@@ -20,8 +20,8 @@ public class Main extends ApplicationAdapter {
     float pipeSpeed = 200;
     float pipeTimer = 0;
 
-    final float GRAVITY = 600;
-    final float JUMP_FORCE = 300;
+    final float GRAVITY = 800;
+    final float JUMP_FORCE = 250;
     final float GAP = 150;
     float CEILING;
     float SCREEN_HEIGHT;
