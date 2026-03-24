@@ -20,9 +20,16 @@ public class Main extends ApplicationAdapter {
     float pipeSpeed = 200;
     float pipeTimer = 0;
 
+    // pipe variables
+    final float GAP = 150;
+    final float PIPE_WIDTH = 50;
+    final float MIN_PIPE_HEIGHT = 50;
+    final float MAX_PIPE_HEIGHT = 250;
+    float timeAlive = 0;
+
     final float GRAVITY = 800;
     final float JUMP_FORCE = 250;
-    final float GAP = 150;
+
     float CEILING;
     float SCREEN_HEIGHT;
     float SCREEN_WIDTH;
@@ -30,6 +37,14 @@ public class Main extends ApplicationAdapter {
     float playerX = 100;
     float playerWidth = 30;
     float playerHeight = 30;
+
+
+    enum PipeSpawnType {
+        PAIR,
+        TOP,
+        BOTTOM
+    }
+
 
     @Override
     public void create() {
@@ -50,6 +65,7 @@ public class Main extends ApplicationAdapter {
 
     void update() {
         float delta = Gdx.graphics.getDeltaTime();
+        timeAlive += delta;
 
         // Hoppa
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
@@ -87,18 +103,32 @@ public class Main extends ApplicationAdapter {
         pipeTimer += delta;
 
 //spawn
-// When the game starts, adds a pipe to the list every 2 seconds, create a new spawn pipe..
+// When the game starts, adds a pipe pair to the list every 2 seconds, create a new spawn pipe..
         if (pipeTimer > 2f) {
             pipeTimer = 0;
-// Create a random vertical position for the gap between top and bottom pipes.
-// Ensures the gap stays fully within the screen height.
-            float gapStart = (float) (Math.random() * (SCREEN_HEIGHT - GAP));
+            spawnPipeObstacles(PipeSpawnType.PAIR);
 
-// Bottom pipe
-            pipes.add(new Pipe(SCREEN_WIDTH, 0, 50, gapStart));
+            // if we want single obstacles:
 
-// Pipe at the top
-            pipes.add(new Pipe(SCREEN_WIDTH, gapStart + GAP, 50, SCREEN_HEIGHT - (gapStart + GAP)));
+//            double r = Math.random();
+//
+//            // Difficulty (ökar över tid)
+//            float difficulty = timeAlive / 60f;
+//
+//            // Gap minskar men har en gräns
+//            float maxGap = Math.max(130, 200 - difficulty * 50);
+//            float minGap = 120;
+//
+//            float gapSize = minGap + (float)(Math.random() * (maxGap - minGap));
+//
+//            if (r < 0.6) {
+//                spawnPipePair(gapSize);
+//            } else if (r < 0.8) {
+//                spawnPipeTop();
+//            } else {
+//                spawnPipeBottom();
+//            }
+
         }
         if (pipes != null && !pipes.isEmpty()) {
             Iterator<Pipe> iter = pipes.iterator();
@@ -150,6 +180,28 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         shape.dispose();
+    }
+
+    // For future sprints: we could break this method up into three separate, where PAIR also has a gapSize parameter,
+    // and change the constant GAP to gapSize in the method.
+    void spawnPipeObstacles(PipeSpawnType type) {
+        if (type == PipeSpawnType.PAIR) {
+            float gapStart = MIN_PIPE_HEIGHT + (float) (Math.random() * (SCREEN_HEIGHT - GAP - 2 * MIN_PIPE_HEIGHT));
+
+            pipes.add(new Pipe(SCREEN_WIDTH, 0, PIPE_WIDTH, gapStart));
+            pipes.add(new Pipe(SCREEN_WIDTH, gapStart + GAP, PIPE_WIDTH, SCREEN_HEIGHT - (gapStart + GAP)));
+        }
+
+        if (type == PipeSpawnType.TOP) {
+            float height = MIN_PIPE_HEIGHT + (float) (Math.random() * (MAX_PIPE_HEIGHT - MIN_PIPE_HEIGHT));
+            float y = SCREEN_HEIGHT - height;
+            pipes.add(new Pipe(SCREEN_WIDTH, y, PIPE_WIDTH, height));
+        }
+
+        if (type == PipeSpawnType.BOTTOM) {
+            float height = MIN_PIPE_HEIGHT + (float) (Math.random() * (MAX_PIPE_HEIGHT - MIN_PIPE_HEIGHT));
+            pipes.add(new Pipe(SCREEN_WIDTH, 0, PIPE_WIDTH, height));
+        }
     }
 }
 
