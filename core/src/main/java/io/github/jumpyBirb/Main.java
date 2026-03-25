@@ -107,28 +107,6 @@ public class Main extends ApplicationAdapter {
         if (pipeTimer > 2f) {
             pipeTimer = 0;
             spawnPipeObstacles(PipeSpawnType.PAIR);
-
-            // if we want single obstacles:
-
-//            double r = Math.random();
-//
-//            // Difficulty (increases ovre time)
-//            float difficulty = timeAlive / 60f;
-//
-//            // Gap decreases, but has a minimum
-//            float maxGap = Math.max(130, 200 - difficulty * 50);
-//            float minGap = 120;
-//
-//            float gapSize = minGap + (float)(Math.random() * (maxGap - minGap));
-//
-//            if (r < 0.6) {
-//                spawnPipePair(gapSize);
-//            } else if (r < 0.8) {
-//                spawnPipeTop();
-//            } else {
-//                spawnPipeBottom();
-//            }
-
         }
         if (pipes != null && !pipes.isEmpty()) {
             Iterator<Pipe> iter = pipes.iterator();
