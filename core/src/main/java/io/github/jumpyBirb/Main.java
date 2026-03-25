@@ -112,10 +112,10 @@ public class Main extends ApplicationAdapter {
 
 //            double r = Math.random();
 //
-//            // Difficulty (ökar över tid)
+//            // Difficulty (increases ovre time)
 //            float difficulty = timeAlive / 60f;
 //
-//            // Gap minskar men har en gräns
+//            // Gap decreases, but has a minimum
 //            float maxGap = Math.max(130, 200 - difficulty * 50);
 //            float minGap = 120;
 //
