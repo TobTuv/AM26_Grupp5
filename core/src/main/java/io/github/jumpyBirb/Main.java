@@ -25,23 +25,10 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont font;
 
-    private Score score = new Score();
+    // private Score score = new Score();
     private float timeAccumulator = 0;
 
-    public void scoreCount() {
-        float delta = Gdx.graphics.getDeltaTime();
-        timeAccumulator += delta;
 
-        while (timeAccumulator >= 0.1f) {
-            if (!alive || start){
-                break;
-            }
-            finalScore = score.getScore();
-            score.addScore();
-            timeAccumulator -= 0.1f;
-        }
-
-    }
 
     // End of score
 
@@ -77,6 +64,8 @@ public class Main extends ApplicationAdapter {
         BOTTOM
     }
 
+    Score score = new Score();
+
     @Override
     public void create() {
         shape = new ShapeRenderer();
@@ -102,11 +91,7 @@ public class Main extends ApplicationAdapter {
         draw();
         scoreCount();
 
-        if (!alive){
-            batch.begin();
-            font.draw(batch, "GAME OVER!\nYour score: " + (int) finalScore, SCREEN_WIDTH/2 - 30, SCREEN_HEIGHT/2);
-            batch.end();
-        }
+
     }
 
     void update() {
@@ -117,14 +102,17 @@ public class Main extends ApplicationAdapter {
         // Start game and start again after game over
         if (!alive || start) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+
                 alive = true;
                 start = false;
-                score.resetScore();
+                score.resetScore(1, 0);
                 playerY = 200;
                 velocity = 0;
                 pipes.clear();
                 timeAlive = 0;
                 pipeTimer = 0;
+                timeAccumulator = 0;
+
             }
             return;
         }
@@ -150,7 +138,7 @@ public class Main extends ApplicationAdapter {
         if (playerY <= 0) {
             System.out.println("Game Over - Fell");
             System.out.printf("Your score: %d%n", (int) score.getScore());
-            score.resetScore();
+            score.resetScore(1,0);
             alive = false;
 
             playerY = 200;
@@ -160,7 +148,7 @@ public class Main extends ApplicationAdapter {
         if (playerY + playerHeight >= CEILING) {
             System.out.println("Game Over - Hit Ceiling");
             System.out.printf("Your score: %d%n", (int) score.getScore());
-            score.resetScore();
+            score.resetScore(1,0);
             alive = false;
 
             playerY = 200;
@@ -203,7 +191,7 @@ public class Main extends ApplicationAdapter {
                         playerY + playerHeight > p.y) {
                     System.out.println("Game Over - Hit Pipe");
                     System.out.printf("Your score: %d%n", (int) score.getScore());
-                    score.resetScore();
+                    score.resetScore(1, 0);
                     alive = false;
 
                     playerY = 200;
@@ -228,6 +216,9 @@ public class Main extends ApplicationAdapter {
         // For score
         batch.begin();
         font.draw(batch, "Score: " + (int) score.getScore(), 270, SCREEN_HEIGHT - 10);
+        if (!alive){
+            font.draw(batch, "GAME OVER!\nYour score: " + (int) finalScore, SCREEN_WIDTH/2 - 30, SCREEN_HEIGHT/2);
+        }
         batch.end();
     }
 
@@ -259,5 +250,23 @@ public class Main extends ApplicationAdapter {
             float height = MIN_PIPE_HEIGHT + (float) (Math.random() * (MAX_PIPE_HEIGHT - MIN_PIPE_HEIGHT));
             pipes.add(new Pipe(SCREEN_WIDTH, 0, PIPE_WIDTH, height));
         }
+    }
+    public void scoreCount() {
+        float delta = Gdx.graphics.getDeltaTime();
+        timeAccumulator += delta;
+
+        while (timeAccumulator >= 0.1f) {
+            if (!alive){
+                score.resetScore(1, 0);
+                break;
+            } else if (start) {
+                score.resetScore(1, 0);
+                break;
+            }
+            finalScore = score.getScore();
+            score.addScore();
+            timeAccumulator -= 0.1f;
+        }
+
     }
 }
