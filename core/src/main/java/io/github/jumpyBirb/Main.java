@@ -27,6 +27,7 @@ public class Main extends ApplicationAdapter {
     private Boolean alive;
     private double finalScore = 0;
 
+    //all assests goes here befor batch;
     Texture backgroundTexture;
     Texture paralaxOneTexture;
     Texture paralaxTwoTexture;
@@ -40,14 +41,6 @@ public class Main extends ApplicationAdapter {
 
     private SpriteBatch batch;
 
-
-    // private Score score = new Score();
-    // private float timeAccumulator = 0;
-
-
-
-
-    ShapeRenderer shape;
     float playerY;
     float velocity;
     // add a list of pipes included the top and the bottom.
@@ -68,12 +61,13 @@ public class Main extends ApplicationAdapter {
     float CEILING;
     float SCREEN_HEIGHT;
     float SCREEN_WIDTH;
+
     // Creat a player here
     float playerX = 100;
-    float playerWidth = 30;
+    float playerWidth = 50;
     float playerHeight = 30;
 
-
+    // creat a ledged where we start
     float podX = 90;
     float podY = 180;
     float podWidth = 60;
@@ -96,7 +90,8 @@ public class Main extends ApplicationAdapter {
         podPlatformTexture = new Texture("podPlatform.png");
         //    paralaxOneTexture = new Texture("paralaxOne.png");
         //    paralaxTwoTexture = new Texture("paralaxTwo.png");
-
+        font = new BitmapFont();
+        batch = new SpriteBatch();
 
 
         playerY = 200;
@@ -109,19 +104,14 @@ public class Main extends ApplicationAdapter {
         // Start game alive
         alive = true;
         start = true;
-
-        // For score
-        batch = new SpriteBatch();
-        font = new BitmapFont();
     }
 
     @Override
     public void render() {
+
         update();
         draw();
         scoreCount();
-
-
     }
 
     void update() {
@@ -133,6 +123,7 @@ public class Main extends ApplicationAdapter {
         if (!alive || start) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 
+                //should this just be the resetGame()-method?
                 alive = true;
                 start = false;
                 score.resetScore(1, 0);
@@ -142,8 +133,8 @@ public class Main extends ApplicationAdapter {
                 timeAlive = 0;
                 pipeTimer = 0;
                 timeAlive = 0;
-
             }
+
             return;
         }
 
@@ -180,7 +171,7 @@ public class Main extends ApplicationAdapter {
 
         // spawn
         // When the game starts, adds a pipe pair to the list every 2 seconds, create a
-        // new spawn pipe..
+        // new spawn pipe.
         if (pipeTimer > 2f) {
             pipeTimer = 0;
             spawnPipeObstacles(PipeSpawnType.PAIR);
@@ -206,9 +197,9 @@ public class Main extends ApplicationAdapter {
         if (pipes != null && !pipes.isEmpty()) {
             for (Pipe p : pipes) {
                 if (playerX < p.x + p.width &&
-                        playerX + playerWidth > p.x &&
-                        playerY < p.y + p.height &&
-                        playerY + playerHeight > p.y) {
+                    playerX + playerWidth > p.x &&
+                    playerY < p.y + p.height &&
+                    playerY + playerHeight > p.y) {
                     System.out.println("Game Over - Hit Pipe");
                     System.out.printf("Your score: %d%n", (int) score.getScore());
                     resetGame();
@@ -229,21 +220,20 @@ public class Main extends ApplicationAdapter {
             batch.draw(skyScraperTexture, p.x, p.y, p.width, p.height);
         }
         font.draw(batch, "Score: " + (int) score.getScore(), 270, SCREEN_HEIGHT - 10);
-        if (!alive){
-            font.draw(batch, "GAME OVER!\nYour score: " + (int) finalScore, SCREEN_WIDTH/2 - 30, SCREEN_HEIGHT/2);
+        if (!alive) {
+            font.draw(batch, "GAME OVER!\nYour score: " + (int) finalScore, SCREEN_WIDTH / 2 - 30, SCREEN_HEIGHT / 2);
         }
         batch.end();
-
-
     }
 
     @Override
     public void dispose() {
-
         batch.dispose();
         font.dispose();
         backgroundTexture.dispose();
         bikerTexture.dispose();
+        skyScraperTexture.dispose();
+        podPlatformTexture.dispose();
     }
 
     void resetGame() {
@@ -260,10 +250,6 @@ public class Main extends ApplicationAdapter {
         alive = false;
     }
 
-
-    // For future sprints: we could break this method up into three separate, where
-    // PAIR also has a gapSize parameter,
-    // and change the constant GAP to gapSize in the method.
     void spawnPipeObstacles(PipeSpawnType type) {
         if (type == PipeSpawnType.PAIR) {
             float gapStart = MIN_PIPE_HEIGHT + (float) (Math.random() * (SCREEN_HEIGHT - GAP - 2 * MIN_PIPE_HEIGHT));
@@ -278,17 +264,18 @@ public class Main extends ApplicationAdapter {
         timeAlive += delta;
 
         while (timeAlive >= 0.1f) {
-            if (!alive){
+
+            if (!alive) {
                 score.resetScore(1, 0);
                 break;
             } else if (start) {
                 score.resetScore(1, 0);
                 break;
             }
+
             finalScore = score.getScore();
             score.addScore();
             timeAlive -= 0.1f;
         }
-
     }
 }
