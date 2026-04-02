@@ -54,9 +54,12 @@ public class Main extends ApplicationAdapter {
     final float MIN_PIPE_HEIGHT = 50;
     final float MAX_PIPE_HEIGHT = 250;
     float timeAlive = 0;
+    float spawnInterval = 2f;
+
 
     final float GRAVITY = 800;
     final float JUMP_FORCE = 250;
+    float currentJumpForce;
 
     float CEILING;
     float SCREEN_HEIGHT;
@@ -121,7 +124,7 @@ public class Main extends ApplicationAdapter {
 
         // Start game and start again after game over
         if (!alive || start) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
 
                 //should this just be the resetGame()-method?
                 alive = true;
@@ -138,10 +141,10 @@ public class Main extends ApplicationAdapter {
             return;
         }
 
-        // Hoppa
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            velocity = JUMP_FORCE;
-        }
+        // Hoppa med båda space och left click.
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            currentJumpForce = Math.max(150f, JUMP_FORCE - (timeAlive / 10f) * 5);
+            velocity = currentJumpForce;        }
 
         // Gravitation
         velocity -= GRAVITY * delta;
@@ -169,12 +172,16 @@ public class Main extends ApplicationAdapter {
 
         pipeTimer += delta;
 
+        // Narrowing the safe distance (GAP)
+        float currentGap = Math.max(90f, GAP - (timeAlive / 5f) * 2);
+
         // spawn
         // When the game starts, adds a pipe pair to the list every 2 seconds, create a
         // new spawn pipe.
-        if (pipeTimer > 2f) {
+        spawnInterval = Math.max(1.3f, 2f - (timeAlive / 40f));
+        if (pipeTimer > spawnInterval) {
             pipeTimer = 0;
-            spawnPipeObstacles(PipeSpawnType.PAIR);
+            spawnPipeObstacles(PipeSpawnType.PAIR, currentGap);
         }
         if (pipes != null && !pipes.isEmpty()) {
             Iterator<Pipe> iter = pipes.iterator();
@@ -226,6 +233,10 @@ public class Main extends ApplicationAdapter {
         batch.end();
     }
 
+    float getPipeSpeed() {
+        return pipeSpeed + ((int) (timeAlive / 5)) * 20;
+    }
+
     @Override
     public void dispose() {
         batch.dispose();
@@ -250,12 +261,12 @@ public class Main extends ApplicationAdapter {
         alive = false;
     }
 
-    void spawnPipeObstacles(PipeSpawnType type) {
+    void spawnPipeObstacles(PipeSpawnType type, float currentGap) {
         if (type == PipeSpawnType.PAIR) {
-            float gapStart = MIN_PIPE_HEIGHT + (float) (Math.random() * (SCREEN_HEIGHT - GAP - 2 * MIN_PIPE_HEIGHT));
+            float gapStart = MIN_PIPE_HEIGHT + (float) (Math.random() * (SCREEN_HEIGHT - currentGap - 2 * MIN_PIPE_HEIGHT));
 
             pipes.add(new Pipe(SCREEN_WIDTH, 0, PIPE_WIDTH, gapStart));
-            pipes.add(new Pipe(SCREEN_WIDTH, gapStart + GAP, PIPE_WIDTH, SCREEN_HEIGHT - (gapStart + GAP)));
+            pipes.add(new Pipe(SCREEN_WIDTH, gapStart + currentGap, PIPE_WIDTH, SCREEN_HEIGHT - (gapStart + currentGap)));
         }
     }
 
