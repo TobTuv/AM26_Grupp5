@@ -45,7 +45,6 @@ public class Main extends ApplicationAdapter {
     float velocity;
     // add a list of pipes included the top and the bottom.
     List<Pipe> pipes;
-    float pipeSpeed = 200;
     float pipeTimer = 0;
 
     // pipe variables
@@ -53,7 +52,8 @@ public class Main extends ApplicationAdapter {
     final float PIPE_WIDTH = 50;
     final float MIN_PIPE_HEIGHT = 50;
     final float MAX_PIPE_HEIGHT = 250;
-    float timeAlive = 0;
+    float timeAlive = 0; // use for score
+    float timePlaying = 0; // use for harder things.
     float spawnInterval = 2f;
 
 
@@ -121,6 +121,7 @@ public class Main extends ApplicationAdapter {
 
         float delta = Gdx.graphics.getDeltaTime();
         timeAlive += delta;
+        timePlaying += delta;
 
         // Start game and start again after game over
         if (!alive || start) {
@@ -136,6 +137,7 @@ public class Main extends ApplicationAdapter {
                 timeAlive = 0;
                 pipeTimer = 0;
                 timeAlive = 0;
+                timePlaying = 0;
             }
 
             return;
@@ -143,7 +145,7 @@ public class Main extends ApplicationAdapter {
 
         // Hoppa med båda space och left click.
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            currentJumpForce = Math.max(150f, JUMP_FORCE - (timeAlive / 10f) * 5);
+            currentJumpForce = Math.max(150f, JUMP_FORCE - (timePlaying / 10f) * 5);
             velocity = currentJumpForce;        }
 
         // Gravitation
@@ -173,12 +175,12 @@ public class Main extends ApplicationAdapter {
         pipeTimer += delta;
 
         // Narrowing the safe distance (GAP)
-        float currentGap = Math.max(90f, GAP - (timeAlive / 5f) * 2);
+        float currentGap = Math.max(90f, GAP - (timePlaying / 5f) * 2);
 
         // spawn
         // When the game starts, adds a pipe pair to the list every 2 seconds, create a
         // new spawn pipe.
-        spawnInterval = Math.max(1.3f, 2f - (timeAlive / 40f));
+        spawnInterval = Math.max(1.3f, 2f - (timePlaying / 40f));
         if (pipeTimer > spawnInterval) {
             pipeTimer = 0;
             spawnPipeObstacles(PipeSpawnType.PAIR, currentGap);
@@ -192,7 +194,7 @@ public class Main extends ApplicationAdapter {
                 // Move the pipe left across the screen by decreasing its x-coordinate.
                 // Using '-=' ensures the pipe moves from right to left over time.
                 // delta = time between 2 frames.
-                p.x -= pipeSpeed * delta;
+                p.x -= getPipeSpeed() * delta;
                 if (p.x + p.width < 0) {
                     iter.remove();
                 }
@@ -234,7 +236,7 @@ public class Main extends ApplicationAdapter {
     }
 
     float getPipeSpeed() {
-        return pipeSpeed + ((int) (timeAlive / 5)) * 20;
+        return 200 + ((int) (timePlaying / 5)) * 20;
     }
 
     @Override
@@ -256,6 +258,7 @@ public class Main extends ApplicationAdapter {
         podY = 180;
 
         pipeTimer = 0;
+        timePlaying = 0;
         timeAlive = 0;
         score.resetScore(1, 0);
         alive = false;
