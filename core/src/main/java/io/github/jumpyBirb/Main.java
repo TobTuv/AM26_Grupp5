@@ -3,8 +3,13 @@ package io.github.jumpyBirb;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.ScreenUtils;
 
 import groovyjarjarantlr4.v4.codegen.model.dbg;
 
@@ -22,15 +27,25 @@ public class Main extends ApplicationAdapter {
     private Boolean alive;
     private double finalScore = 0;
 
-    private SpriteBatch batch;
+    Texture backgroundTexture;
+    Texture paralaxOneTexture;
+    Texture paralaxTwoTexture;
+    Texture bikerTexture;
+    Texture skyScraperTexture;
+    Texture podPlatformTexture;
+    Sound jumpSound;
+    Music music;
+    Music introMusic;
     private BitmapFont font;
 
+    private SpriteBatch batch;
+
+
     // private Score score = new Score();
-    private float timeAccumulator = 0;
+    // private float timeAccumulator = 0;
 
 
 
-    // End of score
 
     ShapeRenderer shape;
     float playerY;
@@ -58,6 +73,12 @@ public class Main extends ApplicationAdapter {
     float playerWidth = 30;
     float playerHeight = 30;
 
+
+    float podX = 90;
+    float podY = 180;
+    float podWidth = 60;
+    float podHeight = 36;
+
     enum PipeSpawnType {
         PAIR,
         TOP,
@@ -68,7 +89,16 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void create() {
-        shape = new ShapeRenderer();
+
+        backgroundTexture = new Texture("background.png");
+        bikerTexture = new Texture("player.png");
+        skyScraperTexture = new Texture("skyscraper.png");
+        podPlatformTexture = new Texture("podPlatform.png");
+        //    paralaxOneTexture = new Texture("paralaxOne.png");
+        //    paralaxTwoTexture = new Texture("paralaxTwo.png");
+
+
+
         playerY = 200;
         velocity = 0;
         pipes = new ArrayList<>();
@@ -111,7 +141,7 @@ public class Main extends ApplicationAdapter {
                 pipes.clear();
                 timeAlive = 0;
                 pipeTimer = 0;
-                timeAccumulator = 0;
+                timeAlive = 0;
 
             }
             return;
@@ -138,22 +168,12 @@ public class Main extends ApplicationAdapter {
         if (playerY <= 0) {
             System.out.println("Game Over - Fell");
             System.out.printf("Your score: %d%n", (int) score.getScore());
-            score.resetScore(1,0);
-            alive = false;
-
-            playerY = 200;
-            velocity = 0;
-            pipes.clear();
+            resetGame();
         }
         if (playerY + playerHeight >= CEILING) {
             System.out.println("Game Over - Hit Ceiling");
             System.out.printf("Your score: %d%n", (int) score.getScore());
-            score.resetScore(1,0);
-            alive = false;
-
-            playerY = 200;
-            velocity = 0;
-            pipes.clear();
+            resetGame();
         }
 
         pipeTimer += delta;
@@ -191,12 +211,7 @@ public class Main extends ApplicationAdapter {
                         playerY + playerHeight > p.y) {
                     System.out.println("Game Over - Hit Pipe");
                     System.out.printf("Your score: %d%n", (int) score.getScore());
-                    score.resetScore(1, 0);
-                    alive = false;
-
-                    playerY = 200;
-                    velocity = 0;
-                    pipes.clear();
+                    resetGame();
                     break;
                 }
             }
@@ -204,30 +219,47 @@ public class Main extends ApplicationAdapter {
     }
 
     void draw() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        ScreenUtils.clear(Color.BLACK);
 
-        shape.begin(ShapeRenderer.ShapeType.Filled);
-        shape.rect(playerX, playerY, playerWidth, playerHeight);
-        for (Pipe p : pipes) {
-            shape.rect(p.x, p.y, p.width, p.height);
-        }
-        shape.end();
-
-        // For score
         batch.begin();
+        batch.draw(backgroundTexture, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(podPlatformTexture, podX, podY, podWidth, podHeight);
+        batch.draw(bikerTexture, playerX, playerY, playerWidth, playerHeight);
+        for (Pipe p : pipes) {
+            batch.draw(skyScraperTexture, p.x, p.y, p.width, p.height);
+        }
         font.draw(batch, "Score: " + (int) score.getScore(), 270, SCREEN_HEIGHT - 10);
         if (!alive){
             font.draw(batch, "GAME OVER!\nYour score: " + (int) finalScore, SCREEN_WIDTH/2 - 30, SCREEN_HEIGHT/2);
         }
         batch.end();
+
+
     }
 
     @Override
     public void dispose() {
-        shape.dispose();
+
         batch.dispose();
         font.dispose();
+        backgroundTexture.dispose();
+        bikerTexture.dispose();
     }
+
+    void resetGame() {
+        playerY = 200;
+        velocity = 0;
+        pipes.clear();
+
+        podX = 90;
+        podY = 180;
+
+        pipeTimer = 0;
+        timeAlive = 0;
+        score.resetScore(1, 0);
+        alive = false;
+    }
+
 
     // For future sprints: we could break this method up into three separate, where
     // PAIR also has a gapSize parameter,
@@ -239,23 +271,13 @@ public class Main extends ApplicationAdapter {
             pipes.add(new Pipe(SCREEN_WIDTH, 0, PIPE_WIDTH, gapStart));
             pipes.add(new Pipe(SCREEN_WIDTH, gapStart + GAP, PIPE_WIDTH, SCREEN_HEIGHT - (gapStart + GAP)));
         }
-
-        if (type == PipeSpawnType.TOP) {
-            float height = MIN_PIPE_HEIGHT + (float) (Math.random() * (MAX_PIPE_HEIGHT - MIN_PIPE_HEIGHT));
-            float y = SCREEN_HEIGHT - height;
-            pipes.add(new Pipe(SCREEN_WIDTH, y, PIPE_WIDTH, height));
-        }
-
-        if (type == PipeSpawnType.BOTTOM) {
-            float height = MIN_PIPE_HEIGHT + (float) (Math.random() * (MAX_PIPE_HEIGHT - MIN_PIPE_HEIGHT));
-            pipes.add(new Pipe(SCREEN_WIDTH, 0, PIPE_WIDTH, height));
-        }
     }
+
     public void scoreCount() {
         float delta = Gdx.graphics.getDeltaTime();
-        timeAccumulator += delta;
+        timeAlive += delta;
 
-        while (timeAccumulator >= 0.1f) {
+        while (timeAlive >= 0.1f) {
             if (!alive){
                 score.resetScore(1, 0);
                 break;
@@ -265,7 +287,7 @@ public class Main extends ApplicationAdapter {
             }
             finalScore = score.getScore();
             score.addScore();
-            timeAccumulator -= 0.1f;
+            timeAlive -= 0.1f;
         }
 
     }
