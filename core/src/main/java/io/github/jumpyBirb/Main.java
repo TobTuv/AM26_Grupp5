@@ -5,13 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
-
-import groovyjarjarantlr4.v4.codegen.model.dbg;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,6 +42,8 @@ public class Main extends ApplicationAdapter {
     // add a list of pipes included the top and the bottom.
     List<Pipe> pipes;
     float pipeTimer = 0;
+
+    float podSpeed = 150;
 
     // pipe variables
     final float GAP = 150;
@@ -159,6 +157,9 @@ public class Main extends ApplicationAdapter {
             playerY = CEILING;
             velocity = 0;
         }
+
+        // moves tha starting pedestal
+        podX -= podSpeed * delta;
 
         // Game over (under skärmen)
         if (playerY <= 0) {
