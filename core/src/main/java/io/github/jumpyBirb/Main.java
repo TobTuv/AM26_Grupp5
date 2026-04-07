@@ -127,7 +127,7 @@ public class Main extends ApplicationAdapter {
 
                 //should this just be the resetGame()-method?
                 alive = true;
-                start = false;
+
                 score.resetScore(1, 0);
                 playerY = 200;
                 velocity = 0;
@@ -136,6 +136,9 @@ public class Main extends ApplicationAdapter {
                 pipeTimer = 0;
                 timeAlive = 0;
                 timePlaying = 0;
+                start = false;
+                currentJumpForce = Math.max(150f, JUMP_FORCE - (timePlaying / 10f) * 5);
+                velocity = currentJumpForce;
             }
 
             return;
