@@ -25,8 +25,9 @@ public class Main extends ApplicationAdapter {
 
     //all assests goes here befor batch;
     Texture backgroundTexture;
-    Texture paralaxOneTexture;
-    Texture paralaxTwoTexture;
+    Texture parallaxOneTexture;
+    Texture parallaxTwoTexture;
+    Texture parallaxThreeTexture;
     Texture bikerTexture;
     Texture skyScraperTexture;
     Texture podPlatformTexture;
@@ -34,6 +35,15 @@ public class Main extends ApplicationAdapter {
     Music music;
     Music introMusic;
     private BitmapFont font;
+
+    //Parallax settings
+    float parallaxOneX = 0;
+    float parallaxTwoX = 0;
+    float parallaxThreeX = 0;
+
+    float parallaxOneSpeed = 20f;
+    float parallaxTwoSpeed = 40f;
+    float parallaxThreeSpeed = 80f;
 
     private SpriteBatch batch;
 
@@ -47,7 +57,7 @@ public class Main extends ApplicationAdapter {
 
     // pipe variables
     final float GAP = 150;
-    final float PIPE_WIDTH = 50;
+    final float PIPE_WIDTH = 80;
     final float MIN_PIPE_HEIGHT = 50;
     final float MAX_PIPE_HEIGHT = 250;
     float timeAlive = 0; // use for score
@@ -65,14 +75,14 @@ public class Main extends ApplicationAdapter {
 
     // Creat a player here
     float playerX = 100;
-    float playerWidth = 50;
-    float playerHeight = 30;
+    float playerWidth = 100;
+    float playerHeight = 60;
 
     // creat a ledged where we start
     float podX = 90;
-    float podY = 180;
-    float podWidth = 60;
-    float podHeight = 36;
+    float podY = 0;
+    float podWidth = 170;
+    float podHeight = 240;
 
     enum PipeSpawnType {
         PAIR,
@@ -89,8 +99,9 @@ public class Main extends ApplicationAdapter {
         bikerTexture = new Texture("player.png");
         skyScraperTexture = new Texture("skyscraper.png");
         podPlatformTexture = new Texture("podPlatform.png");
-        //    paralaxOneTexture = new Texture("paralaxOne.png");
-        //    paralaxTwoTexture = new Texture("paralaxTwo.png");
+        parallaxOneTexture = new Texture("clouds-parallax1-3000x1080.png");
+        parallaxTwoTexture = new Texture("city-parallax2-3000x1080.png");
+        parallaxThreeTexture = new Texture("smog-parallax3-3000x1080.png");
         font = new BitmapFont();
         batch = new SpriteBatch();
 
@@ -118,6 +129,24 @@ public class Main extends ApplicationAdapter {
     void update() {
 
         float delta = Gdx.graphics.getDeltaTime();
+
+        //parallax speed and position settings
+        if (!start && alive) {
+            parallaxOneX -= parallaxOneSpeed * delta;
+            parallaxTwoX -= parallaxTwoSpeed * delta;
+            parallaxThreeX -= parallaxThreeSpeed * delta;
+
+            if (parallaxOneX <= -SCREEN_WIDTH) {
+                parallaxOneX = 0;
+            }
+            if (parallaxTwoX <= -SCREEN_WIDTH) {
+                parallaxTwoX = 0;
+            }
+            if (parallaxThreeX <= -SCREEN_WIDTH) {
+                parallaxThreeX = 0;
+            }
+        }
+
         timeAlive += delta;
         timePlaying += delta;
 
@@ -147,7 +176,8 @@ public class Main extends ApplicationAdapter {
         // Hoppa med båda space och left click.
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             currentJumpForce = Math.max(150f, JUMP_FORCE - (timePlaying / 10f) * 5);
-            velocity = currentJumpForce;        }
+            velocity = currentJumpForce;
+        }
 
         // Gravitation
         velocity -= GRAVITY * delta;
@@ -227,6 +257,12 @@ public class Main extends ApplicationAdapter {
 
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxOneTexture, parallaxOneX, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxOneTexture, parallaxOneX + SCREEN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxTwoTexture, parallaxTwoX, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxTwoTexture, parallaxTwoX + SCREEN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxThreeTexture, parallaxThreeX, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxThreeTexture, parallaxThreeX + SCREEN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         batch.draw(podPlatformTexture, podX, podY, podWidth, podHeight);
         batch.draw(bikerTexture, playerX, playerY, playerWidth, playerHeight);
         for (Pipe p : pipes) {
@@ -251,6 +287,9 @@ public class Main extends ApplicationAdapter {
         bikerTexture.dispose();
         skyScraperTexture.dispose();
         podPlatformTexture.dispose();
+        parallaxOneTexture.dispose();
+        parallaxTwoTexture.dispose();
+        parallaxThreeTexture.dispose();
     }
 
     void resetGame() {
@@ -259,7 +298,7 @@ public class Main extends ApplicationAdapter {
         pipes.clear();
 
         podX = 90;
-        podY = 180;
+        podY = 0;
 
         pipeTimer = 0;
         timePlaying = 0;
