@@ -16,7 +16,7 @@ public class Score {
 
     public void addScore() {
         score = score * 1.01;
-        visualScore = (score - 1) * 1000;
+        visualScore = (score - 1) * 100;
     }
 
     public double getScore() {

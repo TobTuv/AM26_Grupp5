@@ -23,13 +23,14 @@ public class Main extends ApplicationAdapter {
     private Boolean alive;
     private double finalScore = 0;
 
-    //all assests goes here befor batch;
+    //all assests goes here before batch;
     Texture backgroundTexture;
     Texture parallaxOneTexture;
     Texture parallaxTwoTexture;
     Texture parallaxThreeTexture;
     Texture bikerTexture;
     Texture skyScraperTexture;
+    Texture flyingSkyScraperTextureOne;
     Texture podPlatformTexture;
     Sound jumpSound;
     Music music;
@@ -56,8 +57,8 @@ public class Main extends ApplicationAdapter {
     float podSpeed = 150;
 
     // pipe variables
-    final float GAP = 150;
-    final float PIPE_WIDTH = 80;
+    final float GAP = 160;
+    final float PIPE_WIDTH = 120;
     final float MIN_PIPE_HEIGHT = 50;
     final float MAX_PIPE_HEIGHT = 250;
     float timeAlive = 0; // use for score
@@ -75,14 +76,14 @@ public class Main extends ApplicationAdapter {
 
     // Creat a player here
     float playerX = 100;
-    float playerWidth = 100;
-    float playerHeight = 60;
+    float playerWidth = 90;
+    float playerHeight = 50;
 
     // creat a ledged where we start
-    float podX = 90;
+    float podX = 65;
     float podY = 0;
-    float podWidth = 170;
-    float podHeight = 240;
+    float podWidth = 190;
+    float podHeight = 215;
 
     enum PipeSpawnType {
         PAIR,
@@ -98,9 +99,10 @@ public class Main extends ApplicationAdapter {
         backgroundTexture = new Texture("background.png");
         bikerTexture = new Texture("player.png");
         skyScraperTexture = new Texture("skyscraper.png");
+     //   flyingSkyScraperTextureOne = new Texture("hinder_uppe1_250x800.png");
         podPlatformTexture = new Texture("podPlatform.png");
         parallaxOneTexture = new Texture("clouds-parallax1-3000x1080.png");
-        parallaxTwoTexture = new Texture("city-parallax2-3000x1080.png");
+        parallaxTwoTexture = new Texture("city-parallax2-1920x1080.png");
         parallaxThreeTexture = new Texture("smog-parallax3-3000x1080.png");
         font = new BitmapFont();
         batch = new SpriteBatch();
@@ -267,7 +269,8 @@ public class Main extends ApplicationAdapter {
         batch.draw(bikerTexture, playerX, playerY, playerWidth, playerHeight);
         for (Pipe p : pipes) {
             batch.draw(skyScraperTexture, p.x, p.y, p.width, p.height);
-        }
+        //    batch.draw(flyingSkyScraperTextureOne, p.x, p.y, p.width, p.height);
+                   }
         font.draw(batch, "Score: " + (int) score.getScore(), 270, SCREEN_HEIGHT - 10);
         if (!alive) {
             font.draw(batch, "GAME OVER!\nYour score: " + (int) finalScore, SCREEN_WIDTH / 2 - 30, SCREEN_HEIGHT / 2);
@@ -286,6 +289,7 @@ public class Main extends ApplicationAdapter {
         backgroundTexture.dispose();
         bikerTexture.dispose();
         skyScraperTexture.dispose();
+        skyScraperTexture.dispose();
         podPlatformTexture.dispose();
         parallaxOneTexture.dispose();
         parallaxTwoTexture.dispose();
@@ -297,7 +301,7 @@ public class Main extends ApplicationAdapter {
         velocity = 0;
         pipes.clear();
 
-        podX = 90;
+        podX = 65;
         podY = 0;
 
         pipeTimer = 0;
