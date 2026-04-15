@@ -3,32 +3,68 @@ package io.github.jumpyBirb;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+
 public class Main extends ApplicationAdapter {
 
-    ShapeRenderer shape;
+    // Start of score
+    private Boolean start;
+    private Boolean alive;
+    private double finalScore = 0;
+
+    //all assests goes here before batch;
+    Texture backgroundTexture;
+    Texture parallaxOneTexture;
+    Texture parallaxTwoTexture;
+    Texture parallaxThreeTexture;
+    Texture bikerTexture;
+    Texture skyScraperTexture;
+    Texture flyingSkyScraperTextureOne;
+    Texture podPlatformTexture;
+    Sound jumpSound;
+    Music music;
+    Music introMusic;
+    private BitmapFont font;
+
+    //Parallax settings
+    float parallaxOneX = 0;
+    float parallaxTwoX = 0;
+    float parallaxThreeX = 0;
+
+    float parallaxOneSpeed = 20f;
+    float parallaxTwoSpeed = 40f;
+    float parallaxThreeSpeed = 80f;
+
+    private SpriteBatch batch;
+
     float playerY;
     float velocity;
-    //add a list of pipes included the top and the bottom.
+    // add a list of pipes included the top and the bottom.
     List<Pipe> pipes;
-    //float pipeSpeed = 200;
     float pipeTimer = 0;
 
+    float podSpeed = 150;
+
     // pipe variables
-    final float GAP = 150;
-    final float PIPE_WIDTH = 50;
+    final float GAP = 160;
+    final float PIPE_WIDTH = 120;
     final float MIN_PIPE_HEIGHT = 50;
     final float MAX_PIPE_HEIGHT = 250;
-    float timeAlive = 0;
+    float timeAlive = 0; // use for score
+    float timePlaying = 0; // use for harder things.
     float spawnInterval = 2f;
+
 
     final float GRAVITY = 800;
     final float JUMP_FORCE = 250;
@@ -37,16 +73,17 @@ public class Main extends ApplicationAdapter {
     float CEILING;
     float SCREEN_HEIGHT;
     float SCREEN_WIDTH;
+
     // Creat a player here
     float playerX = 100;
-    float playerWidth = 30;
-    float playerHeight = 30;
+    float playerWidth = 90;
+    float playerHeight = 50;
 
-    // Let the player know to try moving with the space key or the mouse.
-    SpriteBatch batch;
-    BitmapFont font;
-    boolean showTutorial = true;
-    //
+    // creat a ledged where we start
+    float podX = 65;
+    float podY = 0;
+    float podWidth = 190;
+    float podHeight = 215;
 
     enum PipeSpawnType {
         PAIR,
@@ -54,49 +91,98 @@ public class Main extends ApplicationAdapter {
         BOTTOM
     }
 
+    Score score = new Score();
 
     @Override
     public void create() {
-        shape = new ShapeRenderer();
-        // Let the player know to try moving with the space key or the mouse.
-        batch = new SpriteBatch();
+
+        backgroundTexture = new Texture("background.png");
+        bikerTexture = new Texture("player.png");
+        skyScraperTexture = new Texture("skyscraper.png");
+        //   flyingSkyScraperTextureOne = new Texture("hinder_uppe1_250x800.png");
+        podPlatformTexture = new Texture("podPlatform.png");
+        parallaxOneTexture = new Texture("clouds-parallax1-3000x1080.png");
+        parallaxTwoTexture = new Texture("city-parallax2-1920x1080.png");
+        parallaxThreeTexture = new Texture("smog-parallax3-3000x1080.png");
         font = new BitmapFont();
-        font.getData().setScale(2);
-        //
+        batch = new SpriteBatch();
+
+
         playerY = 200;
         velocity = 0;
         pipes = new ArrayList<>();
         SCREEN_HEIGHT = Gdx.graphics.getHeight();
         SCREEN_WIDTH = Gdx.graphics.getWidth();
         CEILING = SCREEN_HEIGHT;
+
+        // Start game alive
+        alive = true;
+        start = true;
     }
 
     @Override
     public void render() {
+
         update();
         draw();
+        scoreCount();
     }
 
     void update() {
+
         float delta = Gdx.graphics.getDeltaTime();
+
+        //parallax speed and position settings
+        if (!start && alive) {
+            parallaxOneX -= parallaxOneSpeed * delta;
+            parallaxTwoX -= parallaxTwoSpeed * delta;
+            parallaxThreeX -= parallaxThreeSpeed * delta;
+
+            if (parallaxOneX <= -SCREEN_WIDTH) {
+                parallaxOneX = 0;
+            }
+            if (parallaxTwoX <= -SCREEN_WIDTH) {
+                parallaxTwoX = 0;
+            }
+            if (parallaxThreeX <= -SCREEN_WIDTH) {
+                parallaxThreeX = 0;
+            }
+        }
+
         timeAlive += delta;
+        timePlaying += delta;
 
-        // Let the player know to try moving with the space key or the mouse.
+        // Start game and start again after game over
+        if (!alive || start) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+
+                //should this just be the resetGame()-method?
+                alive = true;
+
+                score.resetScore(1, 0);
+                playerY = 200;
+                velocity = 0;
+                pipes.clear();
+                timeAlive = 0;
+                pipeTimer = 0;
+                timeAlive = 0;
+                timePlaying = 0;
+                start = false;
+                currentJumpForce = Math.max(150f, JUMP_FORCE - (timePlaying / 10f) * 5);
+                velocity = currentJumpForce;
+            }
+
+            return;
+        }
+
+        // Hoppa med båda space och left click.
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            showTutorial = false; // Turn off the tutorial as soon as the player takes action.
-
-        // Hoppa
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-//            velocity = JUMP_FORCE;
-//        }
-        currentJumpForce = Math.max(150f, JUMP_FORCE - (timeAlive / 10f) * 5);
+            currentJumpForce = Math.max(150f, JUMP_FORCE - (timePlaying / 10f) * 5);
             velocity = currentJumpForce;
         }
 
         // Gravitation
-        //float currentGravity = GRAVITY + (timeAlive * 10);
         velocity -= GRAVITY * delta;
-        //velocity -= currentGravity * delta;
 
         // Flytta spelaren
         playerY += velocity * delta;
@@ -107,43 +193,43 @@ public class Main extends ApplicationAdapter {
             velocity = 0;
         }
 
+        // moves tha starting pedestal
+        podX -= podSpeed * delta;
+
         // Game over (under skärmen)
         if (playerY <= 0) {
             System.out.println("Game Over - Fell");
+            System.out.printf("Your score: %d%n", (int) score.getScore());
             resetGame();
         }
         if (playerY + playerHeight >= CEILING) {
             System.out.println("Game Over - Hit Ceiling");
+            System.out.printf("Your score: %d%n", (int) score.getScore());
             resetGame();
         }
 
         pipeTimer += delta;
 
-
         // Narrowing the safe distance (GAP)
-        float currentGap = Math.max(90f, GAP - (timeAlive / 5f) * 2);
-        // The gap decreases by 2 units every 5 seconds, with a minimum of 90.
+        float currentGap = Math.max(90f, GAP - (timePlaying / 5f) * 2);
 
-//spawn
-// When the game starts, adds a pipe pair to the list every 2 seconds, create a new spawn pipe..
-
-        //The pipe spawn time gradually decreases as gameplay progresses(every 40s)
-        // (the longer the game, the harder it gets), but it never falls below 1.3 seconds.
-        spawnInterval = Math.max(1.3f, 2f - (timeAlive / 40f));
-//        if (pipeTimer > 2f) {
+        // spawn
+        // When the game starts, adds a pipe pair to the list every 2 seconds, create a
+        // new spawn pipe.
+        spawnInterval = Math.max(1.3f, 2f - (timePlaying / 40f));
         if (pipeTimer > spawnInterval) {
             pipeTimer = 0;
             spawnPipeObstacles(PipeSpawnType.PAIR, currentGap);
         }
         if (pipes != null && !pipes.isEmpty()) {
             Iterator<Pipe> iter = pipes.iterator();
-// p.x = horizontal coordinate (x) of the pipe on the screen.
+            // p.x = horizontal coordinate (x) of the pipe on the screen.
 
             while (iter.hasNext()) {
                 Pipe p = iter.next();
-//  Move the pipe left across the screen by decreasing its x-coordinate.
-// Using '-=' ensures the pipe moves from right to left over time.
-// delta = time between 2 frames.
+                // Move the pipe left across the screen by decreasing its x-coordinate.
+                // Using '-=' ensures the pipe moves from right to left over time.
+                // delta = time between 2 frames.
                 p.x -= getPipeSpeed() * delta;
                 if (p.x + p.width < 0) {
                     iter.remove();
@@ -153,7 +239,6 @@ public class Main extends ApplicationAdapter {
 
         // Game over when the box hit the pipe.
 
-
         if (pipes != null && !pipes.isEmpty()) {
             for (Pipe p : pipes) {
                 if (playerX < p.x + p.width &&
@@ -161,6 +246,7 @@ public class Main extends ApplicationAdapter {
                     playerY < p.y + p.height &&
                     playerY + playerHeight > p.y) {
                     System.out.println("Game Over - Hit Pipe");
+                    System.out.printf("Your score: %d%n", (int) score.getScore());
                     resetGame();
                     break;
                 }
@@ -168,49 +254,63 @@ public class Main extends ApplicationAdapter {
         }
     }
 
-    void resetGame() {
-        playerY = 200;
-        velocity = 0;
-        pipes.clear();
-        timeAlive = 0;
-        pipeTimer = 0;
-    }
-
-
     void draw() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        ScreenUtils.clear(Color.BLACK);
 
-        shape.begin(ShapeRenderer.ShapeType.Filled);
-        shape.rect(playerX, playerY, playerWidth, playerHeight);
+        batch.begin();
+        batch.draw(backgroundTexture, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxOneTexture, parallaxOneX, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxOneTexture, parallaxOneX + SCREEN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxTwoTexture, parallaxTwoX, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxTwoTexture, parallaxTwoX + SCREEN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxThreeTexture, parallaxThreeX, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(parallaxThreeTexture, parallaxThreeX + SCREEN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        batch.draw(podPlatformTexture, podX, podY, podWidth, podHeight);
+        batch.draw(bikerTexture, playerX, playerY, playerWidth, playerHeight);
         for (Pipe p : pipes) {
-            shape.rect(p.x, p.y, p.width, p.height);
+            batch.draw(skyScraperTexture, p.x, p.y, p.width, p.height);
+            //    batch.draw(flyingSkyScraperTextureOne, p.x, p.y, p.width, p.height);
         }
-        shape.end();
-// Let the player know to try moving with the space key or the mouse.
-        if (showTutorial) {
-            batch.begin();
-            font.draw(batch, "Let's try to move with the space key or the mouse", 50, SCREEN_HEIGHT - 100,
-                SCREEN_WIDTH - 100,
-                com.badlogic.gdx.utils.Align.center, true);
-            batch.end();
+        font.draw(batch, "Score: " + (int) score.getScore(), 270, SCREEN_HEIGHT - 10);
+        if (!alive) {
+            font.draw(batch, "GAME OVER!\nYour score: " + (int) finalScore, SCREEN_WIDTH / 2 - 30, SCREEN_HEIGHT / 2);
         }
-        //
+        batch.end();
     }
 
     float getPipeSpeed() {
-        return 200 + ((int) (timeAlive / 5)) * 20;
+        return 200 + ((int) (timePlaying / 5)) * 20;
     }
 
     @Override
     public void dispose() {
-        if (shape != null) shape.dispose();
-        if (batch != null) batch.dispose();
-        if (font != null) font.dispose();
+        batch.dispose();
+        font.dispose();
+        backgroundTexture.dispose();
+        bikerTexture.dispose();
+        skyScraperTexture.dispose();
+        skyScraperTexture.dispose();
+        podPlatformTexture.dispose();
+        parallaxOneTexture.dispose();
+        parallaxTwoTexture.dispose();
+        parallaxThreeTexture.dispose();
     }
 
-    // For future sprints: we could break this method up into three separate, where PAIR also has a gapSize parameter,
-    // and change the constant GAP to gapSize in the method.
-    // changes GAP throw gapSize, add the parameter gapSize and use gapSize instead of GAP
+    void resetGame() {
+        playerY = 200;
+        velocity = 0;
+        pipes.clear();
+
+        podX = 65;
+        podY = 0;
+
+        pipeTimer = 0;
+        timePlaying = 0;
+        timeAlive = 0;
+        score.resetScore(1, 0);
+        alive = false;
+    }
+
     void spawnPipeObstacles(PipeSpawnType type, float currentGap) {
         if (type == PipeSpawnType.PAIR) {
             float gapStart = MIN_PIPE_HEIGHT + (float) (Math.random() * (SCREEN_HEIGHT - currentGap - 2 * MIN_PIPE_HEIGHT));
@@ -218,17 +318,25 @@ public class Main extends ApplicationAdapter {
             pipes.add(new Pipe(SCREEN_WIDTH, 0, PIPE_WIDTH, gapStart));
             pipes.add(new Pipe(SCREEN_WIDTH, gapStart + currentGap, PIPE_WIDTH, SCREEN_HEIGHT - (gapStart + currentGap)));
         }
+    }
 
-        if (type == PipeSpawnType.TOP) {
-            float height = MIN_PIPE_HEIGHT + (float) (Math.random() * (MAX_PIPE_HEIGHT - MIN_PIPE_HEIGHT));
-            float y = SCREEN_HEIGHT - height;
-            pipes.add(new Pipe(SCREEN_WIDTH, y, PIPE_WIDTH, height));
-        }
+    public void scoreCount() {
+        float delta = Gdx.graphics.getDeltaTime();
+        timeAlive += delta;
 
-        if (type == PipeSpawnType.BOTTOM) {
-            float height = MIN_PIPE_HEIGHT + (float) (Math.random() * (MAX_PIPE_HEIGHT - MIN_PIPE_HEIGHT));
-            pipes.add(new Pipe(SCREEN_WIDTH, 0, PIPE_WIDTH, height));
+        while (timeAlive >= 0.1f) {
+
+            if (!alive) {
+                score.resetScore(1, 0);
+                break;
+            } else if (start) {
+                score.resetScore(1, 0);
+                break;
+            }
+
+            finalScore = score.getScore();
+            score.addScore();
+            timeAlive -= 0.1f;
         }
     }
 }
-
