@@ -12,22 +12,8 @@ import io.github.jumpyBirb.game.ParallaxBackground;
 
 import java.util.List;
 
-public class GameRenderer {
-
-    private final SpriteBatch batch;
-    private final BitmapFont font;
-    private final GameAssets assets;
-    private final float screenWidth;
-    private final float screenHeight;
-
-    public GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets,
-                        float screenWidth, float screenHeight) {
-        this.batch = batch;
-        this.font = font;
-        this.assets = assets;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
-    }
+public record GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets, float screenWidth,
+                           float screenHeight) {
 
     public void draw(
         ParallaxBackground background,

@@ -133,33 +133,6 @@ public class Main extends ApplicationAdapter {
         }
     }
 
-    private void draw() {
-        ScreenUtils.clear(Color.BLACK);
-
-        batch.begin();
-
-        batch.draw(assets.background, 0, 0, screenWidth, screenHeight);
-        background.draw(batch);
-
-        batch.draw(assets.pod, podX, podY, POD_WIDTH, POD_HEIGHT);
-        batch.draw(assets.player, player.getX(), player.getY(), player.getWidth(), player.getHeight());
-
-        for (Obstacle p : obstacleManager.getPipes()) {
-            batch.draw(assets.skyscraper, p.getX(), p.getY(), p.getWidth(), p.getHeight());
-        }
-
-        font.draw(batch, "Score: " + (int) score.getScore(), 270, screenHeight - 10);
-
-        if (gameState == GameState.GAME_OVER) {
-            font.draw(batch,
-                "GAME OVER!\nYour score: " + (int) finalScore,
-                screenWidth / 2 - 80,
-                screenHeight / 2);
-        }
-
-        batch.end();
-    }
-
     private boolean inputPressed() {
         return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
             || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);

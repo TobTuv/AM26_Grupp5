@@ -1,7 +1,10 @@
 package io.github.jumpyBirb.data;
 
 public class Obstacle {
-    float x, y, width, height;
+    private float x;
+    private final float y;
+    private final float width;
+    private final float height;
 
     public Obstacle(float x, float y, float width, float height) {
         this.x = x;
