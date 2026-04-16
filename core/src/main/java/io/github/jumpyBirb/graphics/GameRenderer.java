@@ -10,6 +10,10 @@ import io.github.jumpyBirb.data.Score;
 import io.github.jumpyBirb.game.GameState;
 import io.github.jumpyBirb.game.ObstaclePair;
 import io.github.jumpyBirb.game.ParallaxBackground;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Matrix4;
 
 import java.util.List;
 
@@ -41,6 +45,7 @@ import java.util.List;
  *     <li>{@code SpriteBatch} for drawing</li>
  *     <li>{@code BitmapFont} for text</li>
  *     <li>{@code GameAssets} for textures</li>
+ *     <li>{@code OrthographicCamera} for setting the viewport size</li>
  *     <li>screen size values for positioning and scaling</li>
  * </ul>
  *
@@ -49,8 +54,12 @@ import java.util.List;
  * It should not decide game rules such as when the game starts, when the player dies,
  * or how obstacles move.
  */
-public record GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets, float screenWidth,
-                           float screenHeight) {
+public record GameRenderer(SpriteBatch batch,
+                           BitmapFont font,
+                           GameAssets assets,
+                           OrthographicCamera camera,
+                           float worldWidth,
+                           float worldHeight) {
 
     /**
      * Draws one full frame of the game.
@@ -93,11 +102,15 @@ public record GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets
         // Clear the screen before drawing the next frame.
         ScreenUtils.clear(Color.BLACK);
 
+        //describes where things in the game world should be rendered onto the screen.
+        batch.setProjectionMatrix(camera.combined);
+
         // Begin one SpriteBatch drawing session.
         batch.begin();
 
         // Draw static base background first.
-        batch.draw(assets.background, 0, 0, screenWidth, screenHeight);
+        batch.draw(assets.background, 0, 0, worldWidth, worldHeight);
+
 
         // Draw moving parallax layers on top of the base background.
         background.draw(batch);
@@ -107,64 +120,68 @@ public record GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets
 
         // Draw Obstacle
         for (ObstaclePair pair : pairs) {
-
             Obstacle bottom = pair.getBottom();
             Obstacle top = pair.getTop();
-
-            float texW = assets.skyscraper.getWidth();
-            float texH = assets.skyscraper.getHeight();
-
-            float bottomH = bottom.getHeight();
-            float bottomSrcH = Math.min(bottomH, texH);
 
             batch.draw(
                 assets.skyscraper,
                 bottom.getX(),
                 bottom.getY(),
                 bottom.getWidth(),
-                bottomH,
-                0,
-                0, // TOP texture
-                (int) texW,
-                (int) bottomSrcH,
-                false,
-                false
+                bottom.getHeight()
             );
-
-            float topH = top.getHeight();
-            float topSrcH = Math.min(topH, texH);
 
             batch.draw(
                 assets.skyscraper,
                 top.getX(),
                 top.getY(),
                 top.getWidth(),
-                topH,
-                0,
-                (int)(texH - topSrcH), // BOTTOM texture
-                (int) texW,
-                (int) topSrcH,
-                false,
-                false
+                top.getHeight()
             );
+
+
         }
 
         // Draw the player.
         batch.draw(assets.player, player.getX(), player.getY(), player.getWidth(), player.getHeight());
 
+        // End the SpriteBatch drawing session.
+        batch.end();
+
+        //
+
+        batch.setProjectionMatrix(
+            new Matrix4().setToOrtho2D(
+                0, 0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight()
+            )
+        );
+
+        //Start new batch for score
+        batch.begin();
+
+        //Set size and color on font
+        font.setUseIntegerPositions(false);
+        font.setColor(Color.WHITE);
+        font.getData().setScale(2f);
 
         // Draw the current score near the top of the screen.
-        font.draw(batch, "Score: " + (int) score.getScore(), 270, screenHeight - 10);
+        font.draw(batch, "Score: " + (int) score.getScore(),     250,
+            com.badlogic.gdx.Gdx.graphics.getHeight() - 20
+        );
 
         // If the game is over, draw a game over message and final score.
         if (gameState == GameState.GAME_OVER) {
+            font.getData().setScale(2f);
             font.draw(batch,
                 "GAME OVER!\nYour score: " + (int) finalScore,
-                screenWidth / 2 - 80,
-                screenHeight / 2);
+                com.badlogic.gdx.Gdx.graphics.getWidth() / 2f - 120,
+                com.badlogic.gdx.Gdx.graphics.getHeight() / 2f + 40 );
         }
 
-        // End the SpriteBatch drawing session.
+        // End the score drawing session.
         batch.end();
+
     }
 }

@@ -12,6 +12,9 @@ import io.github.jumpyBirb.game.ObstacleManager;
 import io.github.jumpyBirb.game.ParallaxBackground;
 import io.github.jumpyBirb.graphics.GameAssets;
 import io.github.jumpyBirb.graphics.GameRenderer;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**
  * Main game entry point for JumpyBirb.
@@ -53,22 +56,26 @@ import io.github.jumpyBirb.graphics.GameRenderer;
  * </ul>
  */
 public class Main extends ApplicationAdapter {
+    private static final float WORLD_WIDTH = 16f;
+    private static final float WORLD_HEIGHT = 9f;
+    private OrthographicCamera camera;
+    private Viewport viewport;
 
-    private static final float GRAVITY = 800f;
-    private static final float JUMP_FORCE = 250f;
-    private static final float PLAYER_START_X = 100f;
-    private static final float PLAYER_START_Y = 200f;
-    private static final float PLAYER_WIDTH = 90f;
-    private static final float PLAYER_HEIGHT = 50f;
+    private static final float GRAVITY = 18f;
+    private static final float JUMP_FORCE = 6.0f;
+    private static final float PLAYER_START_X = 3f;
+    private static final float PLAYER_START_Y = 4.5f;
+    private static final float PLAYER_WIDTH = 1.4f;
+    private static final float PLAYER_HEIGHT = 0.8f;
 
-    private static final float POD_START_X = 65f;
+    private static final float POD_START_X = 1.0f;
     private static final float POD_START_Y = 0f;
-    private static final float POD_WIDTH = 190f;
-    private static final float POD_HEIGHT = 215f;
-    private static final float POD_SPEED = 150f;
+    private static final float POD_WIDTH = 3.0f;
+    private static final float POD_HEIGHT = 1.8f;
+    private static final float POD_SPEED = 2.5f;
 
-    private static final float OBSTACLE_WIDTH = 120f;
-    private static final float MIN_OBSTACLE_HEIGHT = 50f;
+    private static final float OBSTACLE_WIDTH = 1.8f;
+    private static final float MIN_OBSTACLE_HEIGHT = 1.0f;
 
     private SpriteBatch batch;
     private BitmapFont font;
@@ -112,15 +119,22 @@ public class Main extends ApplicationAdapter {
      */
     @Override
     public void create() {
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+        viewport.apply();
+
+        camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
+        camera.update();
+
         batch = new SpriteBatch();
         font = new BitmapFont();
         assets = new GameAssets();
 
-        screenWidth = Gdx.graphics.getWidth();
-        screenHeight = Gdx.graphics.getHeight();
-        ceiling = screenHeight;
+        screenWidth = WORLD_WIDTH;
+        screenHeight = WORLD_HEIGHT;
+        ceiling = WORLD_HEIGHT;
 
-        renderer = new GameRenderer(batch, font, assets, screenWidth, screenHeight);
+        renderer = new GameRenderer(batch, font, assets, camera, screenWidth, screenHeight);
         player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
         score = new Score();
         obstacleManager = new ObstacleManager(OBSTACLE_WIDTH, MIN_OBSTACLE_HEIGHT, screenWidth, screenHeight);
@@ -147,6 +161,8 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         update();
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
         renderer.draw(
             background,
             player,
@@ -281,7 +297,7 @@ public class Main extends ApplicationAdapter {
      * @return adjusted jump force
      */
     private float calculateJumpForce() {
-        return Math.max(150f, JUMP_FORCE - (timePlaying / 10f) * 5);
+        return Math.max(5f, JUMP_FORCE - (timePlaying / 10f) * 0.2f);
     }
 
     /**
@@ -292,7 +308,21 @@ public class Main extends ApplicationAdapter {
      * @return current obstacle movement speed
      */
     private float getObstacleSpeed() {
-        return 200 + ((int) (timePlaying / 5)) * 20;
+        return 3.0f + ((int) (timePlaying / 8)) * 0.2f;
+    }
+
+    /**
+     * Updates the viewport when the game window is resized.
+     *
+     * Ensures the game world keeps its aspect ratio and scales correctly
+     * to different screen sizes.
+     *
+     * @param width the new window width in pixels
+     * @param height the new window width in pixels
+     */
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
     }
 
     /**

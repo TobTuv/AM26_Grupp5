@@ -113,7 +113,7 @@ public class ObstacleManager {
     public void update(float delta, float timePlaying, float speed) {
         obstacleTimer += delta;
 
-        float currentGap = Math.max(90f, 160f - (timePlaying / 5f) * 2);
+        float currentGap = Math.max(2.2f, 3.2f - (timePlaying / 20f) * 0.1f);
         float spawnInterval = Math.max(1.3f, 2f - (timePlaying / 40f));
 
         if (obstacleTimer > spawnInterval) {
