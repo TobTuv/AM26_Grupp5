@@ -8,6 +8,7 @@ import io.github.jumpyBirb.data.Obstacle;
 import io.github.jumpyBirb.data.Player;
 import io.github.jumpyBirb.data.Score;
 import io.github.jumpyBirb.game.GameState;
+import io.github.jumpyBirb.game.ObstaclePair;
 import io.github.jumpyBirb.game.ParallaxBackground;
 
 import java.util.List;
@@ -69,7 +70,6 @@ public record GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets
      *
      * @param background parallax background system
      * @param player current player object
-     * @param obstacles all active obstacles to draw
      * @param score score object used for displaying current score
      * @param gameState current game state
      * @param finalScore score to display on game over
@@ -81,7 +81,7 @@ public record GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets
     public void draw(
         ParallaxBackground background,
         Player player,
-        List<Obstacle> obstacles,
+        List<ObstaclePair> pairs,
         Score score,
         GameState gameState,
         double finalScore,
@@ -105,12 +105,53 @@ public record GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets
         // Draw the starting platform.
         batch.draw(assets.pod, podX, podY, podWidth, podHeight);
 
+        // Draw Obstacle
+        for (ObstaclePair pair : pairs) {
+
+            Obstacle bottom = pair.getBottom();
+            Obstacle top = pair.getTop();
+
+            float texW = assets.skyscraper.getWidth();
+            float texH = assets.skyscraper.getHeight();
+
+            float bottomH = bottom.getHeight();
+            float bottomSrcH = Math.min(bottomH, texH);
+
+            batch.draw(
+                assets.skyscraper,
+                bottom.getX(),
+                bottom.getY(),
+                bottom.getWidth(),
+                bottomH,
+                0,
+                0, // TOP texture
+                (int) texW,
+                (int) bottomSrcH,
+                false,
+                false
+            );
+
+            float topH = top.getHeight();
+            float topSrcH = Math.min(topH, texH);
+
+            batch.draw(
+                assets.skyscraper,
+                top.getX(),
+                top.getY(),
+                top.getWidth(),
+                topH,
+                0,
+                (int)(texH - topSrcH), // BOTTOM texture
+                (int) texW,
+                (int) topSrcH,
+                false,
+                false
+            );
+        }
+
         // Draw the player.
         batch.draw(assets.player, player.getX(), player.getY(), player.getWidth(), player.getHeight());
 
-        for (Obstacle obstacle : obstacles) {
-            batch.draw(assets.skyscraper, obstacle.getX(), obstacle.getY(), obstacle.getWidth(), obstacle.getHeight());
-        }
 
         // Draw the current score near the top of the screen.
         font.draw(batch, "Score: " + (int) score.getScore(), 270, screenHeight - 10);

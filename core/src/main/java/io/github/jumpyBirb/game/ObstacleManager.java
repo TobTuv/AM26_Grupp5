@@ -44,25 +44,47 @@ import io.github.jumpyBirb.data.Obstacle;
  * </ul>
  */
 public class ObstacleManager {
-    private List<Obstacle> obstacles = new ArrayList<>();
-    private float pipeTimer = 0f;
+    private final List<ObstaclePair> obstaclePairs = new ArrayList<>();
 
-    private final float pipeWidth;
-    private final float minPipeHeight;
+    public List<Obstacle> getAllObstacles() {
+        List<Obstacle> all = new ArrayList<>();
+        for (ObstaclePair pair : obstaclePairs) {
+            all.addAll(pair.getObstacles());
+        }
+        return all;
+    }
+
+    /**
+     * Returns all obstacle pairs currently active in the game.
+     *
+     * <p>This is primarily used by the renderer so it can draw
+     * top and bottom obstacles differently (e.g., cropping textures
+     * from different directions).
+     *
+     * @return list of active obstacle pairs
+     */
+    public List<ObstaclePair> getPairs() {
+        return obstaclePairs;
+    }
+
+    private float obstacleTimer = 0f;
+
+    private final float obstacleWidth;
+    private final float minObstacleHeight;
     private final float screenWidth;
     private final float screenHeight;
 
     /**
      * Creates an obstacle manager with screen information and obstacle settings.
      *
-     * @param pipeWidth width of each spawned obstacle
-     * @param minPipeHeight minimum obstacle height allowed
+     * @param obstacleWidth width of each spawned obstacle
+     * @param minObstacleHeight minimum obstacle height allowed
      * @param screenWidth width of the game screen
      * @param screenHeight height of the game screen
      */
-    public ObstacleManager(float pipeWidth, float minPipeHeight, float screenWidth, float screenHeight) {
-        this.pipeWidth = pipeWidth;
-        this.minPipeHeight = minPipeHeight;
+    public ObstacleManager(float obstacleWidth, float minObstacleHeight, float screenWidth, float screenHeight) {
+        this.obstacleWidth = obstacleWidth;
+        this.minObstacleHeight = minObstacleHeight;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
     }
@@ -89,45 +111,61 @@ public class ObstacleManager {
      * @param speed horizontal movement speed of obstacles
      */
     public void update(float delta, float timePlaying, float speed) {
-        pipeTimer += delta;
+        obstacleTimer += delta;
 
         float currentGap = Math.max(90f, 160f - (timePlaying / 5f) * 2);
         float spawnInterval = Math.max(1.3f, 2f - (timePlaying / 40f));
 
-        if (pipeTimer > spawnInterval) {
-            pipeTimer = 0;
+        if (obstacleTimer > spawnInterval) {
+            obstacleTimer = 0;
             spawnPair(currentGap);
         }
 
-        Iterator<Obstacle> iter = obstacles.iterator();
+        Iterator<ObstaclePair> iter = obstaclePairs.iterator();
         while (iter.hasNext()) {
-            Obstacle obstacle = iter.next();
-            obstacle.update(delta, speed);
+            ObstaclePair pair = iter.next();
 
-            if (obstacle.isOffScreen()) {
+            pair.update(delta, speed);
+
+            if (pair.isOffScreen()) {
                 iter.remove();
             }
         }
     }
 
     /**
-     * Spawns a pair of obstacles with a vertical gap between them.
+     * Spawns a pair of obstacles (top + bottom) with a vertical gap.
      *
-     * The first obstacle starts at the bottom of the screen and goes upward.
-     * The second obstacle starts above the gap and continues to the top of the screen.
+     * <p>The bottom obstacle grows upward from the bottom of the screen.
+     * The top obstacle grows downward from the top of the screen.
      *
-     * The vertical start of the gap is randomized, but constrained so that
-     * both top and bottom obstacles have at least the minimum allowed height.
+     * <p>The gap position is randomized, but constrained so both obstacles
+     * have at least the minimum height.
      *
-     * @param gap the vertical gap size the player can pass through
+     * <p>This method ensures both obstacles in a pair share the same X position,
+     * so they move together as a single gameplay unit.
+     *
+     * @param gap vertical gap size the player can pass through
      */
     private void spawnPair(float gap) {
-        float gapStart = minPipeHeight + (float) (Math.random() *
-            (screenHeight - gap - 2 * minPipeHeight));
+        float gapStart = minObstacleHeight + (float) (Math.random() *
+            (screenHeight - gap - 2 * minObstacleHeight));
 
-        obstacles.add(new Obstacle(screenWidth, 0, pipeWidth, gapStart));
-        obstacles.add(new Obstacle(screenWidth, gapStart + gap, pipeWidth,
-            screenHeight - (gapStart + gap)));
+        Obstacle top = new Obstacle(
+            screenWidth,
+            gapStart + gap,
+            obstacleWidth,
+            screenHeight - (gapStart + gap)
+        );
+
+        Obstacle bottom = new Obstacle(
+            screenWidth,
+            0,
+            obstacleWidth,
+            gapStart
+        );
+
+        obstaclePairs.add(new ObstaclePair(top, bottom));
     }
 
     /**
@@ -136,23 +174,20 @@ public class ObstacleManager {
      * The player is passed in as a rectangle (x, y, width, height).
      * Each obstacle checks rectangular overlap using simple AABB collision.
      *
-     * @param playerX player's x-position
-     * @param playerY player's y-position
-     * @param playerWidth player's width
-     * @param playerHeight player's height
+
      * @return true if the player collides with at least one obstacle
      */
-    public boolean collidesWith(float playerX, float playerY, float playerWidth, float playerHeight) {
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle.collidesWith(playerX, playerY, playerWidth, playerHeight)) {
+    public boolean collidesWith(float x, float y, float w, float h) {
+        for (ObstaclePair pair : obstaclePairs) {
+            if (pair.collidesWith(x, y, w, h)) {
                 return true;
             }
         }
         return false;
     }
 
-    public List<Obstacle> getPipes() {
-        return obstacles;
+    public List<ObstaclePair> getObstacles() {
+        return obstaclePairs;
     }
 
     /**
@@ -161,7 +196,7 @@ public class ObstacleManager {
      * All active obstacles are removed and the spawn timer is reset.
      */
     public void reset() {
-        obstacles.clear();
-        pipeTimer = 0;
+        obstaclePairs.clear();
+        obstacleTimer = 0;
     }
 }

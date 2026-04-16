@@ -67,8 +67,8 @@ public class Main extends ApplicationAdapter {
     private static final float POD_HEIGHT = 215f;
     private static final float POD_SPEED = 150f;
 
-    private static final float PIPE_WIDTH = 120f;
-    private static final float MIN_PIPE_HEIGHT = 50f;
+    private static final float OBSTACLE_WIDTH = 120f;
+    private static final float MIN_OBSTACLE_HEIGHT = 50f;
 
     private SpriteBatch batch;
     private BitmapFont font;
@@ -123,7 +123,7 @@ public class Main extends ApplicationAdapter {
         renderer = new GameRenderer(batch, font, assets, screenWidth, screenHeight);
         player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
         score = new Score();
-        obstacleManager = new ObstacleManager(PIPE_WIDTH, MIN_PIPE_HEIGHT, screenWidth, screenHeight);
+        obstacleManager = new ObstacleManager(OBSTACLE_WIDTH, MIN_OBSTACLE_HEIGHT, screenWidth, screenHeight);
         background = new ParallaxBackground(
             assets.parallax1,
             assets.parallax2,
@@ -150,7 +150,7 @@ public class Main extends ApplicationAdapter {
         renderer.draw(
             background,
             player,
-            obstacleManager.getPipes(),
+            obstacleManager.getPairs(),
             score,
             gameState,
             finalScore,
