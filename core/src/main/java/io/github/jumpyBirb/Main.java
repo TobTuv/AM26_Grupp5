@@ -3,11 +3,8 @@ package io.github.jumpyBirb;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
-import io.github.jumpyBirb.data.Obstacle;
 import io.github.jumpyBirb.data.Player;
 import io.github.jumpyBirb.data.Score;
 import io.github.jumpyBirb.game.GameState;
@@ -16,6 +13,45 @@ import io.github.jumpyBirb.game.ParallaxBackground;
 import io.github.jumpyBirb.graphics.GameAssets;
 import io.github.jumpyBirb.graphics.GameRenderer;
 
+/**
+ * Main game entry point for JumpyBirb.
+ *
+ * <p>This class is the central coordinator of the game.
+ * It does not contain all game logic itself anymore, but instead creates
+ * and connects the other classes that handle specific responsibilities.
+ *
+ * <p>Main is responsible for:
+ * <ul>
+ *     <li>creating and setting up core game objects</li>
+ *     <li>running the update loop every frame</li>
+ *     <li>sending the current game state to the renderer</li>
+ *     <li>handling high-level game flow such as start, restart, and game over</li>
+ * </ul>
+ *
+ * <p>Main is NOT responsible for detailed logic in every area:
+ * <ul>
+ *     <li>{@link Player} handles player movement</li>
+ *     <li>{@link Score} handles score logic</li>
+ *     <li>{@link ObstacleManager} handles spawning and updating obstacles</li>
+ *     <li>{@link ParallaxBackground} handles parallax movement and drawing</li>
+ *     <li>{@link GameRenderer} handles rendering</li>
+ *     <li>{@link GameAssets} handles textures</li>
+ * </ul>
+ *
+ * <p>Why this class exists in this form:
+ * Earlier, almost everything was inside Main, which made the file very long
+ * and hard to understand. The current version keeps Main as the "orchestrator"
+ * of the game while moving detailed behavior into separate classes.
+ *
+ * <p>Game flow:
+ * <ul>
+ *     <li>{@code create()} runs once when the game starts</li>
+ *     <li>{@code render()} runs every frame</li>
+ *     <li>{@code update()} updates game logic</li>
+ *     <li>{@code renderer.draw(...)} renders the current state</li>
+ *     <li>{@code dispose()} cleans up resources when the game closes</li>
+ * </ul>
+ */
 public class Main extends ApplicationAdapter {
 
     private static final float GRAVITY = 800f;
@@ -53,8 +89,27 @@ public class Main extends ApplicationAdapter {
 
     private float podX;
     private float podY;
+
+    /**
+     * Total time the current run has been active.
+     *
+     * <p>Used for difficulty scaling such as:
+     * <ul>
+     *     <li>stronger/weaker jump tuning</li>
+     *     <li>faster obstacle movement</li>
+     *     <li>smaller obstacle gap</li>
+     *     <li>shorter spawn interval</li>
+     * </ul>
+     */
     private float timePlaying = 0f;
 
+
+    /**
+     * Runs once when the game is first created.
+     *
+     * <p>This method creates the rendering objects, loads assets,
+     * reads screen size, creates the game systems, and sets the game to START state.
+     */
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -83,6 +138,12 @@ public class Main extends ApplicationAdapter {
         gameState = GameState.START;
     }
 
+    /**
+     * Runs once every frame.
+     *
+     * <p>This is the main game loop.
+     * First the game logic is updated, then the current state is rendered.
+     */
     @Override
     public void render() {
         update();
@@ -100,6 +161,17 @@ public class Main extends ApplicationAdapter {
         );
     }
 
+    /**
+     * Updates one frame of game logic.
+     *
+     * <p>Main update flow:
+     * <ul>
+     *     <li>if the game is not running, only listen for start/restart input</li>
+     *     <li>if the game is running, process jump input</li>
+     *     <li>update background, player, score, obstacles, and platform</li>
+     *     <li>check for game over conditions</li>
+     * </ul>
+     */
     private void update() {
         float delta = Gdx.graphics.getDeltaTime();
 
@@ -120,7 +192,7 @@ public class Main extends ApplicationAdapter {
         timePlaying += delta;
 
         score.update(delta, true);
-        obstacleManager.update(delta, timePlaying, getPipeSpeed());
+        obstacleManager.update(delta, timePlaying, getObstacleSpeed());
 
         if (player.hitsBottom() || player.hitsTop(ceiling) ||
             obstacleManager.collidesWith(
@@ -133,17 +205,49 @@ public class Main extends ApplicationAdapter {
         }
     }
 
+    /**
+     * Checks if jump/start input was pressed this frame.
+     *
+     * <p>Supports both:
+     * <ul>
+     *     <li>space key</li>
+     *     <li>left mouse button</li>
+     * </ul>
+     *
+     * @return true if input was pressed this frame
+     */
     private boolean inputPressed() {
         return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
             || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
 
+    /**
+     * Handles input when the game is not currently running.
+     *
+     * <p>If input is pressed at the start screen or after game over,
+     * a new run begins.
+     */
     private void handleStartOrRestartInput() {
         if (inputPressed()) {
             startGame();
         }
     }
 
+    /**
+     * Starts a new run.
+     *
+     * <p>This resets the key game systems and state:
+     * <ul>
+     *     <li>player position and velocity</li>
+     *     <li>score</li>
+     *     <li>obstacles</li>
+     *     <li>platform position</li>
+     *     <li>time-based difficulty scaling</li>
+     *     <li>final score display</li>
+     * </ul>
+     *
+     * <p>The player is also given an immediate jump to begin the run.
+     */
     private void startGame() {
         player.reset(PLAYER_START_Y);
         score.reset();
@@ -158,19 +262,46 @@ public class Main extends ApplicationAdapter {
         player.jump(calculateJumpForce());
     }
 
+    /**
+     * Ends the current run and switches the game to GAME_OVER state.
+     *
+     * <p>The current score is saved so it can still be displayed after the run ends.
+     */
     private void gameOver() {
         finalScore = score.getScore();
         gameState = GameState.GAME_OVER;
     }
 
+    /**
+     * Calculates the current jump force.
+     *
+     * <p>As timePlaying increases, jump force is slightly reduced,
+     * but never below 150.
+     *
+     * @return adjusted jump force
+     */
     private float calculateJumpForce() {
         return Math.max(150f, JUMP_FORCE - (timePlaying / 10f) * 5);
     }
 
-    private float getPipeSpeed() {
+    /**
+     * Calculates current obstacle speed.
+     *
+     * <p>Obstacle speed increases in steps over time to make the game harder.
+     *
+     * @return current obstacle movement speed
+     */
+    private float getObstacleSpeed() {
         return 200 + ((int) (timePlaying / 5)) * 20;
     }
 
+    /**
+     * Cleans up resources when the game closes.
+     *
+     * <p>Important:
+     * LibGDX textures, SpriteBatch, and fonts must be disposed properly
+     * to avoid memory leaks.
+     */
     @Override
     public void dispose() {
         batch.dispose();
