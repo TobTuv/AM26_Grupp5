@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.jumpyBirb.data.Player;
 import io.github.jumpyBirb.data.Score;
 import io.github.jumpyBirb.game.GameState;
-import io.github.jumpyBirb.game.PipeManager;
+import io.github.jumpyBirb.game.ObstacleManager;
 import io.github.jumpyBirb.game.ParallaxBackground;
 import io.github.jumpyBirb.graphics.GameAssets;
 import io.github.jumpyBirb.graphics.GameRenderer;
@@ -28,8 +28,6 @@ public class Main extends ApplicationAdapter {
     private static final float POD_HEIGHT = 215f;
     private static final float POD_SPEED = 150f;
 
-    private static final float PIPE_WIDTH = 120f;
-    private static final float MIN_PIPE_HEIGHT = 50f;
 
     private SpriteBatch batch;
     private BitmapFont font;
@@ -37,7 +35,6 @@ public class Main extends ApplicationAdapter {
 
     private Player player;
     private Score score;
-    private PipeManager obstacleManager;
     private ParallaxBackground background;
     private GameRenderer renderer;
 
@@ -48,6 +45,8 @@ public class Main extends ApplicationAdapter {
     private float screenHeight;
     private float ceiling;
 
+    ObstacleManager obstacleManager;
+
     private float podX;
     private float podY;
     private float timePlaying = 0f;
@@ -57,15 +56,6 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         font = new BitmapFont();
         assets = new GameAssets();
-
-        screenWidth = Gdx.graphics.getWidth();
-        screenHeight = Gdx.graphics.getHeight();
-        ceiling = screenHeight;
-
-        renderer = new GameRenderer(batch, font, assets, screenWidth, screenHeight);
-        player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
-        score = new Score();
-        obstacleManager = new PipeManager(PIPE_WIDTH, MIN_PIPE_HEIGHT, screenWidth, screenHeight);
         background = new ParallaxBackground(
             assets.parallax1,
             assets.parallax2,
@@ -74,8 +64,17 @@ public class Main extends ApplicationAdapter {
             screenHeight
         );
 
+        screenWidth = Gdx.graphics.getWidth();
+        screenHeight = Gdx.graphics.getHeight();
+        ceiling = screenHeight;
+
+        renderer = new GameRenderer(batch, font, assets, screenWidth, screenHeight);
+        player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
+        score = new Score();
+
         podX = POD_START_X;
         podY = POD_START_Y;
+        obstacleManager = new ObstacleManager(screenWidth, screenHeight, assets.skyscraper);
 
         gameState = GameState.START;
     }
@@ -83,17 +82,18 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         update();
+
         renderer.draw(
             background,
             player,
-            obstacleManager.getPipes(),
             score,
             gameState,
             finalScore,
             podX,
             podY,
             POD_WIDTH,
-            POD_HEIGHT
+            POD_HEIGHT,
+            obstacleManager
         );
     }
 
@@ -117,15 +117,14 @@ public class Main extends ApplicationAdapter {
         timePlaying += delta;
 
         score.update(delta, true);
-        obstacleManager.update(delta, timePlaying, getPipeSpeed());
 
-        if (player.hitsBottom() || player.hitsTop(ceiling) ||
-            obstacleManager.collidesWith(
-                player.getX(),
-                player.getY(),
-                player.getWidth(),
-                player.getHeight()
-            )) {
+        obstacleManager.update(delta, getPipeSpeed(), 200f, timePlaying);
+
+        if (player.hitsBottom() || player.hitsTop(ceiling) || obstacleManager.checkCollision(
+            player.getX(),
+            player.getY(),
+            player.getWidth(),
+            player.getHeight())) {
             gameOver();
         }
     }
