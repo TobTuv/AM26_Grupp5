@@ -3,10 +3,10 @@ package io.github.jumpyBirb.game;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import io.github.jumpyBirb.data.Obstacle;
+import io.github.jumpyBirb.data.Pipe;
 
-public class ObstacleManager {
-    private List<Obstacle> obstacles = new ArrayList<>();
+public class PipeManager {
+    private List<Pipe> obstacles = new ArrayList<>();
     private float pipeTimer = 0f;
 
     private final float pipeWidth;
@@ -14,7 +14,7 @@ public class ObstacleManager {
     private final float screenWidth;
     private final float screenHeight;
 
-    public ObstacleManager(float pipeWidth, float minPipeHeight, float screenWidth, float screenHeight) {
+    public PipeManager(float pipeWidth, float minPipeHeight, float screenWidth, float screenHeight) {
         this.pipeWidth = pipeWidth;
         this.minPipeHeight = minPipeHeight;
         this.screenWidth = screenWidth;
@@ -32,9 +32,9 @@ public class ObstacleManager {
             spawnPair(currentGap);
         }
 
-        Iterator<Obstacle> iter = obstacles.iterator();
+        Iterator<Pipe> iter = obstacles.iterator();
         while (iter.hasNext()) {
-            Obstacle obstacle = iter.next();
+            Pipe obstacle = iter.next();
             obstacle.update(delta, speed);
 
             if (obstacle.isOffScreen()) {
@@ -47,13 +47,13 @@ public class ObstacleManager {
         float gapStart = minPipeHeight + (float) (Math.random() *
             (screenHeight - gap - 2 * minPipeHeight));
 
-        obstacles.add(new Obstacle(screenWidth, 0, pipeWidth, gapStart));
-        obstacles.add(new Obstacle(screenWidth, gapStart + gap, pipeWidth,
+        obstacles.add(new Pipe(screenWidth, 0, pipeWidth, gapStart));
+        obstacles.add(new Pipe(screenWidth, gapStart + gap, pipeWidth,
             screenHeight - (gapStart + gap)));
     }
 
     public boolean collidesWith(float playerX, float playerY, float playerWidth, float playerHeight) {
-        for (Obstacle obstacle : obstacles) {
+        for (Pipe obstacle : obstacles) {
             if (obstacle.collidesWith(playerX, playerY, playerWidth, playerHeight)) {
                 return true;
             }
@@ -61,7 +61,7 @@ public class ObstacleManager {
         return false;
     }
 
-    public List<Obstacle> getPipes() {
+    public List<Pipe> getPipes() {
         return obstacles;
     }
 

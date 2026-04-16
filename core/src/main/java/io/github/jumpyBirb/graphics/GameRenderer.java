@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-import io.github.jumpyBirb.data.Obstacle;
+import io.github.jumpyBirb.data.Pipe;
 import io.github.jumpyBirb.data.Player;
 import io.github.jumpyBirb.data.Score;
 import io.github.jumpyBirb.game.GameState;
@@ -18,7 +18,7 @@ public record GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets
     public void draw(
         ParallaxBackground background,
         Player player,
-        List<Obstacle> obstacles,
+        List<Pipe> obstacles,
         Score score,
         GameState gameState,
         double finalScore,
@@ -37,7 +37,7 @@ public record GameRenderer(SpriteBatch batch, BitmapFont font, GameAssets assets
         batch.draw(assets.pod, podX, podY, podWidth, podHeight);
         batch.draw(assets.player, player.getX(), player.getY(), player.getWidth(), player.getHeight());
 
-        for (Obstacle p : obstacles) {
+        for (Pipe p : obstacles) {
             batch.draw(assets.skyscraper, p.getX(), p.getY(), p.getWidth(), p.getHeight());
         }
 

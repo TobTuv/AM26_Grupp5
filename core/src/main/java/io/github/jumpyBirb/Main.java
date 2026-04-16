@@ -3,15 +3,12 @@ package io.github.jumpyBirb;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
-import io.github.jumpyBirb.data.Obstacle;
 import io.github.jumpyBirb.data.Player;
 import io.github.jumpyBirb.data.Score;
 import io.github.jumpyBirb.game.GameState;
-import io.github.jumpyBirb.game.ObstacleManager;
+import io.github.jumpyBirb.game.PipeManager;
 import io.github.jumpyBirb.game.ParallaxBackground;
 import io.github.jumpyBirb.graphics.GameAssets;
 import io.github.jumpyBirb.graphics.GameRenderer;
@@ -40,7 +37,7 @@ public class Main extends ApplicationAdapter {
 
     private Player player;
     private Score score;
-    private ObstacleManager obstacleManager;
+    private PipeManager obstacleManager;
     private ParallaxBackground background;
     private GameRenderer renderer;
 
@@ -68,7 +65,7 @@ public class Main extends ApplicationAdapter {
         renderer = new GameRenderer(batch, font, assets, screenWidth, screenHeight);
         player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
         score = new Score();
-        obstacleManager = new ObstacleManager(PIPE_WIDTH, MIN_PIPE_HEIGHT, screenWidth, screenHeight);
+        obstacleManager = new PipeManager(PIPE_WIDTH, MIN_PIPE_HEIGHT, screenWidth, screenHeight);
         background = new ParallaxBackground(
             assets.parallax1,
             assets.parallax2,

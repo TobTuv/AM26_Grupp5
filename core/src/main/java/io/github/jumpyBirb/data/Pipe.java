@@ -1,12 +1,12 @@
 package io.github.jumpyBirb.data;
 
-public class Obstacle {
+public class Pipe {
     private float x;
     private final float y;
     private final float width;
     private final float height;
 
-    public Obstacle(float x, float y, float width, float height) {
+    public Pipe(float x, float y, float width, float height) {
         this.x = x;
         this.y = y;
         this.width = width;
