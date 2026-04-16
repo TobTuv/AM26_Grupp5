@@ -68,14 +68,15 @@ public class Main extends ApplicationAdapter {
     private static final float PLAYER_WIDTH = 1.4f;
     private static final float PLAYER_HEIGHT = 0.8f;
 
-    private static final float POD_START_X = 1.0f;
+    private static final float POD_START_X = 1.9f;
     private static final float POD_START_Y = 0f;
-    private static final float POD_WIDTH = 3.0f;
-    private static final float POD_HEIGHT = 1.8f;
+    private static final float POD_WIDTH = 3.7f;
+    private static final float POD_HEIGHT = 4.8f;
     private static final float POD_SPEED = 2.5f;
 
     private static final float OBSTACLE_WIDTH = 1.8f;
-    private static final float MIN_OBSTACLE_HEIGHT = 1.0f;
+    private static final float OBSTACLE_HEIGHT = 4.5f;
+   private static final float MIN_OBSTACLE_HEIGHT = 4.5f;
 
     private SpriteBatch batch;
     private BitmapFont font;
@@ -137,7 +138,7 @@ public class Main extends ApplicationAdapter {
         renderer = new GameRenderer(batch, font, assets, camera, screenWidth, screenHeight);
         player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
         score = new Score();
-        obstacleManager = new ObstacleManager(OBSTACLE_WIDTH, MIN_OBSTACLE_HEIGHT, screenWidth, screenHeight);
+        obstacleManager = new ObstacleManager(OBSTACLE_WIDTH, OBSTACLE_HEIGHT, MIN_OBSTACLE_HEIGHT, screenWidth, screenHeight);
         background = new ParallaxBackground(
             assets.parallax1,
             assets.parallax2,

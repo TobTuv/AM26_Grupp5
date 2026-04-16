@@ -71,6 +71,7 @@ public class ObstacleManager {
 
     private final float obstacleWidth;
     private final float minObstacleHeight;
+    private final float obstacleHeight;
     private final float screenWidth;
     private final float screenHeight;
 
@@ -82,9 +83,10 @@ public class ObstacleManager {
      * @param screenWidth width of the game screen
      * @param screenHeight height of the game screen
      */
-    public ObstacleManager(float obstacleWidth, float minObstacleHeight, float screenWidth, float screenHeight) {
+    public ObstacleManager(float obstacleWidth, float minObstacleHeight,float obstacleHeight, float screenWidth, float screenHeight) {
         this.obstacleWidth = obstacleWidth;
         this.minObstacleHeight = minObstacleHeight;
+        this.obstacleHeight = obstacleHeight;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
     }
@@ -151,18 +153,18 @@ public class ObstacleManager {
         float gapStart = minObstacleHeight + (float) (Math.random() *
             (screenHeight - gap - 2 * minObstacleHeight));
 
+        Obstacle bottom = new Obstacle(
+            screenWidth,
+            gapStart - obstacleHeight,
+            obstacleWidth,
+            obstacleHeight
+        );
+
         Obstacle top = new Obstacle(
             screenWidth,
             gapStart + gap,
             obstacleWidth,
-            screenHeight - (gapStart + gap)
-        );
-
-        Obstacle bottom = new Obstacle(
-            screenWidth,
-            0,
-            obstacleWidth,
-            gapStart
+            obstacleHeight
         );
 
         obstaclePairs.add(new ObstaclePair(top, bottom));

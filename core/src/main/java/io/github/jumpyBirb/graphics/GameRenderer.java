@@ -78,14 +78,14 @@ public record GameRenderer(SpriteBatch batch,
      * This method should only render the current state, not modify it.
      *
      * @param background parallax background system
-     * @param player current player object
-     * @param score score object used for displaying current score
-     * @param gameState current game state
+     * @param player     current player object
+     * @param score      score object used for displaying current score
+     * @param gameState  current game state
      * @param finalScore score to display on game over
-     * @param podX x-position of the starting platform
-     * @param podY y-position of the starting platform
-     * @param podWidth width of the starting platform
-     * @param podHeight height of the starting platform
+     * @param podX       x-position of the starting platform
+     * @param podY       y-position of the starting platform
+     * @param podWidth   width of the starting platform
+     * @param podHeight  height of the starting platform
      */
     public void draw(
         ParallaxBackground background,
@@ -129,7 +129,7 @@ public record GameRenderer(SpriteBatch batch,
                 bottom.getY(),
                 bottom.getWidth(),
                 bottom.getHeight()
-            );
+             );
 
             batch.draw(
                 assets.skyscraper,
@@ -138,9 +138,51 @@ public record GameRenderer(SpriteBatch batch,
                 top.getWidth(),
                 top.getHeight()
             );
-
-
         }
+
+//        // Draw Obstacle
+//        for (ObstaclePair pair : pairs) {
+//
+//            Obstacle bottom = pair.getBottom();
+//            Obstacle top = pair.getTop();
+//
+//            float texW = assets.skyscraper.getWidth();
+//            float texH = assets.skyscraper.getHeight();
+//
+//            float bottomH = bottom.getHeight();
+//            float bottomSrcH = Math.min(bottomH, texH);
+//
+//            batch.draw(
+//                assets.skyscraper,
+//                bottom.getX(),
+//                bottom.getY(),
+//                bottom.getWidth(),
+//                bottomH,
+//                0,
+//                0, // TOP texture
+//                (int) texW,
+//                (int) bottomSrcH,
+//                false,
+//                false
+//            );
+//
+//            float topH = top.getHeight();
+//            float topSrcH = Math.min(topH, texH);
+//
+//            batch.draw(
+//                assets.skyscraper,
+//                top.getX(),
+//                top.getY(),
+//                top.getWidth(),
+//                topH,
+//                0,
+//                (int)(texH - topSrcH), // BOTTOM texture
+//                (int) texW,
+//                (int) topSrcH,
+//                false,
+//                false
+//            );
+//        }
 
         // Draw the player.
         batch.draw(assets.player, player.getX(), player.getY(), player.getWidth(), player.getHeight());
@@ -167,7 +209,7 @@ public record GameRenderer(SpriteBatch batch,
         font.getData().setScale(2f);
 
         // Draw the current score near the top of the screen.
-        font.draw(batch, "Score: " + (int) score.getScore(),     250,
+        font.draw(batch, "Score: " + (int) score.getScore(), 250,
             com.badlogic.gdx.Gdx.graphics.getHeight() - 20
         );
 
@@ -177,7 +219,7 @@ public record GameRenderer(SpriteBatch batch,
             font.draw(batch,
                 "GAME OVER!\nYour score: " + (int) finalScore,
                 com.badlogic.gdx.Gdx.graphics.getWidth() / 2f - 120,
-                com.badlogic.gdx.Gdx.graphics.getHeight() / 2f + 40 );
+                com.badlogic.gdx.Gdx.graphics.getHeight() / 2f + 40);
         }
 
         // End the score drawing session.
