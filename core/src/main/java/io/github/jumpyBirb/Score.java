@@ -10,8 +10,8 @@ public class Score {
     }
 
     public void resetScore(double score, double visualScore) {
-       this.score = score;
-       this.visualScore = visualScore;
+        this.score = score;
+        this.visualScore = visualScore;
     }
 
     public void addScore() {
