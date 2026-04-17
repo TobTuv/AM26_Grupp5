@@ -71,9 +71,9 @@ public class ParallaxBackground {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
-        speed1 = 0.15f;
-        speed2 = 0.35f;
-        speed3 = 0.7f;
+        speed1 = 0.2f;
+        speed2 = 0.7f;
+        speed3 = 2.2f;
     }
 
     /**
