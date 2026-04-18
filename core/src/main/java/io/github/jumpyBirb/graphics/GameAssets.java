@@ -2,12 +2,15 @@ package io.github.jumpyBirb.graphics;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import java.util.List;
+
 /**
  * Holds and manages all textures used in the game.
  *
  * <p>This class centralizes asset loading so that:
  * <ul>
  *     <li>textures are created in one place</li>
+ *     <li>supports grouped textures (e.g., multiple obstacle variations)</li>
  *     <li>other classes (like Main or GameRenderer) can easily access them</li>
  *     <li>resource cleanup is handled consistently</li>
  * </ul>
@@ -17,6 +20,14 @@ import com.badlogic.gdx.graphics.Texture;
  * and harder to manage. By moving them into this class, we separate resource
  * handling from game logic.
  *
+ * <p>Obstacle textures are stored as lists rather than single textures.
+ * This allows obstacles to be randomly assigned different appearances
+ * at spawn time, improving visual variety without changing game logic.
+ *
+* <p>Design note:
+ * Separating textures into lists allows systems like ObstacleManager
+ * to perform random selection without hardcoding assets in gameplay logic.
+ *
  * <p>Important note:
  * Each Texture allocates memory (often on the GPU). Therefore, all textures
  * must be properly disposed when the game closes to avoid memory leaks.
@@ -24,8 +35,7 @@ import com.badlogic.gdx.graphics.Texture;
  * <p>Usage:
  * <ul>
  *     <li>Create one instance of GameAssets in Main</li>
- *     <li>Pass it to classes that need textures (e.g. GameRenderer)</li>
- *     <li>Call {@code dispose()} when the game shuts down</li>
+ *      <li>Pass it to classes that need textures (e.g. GameRenderer, ObstacleManager)</li> *     <li>Call {@code dispose()} when the game shuts down</li>
  * </ul>
  *
  * <p>Possible future improvements:
@@ -38,11 +48,22 @@ import com.badlogic.gdx.graphics.Texture;
 public class GameAssets {
     public final Texture background = new Texture("background.png");
     public final Texture player = new Texture("player.png");
-    public final Texture skyscraper = new Texture("retrowave_skyscrapers_bottom-01.png");
     public final Texture pod = new Texture("podPlatform.png");
     public final Texture parallax1 = new Texture("clouds-parallax1-3000x1080.png");
     public final Texture parallax2 = new Texture("city-parallax2-1920x1080.png");
     public final Texture parallax3 = new Texture("smog-parallax3-3000x1080.png");
+
+    public final List<Texture> bottomObstacles = List.of(
+        new Texture("retrowave_skyscrapers_bottom-01.png"),
+        new Texture("retrowave_skyscrapers_bottom-02.png"),
+        new Texture("retrowave_skyscrapers_bottom-03.png")
+    );
+
+    public final List<Texture> topObstacles = List.of(
+        new Texture("retrowave_skyscrapers_top-01.png"),
+        new Texture("retrowave_skyscrapers_top-02.png"),
+        new Texture("retrowave_skyscrapers_top-03.png")
+    );
 
     /**
      * Releases all textures from memory.
@@ -53,10 +74,15 @@ public class GameAssets {
     public void dispose() {
         background.dispose();
         player.dispose();
-        skyscraper.dispose();
         pod.dispose();
         parallax1.dispose();
         parallax2.dispose();
         parallax3.dispose();
+        for (Texture t : bottomObstacles) {
+            t.dispose();
+        }
+        for (Texture t : topObstacles) {
+            t.dispose();
+        }
     }
 }

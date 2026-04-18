@@ -124,7 +124,7 @@ public record GameRenderer(SpriteBatch batch,
             Obstacle top = pair.getTop();
 
             batch.draw(
-                assets.skyscraper,
+                bottom.getTexture(),
                 bottom.getX(),
                 bottom.getY(),
                 bottom.getWidth(),
@@ -132,7 +132,7 @@ public record GameRenderer(SpriteBatch batch,
              );
 
             batch.draw(
-                assets.skyscraper,
+                top.getTexture(),
                 top.getX(),
                 top.getY(),
                 top.getWidth(),

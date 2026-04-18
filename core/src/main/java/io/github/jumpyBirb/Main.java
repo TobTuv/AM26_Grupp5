@@ -138,7 +138,9 @@ public class Main extends ApplicationAdapter {
         renderer = new GameRenderer(batch, font, assets, camera, screenWidth, screenHeight);
         player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
         score = new Score();
-        obstacleManager = new ObstacleManager(OBSTACLE_WIDTH, OBSTACLE_HEIGHT, MIN_OBSTACLE_HEIGHT, screenWidth, screenHeight);
+        obstacleManager = new ObstacleManager(
+            OBSTACLE_WIDTH, MIN_OBSTACLE_HEIGHT, OBSTACLE_HEIGHT, screenWidth, screenHeight, assets.topObstacles, assets.bottomObstacles
+        );
         background = new ParallaxBackground(
             assets.parallax1,
             assets.parallax2,

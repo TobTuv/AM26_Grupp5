@@ -3,12 +3,17 @@ package io.github.jumpyBirb.game;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import com.badlogic.gdx.graphics.Texture;
 import io.github.jumpyBirb.data.Obstacle;
 
 /**
  * Manages all obstacles currently active in the game.
  *
  * <p>This class is responsible for obstacle-related game logic, such as:
+ * <p>Each obstacle is assigned a random texture when spawned.
+ * Separate texture pools are used for top and bottom obstacles,
+ * allowing visual variation while keeping their roles distinct.
  * <ul>
  *     <li>storing all active obstacles</li>
  *     <li>spawning new obstacle pairs over time</li>
@@ -31,6 +36,7 @@ import io.github.jumpyBirb.data.Obstacle;
  *     <li>Obstacles spawn in top/bottom pairs with a gap in between</li>
  *     <li>the gap becomes smaller over time</li>
  *     <li>the time between spawns becomes shorter over time</li>
+ *     <li>spawning new obstacle pairs over time with randomized textures</li>
  *     <li>all active obstacles move left every frame</li>
  *     <li>obstacles are removed once they are fully off screen</li>
  * </ul>
@@ -74,21 +80,31 @@ public class ObstacleManager {
     private final float obstacleHeight;
     private final float screenWidth;
     private final float screenHeight;
+    private final List<Texture> topTextures;
+    private final List<Texture> bottomTextures;
 
     /**
      * Creates an obstacle manager with screen information and obstacle settings.
      *
-     * @param obstacleWidth width of each spawned obstacle
+     * @param obstacleWidth     width of each spawned obstacle
      * @param minObstacleHeight minimum obstacle height allowed
-     * @param screenWidth width of the game screen
-     * @param screenHeight height of the game screen
+     * @param screenWidth       width of the game screen
+     * @param screenHeight      height of the game screen
+     * @param topTextures       list of textures used for top obstacles
+     * @param bottomTextures    list of textures used for bottom obstacles
      */
-    public ObstacleManager(float obstacleWidth, float minObstacleHeight,float obstacleHeight, float screenWidth, float screenHeight) {
+    public ObstacleManager(float obstacleWidth, float minObstacleHeight,
+                           float obstacleHeight, float screenWidth, float screenHeight,
+                           List<Texture> topTextures, List<Texture> bottomTextures) {
+
         this.obstacleWidth = obstacleWidth;
         this.minObstacleHeight = minObstacleHeight;
         this.obstacleHeight = obstacleHeight;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+
+        this.topTextures = topTextures;
+        this.bottomTextures = bottomTextures;
     }
 
 
@@ -108,9 +124,9 @@ public class ObstacleManager {
      *     <li>new obstacles spawn more frequently over time</li>
      * </ul>
      *
-     * @param delta time since last frame
+     * @param delta       time since last frame
      * @param timePlaying total time the current run has been active
-     * @param speed horizontal movement speed of obstacles
+     * @param speed       horizontal movement speed of obstacles
      */
     public void update(float delta, float timePlaying, float speed) {
         obstacleTimer += delta;
@@ -147,24 +163,37 @@ public class ObstacleManager {
      * <p>This method ensures both obstacles in a pair share the same X position,
      * so they move together as a single gameplay unit.
      *
+     * <p>Each obstacle in the pair is also assigned a random texture
+     *  from the corresponding texture list (top or bottom).
+     *
      * @param gap vertical gap size the player can pass through
      */
     private void spawnPair(float gap) {
         float gapStart = minObstacleHeight + (float) (Math.random() *
             (screenHeight - gap - 2 * minObstacleHeight));
 
+        Texture bottomTex = bottomTextures.get(
+            (int) (Math.random() * bottomTextures.size())
+        );
+
+        Texture topTex = topTextures.get(
+            (int) (Math.random() * topTextures.size())
+        );
+
         Obstacle bottom = new Obstacle(
             screenWidth,
             gapStart - obstacleHeight,
             obstacleWidth,
-            obstacleHeight
+            obstacleHeight,
+            bottomTex
         );
 
         Obstacle top = new Obstacle(
             screenWidth,
             gapStart + gap,
             obstacleWidth,
-            obstacleHeight
+            obstacleHeight,
+            topTex
         );
 
         obstaclePairs.add(new ObstaclePair(top, bottom));
@@ -172,11 +201,10 @@ public class ObstacleManager {
 
     /**
      * Checks whether the player collides with any active obstacle.
-     *
+     * <p>
      * The player is passed in as a rectangle (x, y, width, height).
      * Each obstacle checks rectangular overlap using simple AABB collision.
      *
-
      * @return true if the player collides with at least one obstacle
      */
     public boolean collidesWith(float x, float y, float w, float h) {
@@ -194,7 +222,7 @@ public class ObstacleManager {
 
     /**
      * Resets obstacle state for a new game.
-     *
+     * <p>
      * All active obstacles are removed and the spawn timer is reset.
      */
     public void reset() {
