@@ -22,6 +22,14 @@ public class Score {
         timer = 0f;
     }
 
+    public void stopScore() {
+        timer -= 0.1f;
+    }
+
+    public void restartScore() {
+        timer += 0.1f;
+    }
+
     public double getScore() {
         return visualScore;
     }
