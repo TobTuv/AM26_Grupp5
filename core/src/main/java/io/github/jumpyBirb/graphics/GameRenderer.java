@@ -1,6 +1,7 @@
 package io.github.jumpyBirb.graphics;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -66,6 +67,28 @@ public record GameRenderer(SpriteBatch batch,
         OrthographicCamera camera,
         float worldWidth,
         float worldHeight) {
+
+    private Texture getPlayerTexture(Player player) {
+        float velocity = player.getVelocity();
+
+        if (velocity > 3f) {
+            return assets.playerRiseFast;   // motorbike4
+        } else if (velocity > 0.3f) {
+            return assets.playerRise;       // motorbike3
+        } else if (velocity < -3f) {
+            return assets.playerFallFast;   // motorbike2
+        } else if (velocity < -0.3f) {
+            return assets.playerFall;       // motorbike5
+        } else {
+            return assets.playerIdle;       //  motorbike1 (start)
+        }
+    }
+
+    private float getPlayerRotation(Player player) {
+        float velocity = player.getVelocity();
+        float clampedVelocity = Math.max(-8f, Math.min(8f, velocity));
+        return clampedVelocity * 3f;
+    }
 
     /**
      * Draws one full frame of the game.
@@ -193,7 +216,27 @@ public record GameRenderer(SpriteBatch batch,
         // }
 
         // Draw the player.
-        batch.draw(assets.player, player.getX(), player.getY(), player.getWidth(), player.getHeight());
+        Texture playerTexture = getPlayerTexture(player);
+        float rotation = getPlayerRotation(player);
+
+        batch.draw(
+            playerTexture,
+            player.getX(),
+            player.getY(),
+            player.getWidth() / 2f,
+            player.getHeight() / 2f,
+            player.getWidth(),
+            player.getHeight(),
+            1f,
+            1f,
+            rotation,
+            0,
+            0,
+            playerTexture.getWidth(),
+            playerTexture.getHeight(),
+            false,
+            false
+        );
 
         // End the SpriteBatch drawing session.
         batch.end();

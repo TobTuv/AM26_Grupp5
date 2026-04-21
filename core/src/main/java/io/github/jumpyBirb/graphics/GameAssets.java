@@ -48,6 +48,11 @@ import java.util.List;
 public class GameAssets {
     public final Texture background = new Texture("background.png");
     public final Texture player = new Texture("player.png");
+    public final Texture playerIdle = new Texture("motorbike1.png");
+    public final Texture playerRiseFast = new Texture("motorbike4.png");
+    public final Texture playerRise = new Texture("motorbike3.png");
+    public final Texture playerFall = new Texture("motorbike1.png");
+    public final Texture playerFallFast = new Texture("motorbike2.png");
     public final Texture pod = new Texture("podPlatform.png");
     public final Texture parallax1 = new Texture("clouds-parallax1-3000x1080.png");
     public final Texture parallax2 = new Texture("city-parallax2-1920x1080.png");
@@ -74,6 +79,11 @@ public class GameAssets {
     public void dispose() {
         background.dispose();
         player.dispose();
+        playerRiseFast.dispose();
+        playerRise.dispose();
+        playerFall.dispose();
+        playerFallFast.dispose();
+        playerIdle.dispose();
         pod.dispose();
         parallax1.dispose();
         parallax2.dispose();

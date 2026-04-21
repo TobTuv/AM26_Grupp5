@@ -135,6 +135,7 @@ public class Player {
     public float getY() { return y; }
     public float getWidth() { return width; }
     public float getHeight() { return height; }
+    public float getVelocity() {return velocity; }
 
 
 }
