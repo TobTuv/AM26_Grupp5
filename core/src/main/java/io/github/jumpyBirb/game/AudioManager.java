@@ -36,7 +36,7 @@ public class AudioManager {
     }
 
     public void playJump() {
-        jumpSound.play(0.15f);
+        jumpSound.play(0.09f);
     }
 
     public void stopJump() {
@@ -44,7 +44,7 @@ public class AudioManager {
     }
 
     public void playCrash() {
-        crashSound.play(0.4f);
+        crashSound.play(0.25f);
     }
 }
 
