@@ -14,6 +14,7 @@ import io.github.jumpyBirb.data.Highscore;
 import io.github.jumpyBirb.data.Menu;
 import io.github.jumpyBirb.data.Player;
 import io.github.jumpyBirb.data.Score;
+import io.github.jumpyBirb.game.AudioManager;
 import io.github.jumpyBirb.game.GameState;
 import io.github.jumpyBirb.game.ObstacleManager;
 import io.github.jumpyBirb.game.ParallaxBackground;
@@ -114,6 +115,8 @@ public class Main extends ApplicationAdapter {
     private boolean ignoreFirstNameInputFrame = false;
     private boolean scoreSaved = false;
 
+    private AudioManager audio;
+
     private GameState gameState;
     private double finalScore = 0;
 
@@ -192,6 +195,9 @@ public class Main extends ApplicationAdapter {
 
         podX = POD_START_X;
         podY = POD_START_Y;
+
+        audio = new AudioManager(assets);
+        audio.playMenuMusic();
 
         gameState = GameState.MENU;
 
@@ -388,6 +394,7 @@ public class Main extends ApplicationAdapter {
 
         if (inputPressed()) {
             player.jump(calculateJumpForce());
+            audio.playJump();
         }
 
         background.update(delta);
@@ -473,6 +480,9 @@ public class Main extends ApplicationAdapter {
 
         gameState = GameState.RUNNING;
         player.jump(calculateJumpForce());
+
+        audio.playGameMusic();
+        audio.playJump();
     }
 
     /**
@@ -496,6 +506,9 @@ public class Main extends ApplicationAdapter {
                 }
 
                 gameState = GameState.GAME_OVER;
+                audio.stopJump();
+                audio.playCrash();
+                audio.playMenuMusic();
             }
             if (inputPressed()) {
                 handleStartOrRestartInput();

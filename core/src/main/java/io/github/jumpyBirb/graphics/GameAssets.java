@@ -82,15 +82,19 @@ public class GameAssets {
     );
 
     public final Sound jumpSound = com.badlogic.gdx.Gdx.audio.newSound(
-        com.badlogic.gdx.Gdx.files.internal("jump.wav")
+        com.badlogic.gdx.Gdx.files.internal("jump.mp3")
+    );
+
+    public final Sound crashSound = com.badlogic.gdx.Gdx.audio.newSound(
+        com.badlogic.gdx.Gdx.files.internal("crash.mp3")
     );
 
     public GameAssets() {
         menuMusic.setLooping(true);
         gameMusic.setLooping(true);
 
-        menuMusic.setVolume(0.5f);
-        gameMusic.setVolume(0.5f);
+        menuMusic.setVolume(0.6f);
+        gameMusic.setVolume(0.6f);
     }
 
 
@@ -122,5 +126,6 @@ public class GameAssets {
         menuMusic.dispose();
         gameMusic.dispose();
         jumpSound.dispose();
+        crashSound.dispose();
     }
 }
