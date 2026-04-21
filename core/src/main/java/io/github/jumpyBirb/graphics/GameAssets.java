@@ -1,5 +1,7 @@
 package io.github.jumpyBirb.graphics;
 
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 
 import java.util.List;
@@ -70,6 +72,28 @@ public class GameAssets {
         new Texture("retrowave_skyscrapers_top-03.png")
     );
 
+
+    public final Music menuMusic = com.badlogic.gdx.Gdx.audio.newMusic(
+        com.badlogic.gdx.Gdx.files.internal("menu-music.mp3")
+    );
+
+    public final Music gameMusic = com.badlogic.gdx.Gdx.audio.newMusic(
+        com.badlogic.gdx.Gdx.files.internal("game-music.mp3")
+    );
+
+    public final Sound jumpSound = com.badlogic.gdx.Gdx.audio.newSound(
+        com.badlogic.gdx.Gdx.files.internal("jump.wav")
+    );
+
+    public GameAssets() {
+        menuMusic.setLooping(true);
+        gameMusic.setLooping(true);
+
+        menuMusic.setVolume(0.5f);
+        gameMusic.setVolume(0.5f);
+    }
+
+
     /**
      * Releases all textures from memory.
      *
@@ -94,5 +118,9 @@ public class GameAssets {
         for (Texture t : topObstacles) {
             t.dispose();
         }
+
+        menuMusic.dispose();
+        gameMusic.dispose();
+        jumpSound.dispose();
     }
 }
