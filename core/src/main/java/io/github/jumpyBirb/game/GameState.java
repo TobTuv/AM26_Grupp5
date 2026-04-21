@@ -3,5 +3,9 @@ package io.github.jumpyBirb.game;
 public enum GameState {
     START,
     RUNNING,
-    GAME_OVER
+    GAME_OVER,
+    SETTINGS,
+    HIGH_SCORE,
+    MENU,
+    NAME_INPUT
 }
