@@ -1,293 +1,573 @@
 package io.github.jumpyBirb;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import io.github.jumpyBirb.data.Highscore;
+import io.github.jumpyBirb.data.Menu;
+import io.github.jumpyBirb.data.Player;
+import io.github.jumpyBirb.data.Score;
+import io.github.jumpyBirb.game.AudioManager;
+import io.github.jumpyBirb.game.GameState;
+import io.github.jumpyBirb.game.ObstacleManager;
+import io.github.jumpyBirb.game.ParallaxBackground;
+import io.github.jumpyBirb.graphics.GameAssets;
+import io.github.jumpyBirb.graphics.GameRenderer;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.util.List;
+
+/**
+ * Main game entry point for JumpyBirb.
+ *
+ * <p>
+ * This class is the central coordinator of the game.
+ * It does not contain all game logic itself anymore, but instead creates
+ * and connects the other classes that handle specific responsibilities.
+ *
+ * <p>
+ * Main is responsible for:
+ * <ul>
+ * <li>creating and setting up core game objects</li>
+ * <li>running the update loop every frame</li>
+ * <li>sending the current game state to the renderer</li>
+ * <li>handling high-level game flow such as start, restart, and game over</li>
+ * </ul>
+ *
+ * <p>
+ * Main is NOT responsible for detailed logic in every area:
+ * <ul>
+ * <li>{@link Player} handles player movement</li>
+ * <li>{@link Score} handles score logic</li>
+ * <li>{@link ObstacleManager} handles spawning and updating obstacles</li>
+ * <li>{@link ParallaxBackground} handles parallax movement and drawing</li>
+ * <li>{@link GameRenderer} handles rendering</li>
+ * <li>{@link GameAssets} handles textures</li>
+ * </ul>
+ *
+ * <p>
+ * Why this class exists in this form:
+ * Earlier, almost everything was inside Main, which made the file very long
+ * and hard to understand. The current version keeps Main as the "orchestrator"
+ * of the game while moving detailed behavior into separate classes.
+ *
+ * <p>
+ * Game flow:
+ * <ul>
+ * <li>{@code create()} runs once when the game starts</li>
+ * <li>{@code render()} runs every frame</li>
+ * <li>{@code update()} updates game logic</li>
+ * <li>{@code renderer.draw(...)} renders the current state</li>
+ * <li>{@code dispose()} cleans up resources when the game closes</li>
+ * </ul>
+ */
 public class Main extends ApplicationAdapter {
+    private static final float WORLD_WIDTH = 16f;
+    private static final float WORLD_HEIGHT = 9f;
+    private OrthographicCamera camera;
+    private Viewport viewport;
 
-    // Start of score
-    private boolean start;
-    private boolean alive;
-    private double finalScore = 0;
+    private static final float GRAVITY = 18f;
+    private static final float JUMP_FORCE = 6.0f;
+    private static final float PLAYER_START_X = 3f;
+    private static final float PLAYER_START_Y = 4.5f;
+    private static final float PLAYER_WIDTH = 1.4f;
+    private static final float PLAYER_HEIGHT = 0.8f;
 
-    //all assests goes here before batch;
-    Texture backgroundTexture;
-    Texture parallaxOneTexture;
-    Texture parallaxTwoTexture;
-    Texture parallaxThreeTexture;
-    Texture bikerTexture;
-    Texture skyScraperTexture;
-    Texture flyingSkyScraperTextureOne;
-    Texture podPlatformTexture;
-    Sound jumpSound;
-    Music music;
-    Music introMusic;
-    private BitmapFont font;
+    private static final float POD_START_X = 1.9f;
+    private static final float POD_START_Y = 0f;
+    private static final float POD_WIDTH = 3.7f;
+    private static final float POD_HEIGHT = 4.8f;
+    private static final float POD_SPEED = 2.5f;
 
-    //Parallax settings
-    float parallaxOneX = 0;
-    float parallaxTwoX = 0;
-    float parallaxThreeX = 0;
-
-    float parallaxOneSpeed = 20f;
-    float parallaxTwoSpeed = 40f;
-    float parallaxThreeSpeed = 80f;
+    private static final float OBSTACLE_WIDTH = 1.8f;
+    private static final float OBSTACLE_HEIGHT = 4.5f;
+    private static final float MIN_OBSTACLE_HEIGHT = 4.5f;
 
     private SpriteBatch batch;
+    private BitmapFont font;
+    private GameAssets assets;
 
-    float playerY;
-    float velocity;
+    private Stage nameStage;
+    private TextField nameField;
+    private Skin skin;
 
-    float podSpeed = 150;
-    float timeAlive = 0; // use for score
-    float timePlaying = 0; // use for harder things.
+    private Player player;
+    private Score score;
+    private ObstacleManager obstacleManager;
+    private ParallaxBackground background;
+    private GameRenderer renderer;
+    private Menu menu;
+    private String playerName = "Player";
+    private boolean ignoreFirstNameInputFrame = false;
+    private boolean scoreSaved = false;
 
-    final float GRAVITY = 800;
-    final float JUMP_FORCE = 250;
-    float currentJumpForce;
+    private AudioManager audio;
 
-    float SCREEN_WIDTH;
-    float SCREEN_HEIGHT;
-    float CEILING;
+    private GameState gameState;
+    private double finalScore = 0;
 
-    // Creat a player here
-    float playerX = 100;
-    float playerWidth = 90;
-    float playerHeight = 50;
+    private float screenWidth;
+    private float screenHeight;
+    private float ceiling;
 
-    // creat a ledged where we start
-    float podX = 65;
-    float podY = 0;
-    float podWidth = 190;
-    float podHeight = 215;
+    private float podX;
+    private float podY;
 
-    // Pipe system (NEW)
-    PipeManager pipeManager;
+    /**
+     * Total time the current run has been active.
+     *
+     * <p>
+     * Used for difficulty scaling such as:
+     * <ul>
+     * <li>stronger/weaker jump tuning</li>
+     * <li>faster obstacle movement</li>
+     * <li>smaller obstacle gap</li>
+     * <li>shorter spawn interval</li>
+     * </ul>
+     */
+    private float timePlaying = 0f;
 
-    // Difficulty
-    final float BASE_GAP = 160;
-
-    Score score = new Score();
-
+    /**
+     * Runs once when the game is first created.
+     *
+     * <p>
+     * This method creates the rendering objects, loads assets,
+     * reads screen size, creates the game systems, and sets the game to START
+     * state.
+     */
     @Override
     public void create() {
 
-        backgroundTexture = new Texture("background.png");
-        bikerTexture = new Texture("player.png");
-        skyScraperTexture = new Texture("skyscraper.png");
+        menu = new Menu();
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+        viewport.apply();
 
-        podPlatformTexture = new Texture("podPlatform.png");
-        parallaxOneTexture = new Texture("clouds-parallax1-3000x1080.png");
-        parallaxTwoTexture = new Texture("city-parallax2-1920x1080.png");
-        parallaxThreeTexture = new Texture("smog-parallax3-3000x1080.png");
-        font = new BitmapFont();
+        camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
+        camera.update();
+
         batch = new SpriteBatch();
+        font = new BitmapFont();
+        font.getData().setScale(0.03f);
+        assets = new GameAssets();
 
-        SCREEN_WIDTH = Gdx.graphics.getWidth();
-        SCREEN_HEIGHT = Gdx.graphics.getHeight();
-        CEILING = SCREEN_HEIGHT;
+        skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
+        nameStage = new Stage(new ScreenViewport());
 
-        pipeManager = new PipeManager(SCREEN_WIDTH, SCREEN_HEIGHT, skyScraperTexture);
+        nameField = new TextField("Player", skin);
+        nameField.setSize(300, 50);
+        nameField.setPosition(
+                Gdx.graphics.getWidth() / 2f - 150,
+                Gdx.graphics.getHeight() / 2f);
 
-        playerY = 200;
-        velocity = 0;
+        nameStage.addActor(nameField);
 
-        start = true;
-        alive = true;
+        screenWidth = WORLD_WIDTH;
+        screenHeight = WORLD_HEIGHT;
+        ceiling = WORLD_HEIGHT;
+
+        renderer = new GameRenderer(batch, font, assets, camera, screenWidth, screenHeight);
+        player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
+        score = new Score();
+        obstacleManager = new ObstacleManager(
+                OBSTACLE_WIDTH, MIN_OBSTACLE_HEIGHT, OBSTACLE_HEIGHT, screenWidth, screenHeight, assets.topObstacles,
+                assets.bottomObstacles);
+        background = new ParallaxBackground(
+                assets.parallax1,
+                assets.parallax2,
+                assets.parallax3,
+                screenWidth,
+                screenHeight);
+
+        podX = POD_START_X;
+        podY = POD_START_Y;
+
+        audio = new AudioManager(assets);
+        audio.playMenuMusic();
+
+        gameState = GameState.MENU;
+
     }
 
+    /**
+     * Runs once every frame.
+     *
+     * <p>
+     * This is the main game loop.
+     * First the game logic is updated, then the current state is rendered.
+     */
     @Override
     public void render() {
-        update();
-        draw();
-        scoreCount();
-    }
-
-    void update() {
-
-        float delta = Gdx.graphics.getDeltaTime();
-
-        if (!start && alive) {
-            timePlaying += delta;
-
-            // Parallax
-            parallaxOneX -= parallaxOneSpeed * delta;
-            parallaxTwoX -= parallaxTwoSpeed * delta;
-            parallaxThreeX -= parallaxThreeSpeed * delta;
-
-            if (parallaxOneX <= -SCREEN_WIDTH) parallaxOneX = 0;
-            if (parallaxTwoX <= -SCREEN_WIDTH) parallaxTwoX = 0;
-            if (parallaxThreeX <= -SCREEN_WIDTH) parallaxThreeX = 0;
-
-            // Start game and start again after game over
-            if (!alive || start) {
-                if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-
-                    //should this just be the resetGame()-method?
-                    alive = true;
-
-                    score.resetScore(1, 0);
-                    playerY = 200;
-                    velocity = 0;
-                    timeAlive = 0;
-                    timeAlive = 0;
-                    timePlaying = 0;
-                    start = false;
-                    currentJumpForce = Math.max(150f, JUMP_FORCE - (timePlaying / 10f) * 5);
-                    velocity = currentJumpForce;
-                }
-
-                return;
-            }
-
-            // Hoppa med båda space och left click.
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-                currentJumpForce = Math.max(150f, JUMP_FORCE - (timePlaying / 10f) * 5);
-                velocity = currentJumpForce;
-            }
-
-            // Gravitation
-            velocity -= GRAVITY * delta;
-
-            // Flytta spelaren
-            playerY += velocity * delta;
-
-            //Tak
-            if (playerY > CEILING) {
-                playerY = CEILING;
-                velocity = 0;
-            }
-
-            // moves tha starting pedestal
-            podX -= podSpeed * delta;
-
-            // Narrowing the safe distance (GAP)
-            float currentGap = Math.max(90f, BASE_GAP - (timePlaying / 5f) * 2);
-
-            // PIPE UPDATE (NEW SYSTEM)
-            pipeManager.update(delta, getPipeSpeed(), currentGap, timePlaying);
-
-            // COLLISION PIPE (NEW SYSTEM)
-            if (pipeManager.checkCollision(playerX, playerY, playerWidth, playerHeight)) {
-                System.out.println("Game Over - Hit Pipe");
-                resetGame();
-            }
-
-            // Death
-            if (playerY <= 0) {
-                System.out.println("Game Over - Fell");
-                resetGame();
-            }
-        }
-
-        // Start / restart
-        if (!alive || start) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
-                || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-
-                alive = true;
-                start = false;
-
-                resetGameState();
-            }
-        }
-    }
-
-    void draw() {
-
         ScreenUtils.clear(Color.BLACK);
+        update();
+
+        // UI ska ritas i pixel-space
+        batch.setProjectionMatrix(
+                new Matrix4().setToOrtho2D(
+                        0, 0,
+                        Gdx.graphics.getWidth(),
+                        Gdx.graphics.getHeight()));
+
+        font.getData().setScale(2f);
+        font.setColor(Color.WHITE);
 
         batch.begin();
 
-        batch.draw(backgroundTexture, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        batch.draw(parallaxOneTexture, parallaxOneX, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        batch.draw(parallaxOneTexture, parallaxOneX + SCREEN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        batch.draw(parallaxTwoTexture, parallaxTwoX, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        batch.draw(parallaxTwoTexture, parallaxTwoX + SCREEN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        batch.draw(parallaxThreeTexture, parallaxThreeX, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        batch.draw(parallaxThreeTexture, parallaxThreeX + SCREEN_WIDTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        batch.draw(podPlatformTexture, podX, podY, podWidth, podHeight);
-        batch.draw(bikerTexture, playerX, playerY, playerWidth, playerHeight);
-
-        // PIPE DRAW (NEW SYSTEM)
-        pipeManager.draw(batch);
-
-        font.draw(batch, "Score: " + (int) score.getScore(), 270, SCREEN_HEIGHT - 10);
-
-        if (!alive) {
-            font.draw(batch,
-                "GAME OVER!\nYour score: " + (int) finalScore,
-                SCREEN_WIDTH / 2 - 30,
-                SCREEN_HEIGHT / 2);
+        switch (gameState) {
+            case START, MENU -> menu.render(batch, font);
+            case SETTINGS -> font.draw(batch, "SETTINGS COMING SOON", 50, 200);
         }
 
         batch.end();
-    }
 
-    float getPipeSpeed() {
-        return 200 + ((int) (timePlaying / 5)) * 20;
-    }
+        if (gameState == GameState.RUNNING) {
+            renderer.draw(
+                    background,
+                    player,
+                    obstacleManager.getPairs(),
+                    score,
+                    gameState,
+                    finalScore,
+                    podX,
+                    podY,
+                    POD_WIDTH,
+                    POD_HEIGHT);
+        }
 
-    void resetGame() {
-        playerY = 200;
-        velocity = 0;
+        if (gameState == GameState.NAME_INPUT) {
+            ScreenUtils.clear(Color.BLACK);
 
-        pipeManager.reset();
+            Gdx.input.setInputProcessor(nameStage);
 
-        podX = 65;
-        timePlaying = 0;
-        score.resetScore(1, 0);
-        alive = false;
-    }
+            // Se till att textfältet får keyboard focus
+            if (nameStage.getKeyboardFocus() == null) {
+                nameStage.setKeyboardFocus(nameField);
+            }
 
-    void resetGameState() {
-        playerY = 200;
-        velocity = 0;
+            nameStage.act(Gdx.graphics.getDeltaTime());
+            nameStage.draw();
 
-        pipeManager.reset();
+            batch.begin();
+            font.draw(batch, "Enter your name:",
+                    Gdx.graphics.getWidth() / 2f - 150,
+                    Gdx.graphics.getHeight() / 2f + 80);
+            font.draw(batch, "Press SPACE to continue",
+                    Gdx.graphics.getWidth() / 2f - 150,
+                    Gdx.graphics.getHeight() / 2f - 80);
+            batch.end();
 
-        podX = 65;
-        timePlaying = 0;
+            // IGNORERA FÖRSTA FRAMEN EFTER STATE BYTE
+            if (ignoreFirstNameInputFrame) {
+                ignoreFirstNameInputFrame = false;
+                return;
+            }
 
-        score.resetScore(1, 0);
-    }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                playerName = nameField.getText();
 
-    public void scoreCount() {
-        float delta = Gdx.graphics.getDeltaTime();
+                nameStage.clear();
+                Gdx.input.setInputProcessor(null);
 
-        if (!alive || start) {
+                startGame();
+            }
+
             return;
         }
 
+        if (gameState == GameState.GAME_OVER) {
+
+            // visa topp 5
+            List<Highscore.Entry> top5 = Highscore.top(5);
+
+            batch.begin();
+            font.draw(batch, "HIGH SCORE", 100, 450);
+            font.draw(batch, "Your score: " + Math.round(finalScore), 100, 600);
+
+            int y = 380;
+            for (Highscore.Entry e : top5) {
+                font.draw(batch, e.name + ": " + e.score, 100, y);
+                y -= 40;
+            }
+            batch.end();
+
+            return;
+        }
+
+        if (gameState == GameState.HIGH_SCORE) {
+
+            batch.begin();
+
+            font.draw(batch, "HIGH SCORES", 100, 700);
+
+            // Visa top 10 i menyn
+            List<Highscore.Entry> top10 = Highscore.top(10);
+
+            int y = 650;
+            for (Highscore.Entry e : top10) {
+                font.draw(batch, e.name + ": " + e.score, 100, y);
+                y -= 40;
+            }
+
+            batch.end();
+            return;
+        }
+
+        if (gameState == GameState.SETTINGS) {
+            Highscore.cleanHighScore();
+        }
+
+    }
+
+    /**
+     * Updates one frame of game logic.
+     *
+     * <p>
+     * Main update flow:
+     * <ul>
+     * <li>if the game is not running, only listen for start/restart input</li>
+     * <li>if the game is running, process jump input</li>
+     * <li>update background, player, score, obstacles, and platform</li>
+     * <li>check for game over conditions</li>
+     * </ul>
+     */
+    private void update() {
+        float delta = Gdx.graphics.getDeltaTime();
+
+        if (gameState == GameState.MENU) {
+            menu.update();
+
+            GameState next = menu.consumeNextState();
+            if (next != null) {
+                gameState = next;
+
+                if (gameState == GameState.NAME_INPUT) {
+                    ignoreFirstNameInputFrame = true;
+                }
+            }
+
+            return;
+        }
+
+        if (gameState == GameState.SETTINGS) {
+            if (inputPressed()) {
+                gameState = GameState.MENU;
+            }
+            return;
+        }
+
+        if (gameState == GameState.NAME_INPUT) {
+
+            if (inputPressed()) {
+                playerName = nameField.getText();
+
+                nameStage.clear();
+                Gdx.input.setInputProcessor(null);
+
+                startGame();
+            }
+
+            return;
+        }
+
+        if (gameState == GameState.HIGH_SCORE) {
+
+            if (inputPressed()) {
+                gameState = GameState.MENU;
+            }
+
+            return;
+        }
+
+        if (inputPressed()) {
+            player.jump(calculateJumpForce());
+            audio.playJump();
+        }
+
+        background.update(delta);
+        player.update(delta, GRAVITY);
+        player.clampToCeiling(ceiling);
+
+        podX -= POD_SPEED * delta;
         timePlaying += delta;
 
-        while (timePlaying >= 0.1f) {
-            finalScore = score.getScore();
-            score.addScore();
-            timePlaying -= 0.1f;
+        score.update(delta, true);
+        obstacleManager.update(delta, timePlaying, getObstacleSpeed());
+
+        if (player.hitsBottom() || player.hitsTop(ceiling) ||
+                obstacleManager.collidesWith(
+                        player.getX(),
+                        player.getY(),
+                        player.getWidth(),
+                        player.getHeight())) {
+
+            gameOver();
+        }
+
+    }
+
+    /**
+     * Checks if jump/start input was pressed this frame.
+     *
+     * <p>
+     * Supports both:
+     * <ul>
+     * <li>space key</li>
+     * <li>left mouse button</li>
+     * </ul>
+     *
+     * @return true if input was pressed this frame
+     */
+    private boolean inputPressed() {
+        return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
+                || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
+    }
+
+    /**
+     * Handles input when the game is not currently running.
+     *
+     * <p>
+     * If input is pressed at the start screen or after game over,
+     * a new run begins.
+     */
+    private void handleStartOrRestartInput() {
+        if (inputPressed()) {
+            startGame();
         }
     }
 
+    /**
+     * Starts a new run.
+     *
+     * <p>
+     * This resets the key game systems and state:
+     * <ul>
+     * <li>player position and velocity</li>
+     * <li>score</li>
+     * <li>obstacles</li>
+     * <li>platform position</li>
+     * <li>time-based difficulty scaling</li>
+     * <li>final score display</li>
+     * </ul>
+     *
+     * <p>
+     * The player is also given an immediate jump to begin the run.
+     */
+    private void startGame() {
+        player.reset(PLAYER_START_Y);
+        score.reset();
+        obstacleManager.reset();
+
+        podX = POD_START_X;
+        podY = POD_START_Y;
+        timePlaying = 0f;
+        finalScore = 0;
+
+        scoreSaved = false;
+
+        gameState = GameState.RUNNING;
+        player.jump(calculateJumpForce());
+
+        audio.playGameMusic();
+        audio.playJump();
+    }
+
+    /**
+     * Ends the current run and switches the game to GAME_OVER state.
+     *
+     * <p>
+     * The current score is saved so it can still be displayed after the run ends.
+     */
+    private void gameOver() {
+        if (gameState == GameState.MENU) {
+            gameState = GameState.MENU;
+        } else {
+            if (gameState != GameState.GAME_OVER) {
+
+                score.stopScore();
+                finalScore = score.getScore();
+
+                if (!scoreSaved) {
+                    Highscore.save(playerName, (int) finalScore);
+                    scoreSaved = true;
+                }
+
+                gameState = GameState.GAME_OVER;
+                audio.stopJump();
+                audio.playCrash();
+                audio.playMenuMusic();
+            }
+            if (inputPressed()) {
+                handleStartOrRestartInput();
+                gameState = GameState.RUNNING;
+            }
+        }
+    }
+
+    /**
+     * Calculates the current jump force.
+     *
+     * <p>
+     * As timePlaying increases, jump force is slightly reduced,
+     * but never below 150.
+     *
+     * @return adjusted jump force
+     */
+    private float calculateJumpForce() {
+        return Math.max(5f, JUMP_FORCE - (timePlaying / 10f) * 0.2f);
+    }
+
+    /**
+     * Calculates current obstacle speed.
+     *
+     * <p>
+     * Obstacle speed increases in steps over time to make the game harder.
+     *
+     * @return current obstacle movement speed
+     */
+    private float getObstacleSpeed() {
+        return 3.0f + ((int) (timePlaying / 8)) * 0.2f;
+    }
+
+    /**
+     * Updates the viewport when the game window is resized.
+     *
+     * Ensures the game world keeps its aspect ratio and scales correctly
+     * to different screen sizes.
+     *
+     * @param width  the new window width in pixels
+     * @param height the new window width in pixels
+     */
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
+
+    /**
+     * Cleans up resources when the game closes.
+     *
+     * <p>
+     * Important:
+     * LibGDX textures, SpriteBatch, and fonts must be disposed properly
+     * to avoid memory leaks.
+     */
     @Override
     public void dispose() {
         batch.dispose();
         font.dispose();
-
-        backgroundTexture.dispose();
-        bikerTexture.dispose();
-        skyScraperTexture.dispose();
-        podPlatformTexture.dispose();
-
-        parallaxOneTexture.dispose();
-        parallaxTwoTexture.dispose();
-        parallaxThreeTexture.dispose();
+        assets.dispose();
     }
 }
