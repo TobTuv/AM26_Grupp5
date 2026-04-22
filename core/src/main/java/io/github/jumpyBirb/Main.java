@@ -80,7 +80,7 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Viewport viewport;
 
-    private static final float GRAVITY = 18f;
+    private static final float GRAVITY = 25f;
     private static final float JUMP_FORCE = 6.0f;
     private static final float PLAYER_START_X = 3f;
     private static final float PLAYER_START_Y = 4.5f;
@@ -527,7 +527,7 @@ public class Main extends ApplicationAdapter {
      * @return adjusted jump force
      */
     private float calculateJumpForce() {
-        return Math.max(5f, JUMP_FORCE - (timePlaying / 10f) * 0.6f);
+        return Math.max(5f, JUMP_FORCE - (timePlaying / 10f) * 0.3f);
     }
 
     /**
@@ -539,7 +539,7 @@ public class Main extends ApplicationAdapter {
      * @return current obstacle movement speed
      */
     private float getObstacleSpeed() {
-        return 3.0f + ((int) (timePlaying / 8)) * 0.2f;
+        return 4.0f + ((int) (timePlaying / 8)) * 0.8f;
     }
 
     /**
