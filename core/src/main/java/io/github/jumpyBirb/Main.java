@@ -527,7 +527,7 @@ public class Main extends ApplicationAdapter {
      * @return adjusted jump force
      */
     private float calculateJumpForce() {
-        return Math.max(5f, JUMP_FORCE - (timePlaying / 10f) * 0.2f);
+        return Math.max(5f, JUMP_FORCE - (timePlaying / 10f) * 0.6f);
     }
 
     /**
