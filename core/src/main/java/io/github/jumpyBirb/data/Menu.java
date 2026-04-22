@@ -29,11 +29,18 @@ public class Menu {
             menuIndex = (menuIndex + 1) % items.length;
         }
 
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+            menuIndex = (menuIndex + 1) % items.length;
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             menuIndex = (menuIndex - 1 + items.length) % items.length;
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            select();
+        }
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             select();
         }
     }

@@ -114,6 +114,7 @@ public class Main extends ApplicationAdapter {
     private String playerName = "Player";
     private boolean ignoreFirstNameInputFrame = false;
     private boolean scoreSaved = false;
+    private boolean nameFieldFocused = false;
 
     private AudioManager audio;
 
@@ -168,11 +169,14 @@ public class Main extends ApplicationAdapter {
         skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
         nameStage = new Stage(new ScreenViewport());
 
-        nameField = new TextField("Player", skin);
+        nameField = new TextField("", skin);
+        nameField.setMessageText(playerName);
+        nameField.setMaxLength(12);
         nameField.setSize(300, 50);
         nameField.setPosition(
                 Gdx.graphics.getWidth() / 2f - 150,
                 Gdx.graphics.getHeight() / 2f);
+        nameField.setTextFieldFilter((textField, c) -> Character.isLetterOrDigit(c) || c == '_');
 
         nameStage.addActor(nameField);
 
@@ -253,11 +257,6 @@ public class Main extends ApplicationAdapter {
 
             Gdx.input.setInputProcessor(nameStage);
 
-            // Se till att textfältet får keyboard focus
-            if (nameStage.getKeyboardFocus() == null) {
-                nameStage.setKeyboardFocus(nameField);
-            }
-
             nameStage.act(Gdx.graphics.getDeltaTime());
             nameStage.draw();
 
@@ -275,17 +274,6 @@ public class Main extends ApplicationAdapter {
                 ignoreFirstNameInputFrame = false;
                 return;
             }
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                playerName = nameField.getText();
-
-                nameStage.clear();
-                Gdx.input.setInputProcessor(null);
-
-                startGame();
-            }
-
-            return;
         }
 
         if (gameState == GameState.GAME_OVER) {
@@ -371,13 +359,36 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.NAME_INPUT) {
 
-            if (inputPressed()) {
-                playerName = nameField.getText();
+            nameStage.act(Gdx.graphics.getDeltaTime());
+            nameStage.draw();
 
-                nameStage.clear();
-                Gdx.input.setInputProcessor(null);
+            // INGET FOKUS
+            if (nameFieldFocused == false && Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
 
-                startGame();
+                if (!Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || !Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || !Gdx.input.isKeyJustPressed(Input.Buttons.LEFT)) {
+                    nameStage.setKeyboardFocus(nameField);
+                    nameFieldFocused = true;
+                }
+                else {
+                    nameFieldFocused = false;
+                }
+
+            }
+
+            // ANNARS STARTA SOM VANLIGT
+            if (inputPressed() || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+
+                if (nameFieldFocused == false){
+                    playerName = "Player";
+                }
+                else {
+                    playerName = nameField.getText().trim();
+                }
+
+                if (!playerName.isEmpty()) {
+                    Gdx.input.setInputProcessor(null);
+                    startGame();
+                }
             }
 
             return;
@@ -512,7 +523,7 @@ public class Main extends ApplicationAdapter {
             }
             if (inputPressed()) {
                 handleStartOrRestartInput();
-                gameState = GameState.RUNNING;
+                gameState = GameState.MENU;
             }
         }
     }
