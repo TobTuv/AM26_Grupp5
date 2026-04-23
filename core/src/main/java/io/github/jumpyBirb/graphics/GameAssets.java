@@ -53,12 +53,13 @@ public class GameAssets {
     public final Texture playerIdle = new Texture("motorbike1.png");
     public final Texture playerRiseFast = new Texture("motorbike4.png");
     public final Texture playerRise = new Texture("motorbike3.png");
-    public final Texture playerFall = new Texture("motorbike1.png");
+    public final Texture playerFall = new Texture("motorbike5.png");
     public final Texture playerFallFast = new Texture("motorbike2.png");
     public final Texture pod = new Texture("podPlatform.png");
     public final Texture parallax1 = new Texture("clouds-parallax1-3000x1080.png");
     public final Texture parallax2 = new Texture("city-parallax2-1920x1080.png");
     public final Texture parallax3 = new Texture("smog-parallax3-3000x1080.png");
+    public final Texture menuBackground = new Texture("menuBackground.jpg");
 
     public final List<Texture> bottomObstacles = List.of(
         new Texture("retrowave_skyscrapers_bottom-01.png"),
@@ -116,6 +117,7 @@ public class GameAssets {
         parallax1.dispose();
         parallax2.dispose();
         parallax3.dispose();
+        menuBackground.dispose();
         for (Texture t : bottomObstacles) {
             t.dispose();
         }

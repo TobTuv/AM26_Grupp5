@@ -174,8 +174,8 @@ public class Main extends ApplicationAdapter {
         nameField.setMaxLength(12);
         nameField.setSize(300, 50);
         nameField.setPosition(
-                Gdx.graphics.getWidth() / 2f - 150,
-                Gdx.graphics.getHeight() / 2f);
+            Gdx.graphics.getWidth() / 2f - 150,
+            Gdx.graphics.getHeight() / 2f);
         nameField.setTextFieldFilter((textField, c) -> Character.isLetterOrDigit(c) || c == '_');
 
         nameStage.addActor(nameField);
@@ -188,14 +188,14 @@ public class Main extends ApplicationAdapter {
         player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
         score = new Score();
         obstacleManager = new ObstacleManager(
-                OBSTACLE_WIDTH, MIN_OBSTACLE_HEIGHT, OBSTACLE_HEIGHT, screenWidth, screenHeight, assets.topObstacles,
-                assets.bottomObstacles);
+            OBSTACLE_WIDTH, MIN_OBSTACLE_HEIGHT, OBSTACLE_HEIGHT, screenWidth, screenHeight, assets.topObstacles,
+            assets.bottomObstacles);
         background = new ParallaxBackground(
-                assets.parallax1,
-                assets.parallax2,
-                assets.parallax3,
-                screenWidth,
-                screenHeight);
+            assets.parallax1,
+            assets.parallax2,
+            assets.parallax3,
+            screenWidth,
+            screenHeight);
 
         podX = POD_START_X;
         podY = POD_START_Y;
@@ -221,10 +221,10 @@ public class Main extends ApplicationAdapter {
 
         // UI ska ritas i pixel-space
         batch.setProjectionMatrix(
-                new Matrix4().setToOrtho2D(
-                        0, 0,
-                        Gdx.graphics.getWidth(),
-                        Gdx.graphics.getHeight()));
+            new Matrix4().setToOrtho2D(
+                0, 0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight()));
 
         font.getData().setScale(2f);
         font.setColor(Color.WHITE);
@@ -232,7 +232,11 @@ public class Main extends ApplicationAdapter {
         batch.begin();
 
         switch (gameState) {
-            case START, MENU -> menu.render(batch, font);
+            case START, MENU -> {
+                batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                menu.render(batch, font);
+            }
+
             case SETTINGS -> font.draw(batch, "SETTINGS COMING SOON", 50, 200);
         }
 
@@ -240,20 +244,32 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.RUNNING) {
             renderer.draw(
-                    background,
-                    player,
-                    obstacleManager.getPairs(),
-                    score,
-                    gameState,
-                    finalScore,
-                    podX,
-                    podY,
-                    POD_WIDTH,
-                    POD_HEIGHT);
+                background,
+                player,
+                obstacleManager.getPairs(),
+                score,
+                gameState,
+                finalScore,
+                podX,
+                podY,
+                POD_WIDTH,
+                POD_HEIGHT);
         }
 
         if (gameState == GameState.NAME_INPUT) {
             ScreenUtils.clear(Color.BLACK);
+
+            batch.setProjectionMatrix(
+                new Matrix4().setToOrtho2D(
+                    0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                )
+            );
+
+            batch.begin();
+            batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            batch.end();
 
             Gdx.input.setInputProcessor(nameStage);
 
@@ -262,11 +278,11 @@ public class Main extends ApplicationAdapter {
 
             batch.begin();
             font.draw(batch, "Enter your name:",
-                    Gdx.graphics.getWidth() / 2f - 150,
-                    Gdx.graphics.getHeight() / 2f + 80);
+                Gdx.graphics.getWidth() / 2f - 150,
+                Gdx.graphics.getHeight() / 2f + 80);
             font.draw(batch, "Press SPACE to continue",
-                    Gdx.graphics.getWidth() / 2f - 150,
-                    Gdx.graphics.getHeight() / 2f - 80);
+                Gdx.graphics.getWidth() / 2f - 150,
+                Gdx.graphics.getHeight() / 2f - 80);
             batch.end();
 
             // IGNORERA FÖRSTA FRAMEN EFTER STATE BYTE
@@ -278,10 +294,24 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.GAME_OVER) {
 
+            batch.setProjectionMatrix(
+                new Matrix4().setToOrtho2D(
+                    0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                )
+            );
+
             // visa topp 5
             List<Highscore.Entry> top5 = Highscore.top(5);
 
             batch.begin();
+
+            batch.draw(assets.menuBackground, 0, 0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight()
+            );
+
             font.draw(batch, "HIGH SCORE", 100, 450);
             font.draw(batch, "Your score: " + Math.round(finalScore), 100, 600);
 
@@ -297,7 +327,19 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.HIGH_SCORE) {
 
+            batch.setProjectionMatrix(
+                new Matrix4().setToOrtho2D(
+                    0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                )
+            );
             batch.begin();
+
+            batch.draw(assets.menuBackground, 0, 0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight()
+            );
 
             font.draw(batch, "HIGH SCORES", 100, 700);
 
@@ -315,7 +357,27 @@ public class Main extends ApplicationAdapter {
         }
 
         if (gameState == GameState.SETTINGS) {
+
+            batch.setProjectionMatrix(
+                new Matrix4().setToOrtho2D(
+                    0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                )
+            );
+
+            batch.begin();
+
+            batch.draw(assets.menuBackground, 0, 0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight()
+            );
+
             Highscore.cleanHighScore();
+
+            batch.end();
+
+
         }
 
     }
@@ -368,8 +430,7 @@ public class Main extends ApplicationAdapter {
                 if (!Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || !Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || !Gdx.input.isKeyJustPressed(Input.Buttons.LEFT)) {
                     nameStage.setKeyboardFocus(nameField);
                     nameFieldFocused = true;
-                }
-                else {
+                } else {
                     nameFieldFocused = false;
                 }
 
@@ -378,10 +439,9 @@ public class Main extends ApplicationAdapter {
             // ANNARS STARTA SOM VANLIGT
             if (inputPressed() || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
 
-                if (nameFieldFocused == false){
+                if (nameFieldFocused == false) {
                     playerName = "Player";
-                }
-                else {
+                } else {
                     playerName = nameField.getText().trim();
                 }
 
@@ -419,11 +479,11 @@ public class Main extends ApplicationAdapter {
         obstacleManager.update(delta, timePlaying, getObstacleSpeed());
 
         if (player.hitsBottom() || player.hitsTop(ceiling) ||
-                obstacleManager.collidesWith(
-                        player.getX(),
-                        player.getY(),
-                        player.getWidth(),
-                        player.getHeight())) {
+            obstacleManager.collidesWith(
+                player.getX(),
+                player.getY(),
+                player.getWidth(),
+                player.getHeight())) {
 
             gameOver();
         }
@@ -444,7 +504,7 @@ public class Main extends ApplicationAdapter {
      */
     private boolean inputPressed() {
         return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
-                || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
+            || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
 
     /**
@@ -555,7 +615,7 @@ public class Main extends ApplicationAdapter {
 
     /**
      * Updates the viewport when the game window is resized.
-     *
+     * <p>
      * Ensures the game world keeps its aspect ratio and scales correctly
      * to different screen sizes.
      *
