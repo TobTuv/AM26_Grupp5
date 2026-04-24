@@ -155,7 +155,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
 
-        intro = new Intro();
+
         menu = new Menu();
         camera = new OrthographicCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
@@ -168,6 +168,9 @@ public class Main extends ApplicationAdapter {
         font = new BitmapFont();
         font.getData().setScale(0.03f);
         assets = new GameAssets();
+
+        intro = new Intro(assets.logo);
+        gameState = GameState.INTRO;
 
         skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
         nameStage = new Stage(new ScreenViewport());
@@ -206,7 +209,7 @@ public class Main extends ApplicationAdapter {
         audio = new AudioManager(assets);
         audio.playMenuMusic();
 
-        gameState = GameState.INTRO;
+
 
     }
 
@@ -237,6 +240,26 @@ public class Main extends ApplicationAdapter {
         switch (gameState) {
 
             case INTRO -> {
+                batch.draw(assets.background, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
+                batch.draw(assets.parallax1, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
+                batch.draw(assets.parallax2, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
+                batch.draw(assets.parallax3, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
+                batch.draw(assets.parallax4, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
                 intro.render(batch);
             }
 
@@ -409,14 +432,16 @@ public class Main extends ApplicationAdapter {
             intro.update(delta);
 
             if (inputPressed()) {
-                if (intro.isFinished()) {
-                    gameState = GameState.MENU;
-                } else {
-                    intro.skip();
-                }
+                intro.skip();
+            }
+
+            if (intro.isFinished()) {
+                gameState = GameState.MENU;
+                audio.playMenuMusic();
             }
 
             return;
+
         }
 
         if (gameState == GameState.MENU) {
