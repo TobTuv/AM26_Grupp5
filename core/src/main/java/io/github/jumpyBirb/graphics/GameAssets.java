@@ -59,6 +59,7 @@ public class GameAssets {
     public final Texture parallax1 = new Texture("clouds-parallax1-3000x1080.png");
     public final Texture parallax2 = new Texture("city-parallax2-1920x1080.png");
     public final Texture parallax3 = new Texture("smog-parallax3-3000x1080.png");
+    public final Texture parallax4 = new Texture("gradient-parallax4-1920x1080.png");
     public final Texture menuBackground = new Texture("menuBackground.jpg");
 
     public final List<Texture> bottomObstacles = List.of(
@@ -117,6 +118,7 @@ public class GameAssets {
         parallax1.dispose();
         parallax2.dispose();
         parallax3.dispose();
+        parallax4.dispose();
         menuBackground.dispose();
         for (Texture t : bottomObstacles) {
             t.dispose();

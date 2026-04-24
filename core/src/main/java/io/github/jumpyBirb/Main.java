@@ -253,6 +253,10 @@ public class Main extends ApplicationAdapter {
                     Gdx.graphics.getWidth(),
                     Gdx.graphics.getHeight()
                 );
+                batch.draw(assets.parallax4, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
                 intro.render(batch);
             }
 
