@@ -111,8 +111,8 @@ public class Intro {
         float progress = phaseTimer / LOGO_GROW_TIME;
         progress = Math.min(progress, 1f);
 
-        float maxWidth = 735f;
-        float maxHeight = 555f;
+        float maxWidth = 920f;
+        float maxHeight = 453f;
 
         float width = maxWidth * progress;
         float height = maxHeight * progress;
