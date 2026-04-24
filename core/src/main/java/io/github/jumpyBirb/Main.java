@@ -338,7 +338,7 @@ public class Main extends ApplicationAdapter {
 
             batch.begin();
 
-            batch.draw(assets.menuBackground, 0, 0,
+            batch.draw(assets.gameOverBackground, 0, 0,
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight()
             );
