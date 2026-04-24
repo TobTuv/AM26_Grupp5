@@ -77,6 +77,9 @@ public class GameAssets {
         new Texture("retrowave_skyscrapers_top-03.png")
     );
 
+    public final Music introMusic = com.badlogic.gdx.Gdx.audio.newMusic(
+        com.badlogic.gdx.Gdx.files.internal("intro-music.mp3")
+    );
 
     public final Music menuMusic = com.badlogic.gdx.Gdx.audio.newMusic(
         com.badlogic.gdx.Gdx.files.internal("menu-music.mp3")
@@ -95,9 +98,11 @@ public class GameAssets {
     );
 
     public GameAssets() {
+        introMusic.setLooping(true);
         menuMusic.setLooping(true);
         gameMusic.setLooping(true);
 
+        introMusic.setVolume(0.6f);
         menuMusic.setVolume(0.6f);
         gameMusic.setVolume(0.6f);
     }
@@ -131,6 +136,7 @@ public class GameAssets {
             t.dispose();
         }
 
+        introMusic.dispose();
         menuMusic.dispose();
         gameMusic.dispose();
         jumpSound.dispose();

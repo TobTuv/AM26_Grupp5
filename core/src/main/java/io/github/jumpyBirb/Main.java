@@ -207,7 +207,7 @@ public class Main extends ApplicationAdapter {
         podY = POD_START_Y;
 
         audio = new AudioManager(assets);
-        audio.playMenuMusic();
+        audio.playIntroMusic();
 
 
 
@@ -431,7 +431,7 @@ public class Main extends ApplicationAdapter {
         if (gameState == GameState.INTRO) {
             intro.update(delta);
 
-            if (inputPressed()) {
+            if (skipPressed()) {
                 intro.skip();
             }
 
@@ -460,7 +460,7 @@ public class Main extends ApplicationAdapter {
         }
 
         if (gameState == GameState.SETTINGS) {
-            if (inputPressed()) {
+            if (menuConfirmPressed()) {
                 gameState = GameState.MENU;
             }
             return;
@@ -484,7 +484,7 @@ public class Main extends ApplicationAdapter {
             }
 
             // ANNARS STARTA SOM VANLIGT
-            if (inputPressed() || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            if (menuConfirmPressed()) {
 
                 if (nameFieldFocused == false) {
                     playerName = "Player";
@@ -503,14 +503,14 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.HIGH_SCORE) {
 
-            if (inputPressed()) {
+            if (menuConfirmPressed()) {
                 gameState = GameState.MENU;
             }
 
             return;
         }
 
-        if (inputPressed()) {
+        if (jumpPressed()) {
             player.jump(calculateJumpForce());
             audio.playJump();
         }
@@ -549,7 +549,17 @@ public class Main extends ApplicationAdapter {
      *
      * @return true if input was pressed this frame
      */
-    private boolean inputPressed() {
+    private boolean jumpPressed() {
+        return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
+            || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
+    }
+
+    private boolean menuConfirmPressed() {
+        return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
+            || Gdx.input.isKeyJustPressed(Input.Keys.ENTER);
+    }
+
+    private boolean skipPressed() {
         return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
             || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
@@ -562,7 +572,7 @@ public class Main extends ApplicationAdapter {
      * a new run begins.
      */
     private void handleStartOrRestartInput() {
-        if (inputPressed()) {
+        if (menuConfirmPressed()) {
             startGame();
         }
     }
@@ -628,8 +638,7 @@ public class Main extends ApplicationAdapter {
                 audio.playCrash();
                 audio.playMenuMusic();
             }
-            if (inputPressed()) {
-                handleStartOrRestartInput();
+            if (menuConfirmPressed()) {
                 gameState = GameState.MENU;
             }
         }
