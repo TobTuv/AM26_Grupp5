@@ -14,7 +14,7 @@ public class Intro {
     private BitmapFont font;
     private GlyphLayout layout;
 
-    private Texture logo;
+    private Texture logoText;
 
     private IntroPhase phase = IntroPhase.TEXT;
     private float phaseTimer = 0f;
@@ -23,13 +23,13 @@ public class Intro {
     private static final float LOGO_TIME = 20f;
     private static final float LOGO_GROW_TIME = 1f;
 
-    public Intro(Texture logo) {
+    public Intro(Texture logoText) {
         FileHandle file = Gdx.files.internal("intro.txt");
         String content = file.readString();
 
-        this.logo = logo;
+        this.logoText = logoText;
 
-        text = new TextWriter(content, 0.05f);
+        text = new TextWriter(content, 0.04f);
         layout = new GlyphLayout();
 
         FreeTypeFontGenerator generator =
@@ -120,7 +120,7 @@ public class Intro {
         float x = Gdx.graphics.getWidth() / 2f - width / 2f;
         float y = Gdx.graphics.getHeight() / 2f - height / 2f;
 
-        batch.draw(logo, x, y, width, height);
+        batch.draw(logoText, x, y, width, height);
     }
 
     public void skip() {

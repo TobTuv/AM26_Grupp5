@@ -169,7 +169,7 @@ public class Main extends ApplicationAdapter {
         font.getData().setScale(0.03f);
         assets = new GameAssets();
 
-        intro = new Intro(assets.logo);
+        intro = new Intro(assets.logoText);
         gameState = GameState.INTRO;
 
         skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
