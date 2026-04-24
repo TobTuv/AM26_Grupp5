@@ -61,6 +61,7 @@ public class GameAssets {
     public final Texture parallax3 = new Texture("smog-parallax3-3000x1080.png");
     public final Texture parallax4 = new Texture("gradient-parallax4-1920x1080.png");
     public final Texture menuBackground = new Texture("menuBackground.jpg");
+    public final Texture logo = new Texture("neon_rider_logo_hd2.png");
 
     public final List<Texture> bottomObstacles = List.of(
         new Texture("retrowave_skyscrapers_bottom-01.png"),
@@ -120,6 +121,7 @@ public class GameAssets {
         parallax3.dispose();
         parallax4.dispose();
         menuBackground.dispose();
+        logo.dispose();
         for (Texture t : bottomObstacles) {
             t.dispose();
         }
