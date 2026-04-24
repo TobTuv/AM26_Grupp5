@@ -237,6 +237,22 @@ public class Main extends ApplicationAdapter {
         switch (gameState) {
 
             case INTRO -> {
+                batch.draw(assets.background, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
+                batch.draw(assets.parallax1, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
+                batch.draw(assets.parallax2, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
+                batch.draw(assets.parallax3, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()
+                );
                 intro.render(batch);
             }
 

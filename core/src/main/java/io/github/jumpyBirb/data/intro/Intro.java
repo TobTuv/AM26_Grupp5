@@ -17,7 +17,7 @@ public class Intro {
         FileHandle file = Gdx.files.internal("intro.txt");
         String content = file.readString();
 
-        text = new TextWriter(content, 0.04f);
+        text = new TextWriter(content, 0.06f);
         layout = new GlyphLayout();
 
         FreeTypeFontGenerator generator =
