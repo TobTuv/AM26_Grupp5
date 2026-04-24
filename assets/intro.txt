@@ -1,7 +1,13 @@
-"The year is 2121. Los Angeles is drenched in neon light and smog. 
-You wake up miles above the ground in your pod apartment for yet another day in the service of Evil Corp. 
-Since losing your job as a console cowboy, you’ve become one of their many motorcycle couriers in this jungle of skyscrapers.\n\n"
+The year is 2121.
 
-+ "It’s dark, as always. The sun has been nothing more than decoration since the Golden Dome was installed nearly a hundred years ago.
- You bathe in the neon glow of the advertisements outside your window as you put on your riding gear. 
- You are ready to deliver. You are ready to ride high above the city.\n\n"
+Los Angeles is drenched in neon light and smog. You wake up miles above the ground
+in your pod apartment for yet another day in the service of Evil Corp.
+Since losing your job as a console cowboy, you've become one of their many
+motorcycle couriers in this jungle of skyscrapers.
+
+It's dark, as always. The sun has been nothing more than decoration since
+the Golden Dome was installed nearly a hundred years ago. You bathe in the neon glow
+of the advertisements outside your window as you put on your riding gear.
+You are ready to deliver. You are ready to ride high above the city.
+
+You are the neon runner.

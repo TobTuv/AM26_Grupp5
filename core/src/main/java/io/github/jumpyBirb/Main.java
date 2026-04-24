@@ -14,6 +14,7 @@ import io.github.jumpyBirb.data.Highscore;
 import io.github.jumpyBirb.data.Menu;
 import io.github.jumpyBirb.data.Player;
 import io.github.jumpyBirb.data.Score;
+import io.github.jumpyBirb.data.intro.Intro;
 import io.github.jumpyBirb.game.AudioManager;
 import io.github.jumpyBirb.game.GameState;
 import io.github.jumpyBirb.game.ObstacleManager;
@@ -120,6 +121,7 @@ public class Main extends ApplicationAdapter {
 
     private GameState gameState;
     private double finalScore = 0;
+    private Intro intro;
 
     private float screenWidth;
     private float screenHeight;
@@ -153,6 +155,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
 
+        intro = new Intro();
         menu = new Menu();
         camera = new OrthographicCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
@@ -203,7 +206,7 @@ public class Main extends ApplicationAdapter {
         audio = new AudioManager(assets);
         audio.playMenuMusic();
 
-        gameState = GameState.MENU;
+        gameState = GameState.INTRO;
 
     }
 
@@ -232,6 +235,11 @@ public class Main extends ApplicationAdapter {
         batch.begin();
 
         switch (gameState) {
+
+            case INTRO -> {
+                intro.render(batch);
+            }
+
             case START, MENU -> {
                 batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 menu.render(batch, font);
@@ -396,6 +404,20 @@ public class Main extends ApplicationAdapter {
      */
     private void update() {
         float delta = Gdx.graphics.getDeltaTime();
+
+        if (gameState == GameState.INTRO) {
+            intro.update(delta);
+
+            if (inputPressed()) {
+                if (intro.isFinished()) {
+                    gameState = GameState.MENU;
+                } else {
+                    intro.skip();
+                }
+            }
+
+            return;
+        }
 
         if (gameState == GameState.MENU) {
             menu.update();

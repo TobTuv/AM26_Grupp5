@@ -7,5 +7,6 @@ public enum GameState {
     SETTINGS,
     HIGH_SCORE,
     MENU,
-    NAME_INPUT
+    NAME_INPUT,
+    INTRO
 }
