@@ -61,6 +61,7 @@ public class GameAssets {
     public final Texture parallax2 = new Texture("city-parallax2-1920x1080.png");
     public final Texture parallax3 = new Texture("smog-parallax3-3000x1080.png");
     public final Texture menuBackground = new Texture("menuBackground.jpg");
+    public final Texture menuBackgroundNoBike = new Texture("menuBackground_empty.jpg");
 
     public final List<Texture> bottomObstacles = List.of(
         new Texture("retrowave_skyscrapers_bottom-01.png"),
