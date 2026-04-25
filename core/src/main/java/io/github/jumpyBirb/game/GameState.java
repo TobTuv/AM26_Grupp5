@@ -8,5 +8,9 @@ public enum GameState {
     HIGH_SCORE,
     MENU,
     NAME_INPUT,
-    INTRO
+    INTRO,
+    SOUND,
+    MUSIC,
+    CREDITS,
+    RESET_SCORE
 }

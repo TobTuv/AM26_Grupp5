@@ -10,6 +10,8 @@ public class AudioManager {
     private final Music gameMusic;
     private final Sound jumpSound;
     private final Sound crashSound;
+    private boolean sound = true;
+    private boolean music = true;
 
     public AudioManager(GameAssets assets) {
         this.introMusic = assets.introMusic;
@@ -20,35 +22,88 @@ public class AudioManager {
     }
 
     public void playIntroMusic() {
-        stopAllMusic();
-        introMusic.play();
+        if (!music) {
+            return;
+        } else {
+            stopAllMusic();
+            introMusic.play();
+        }
+        return;
     }
 
     public void playMenuMusic() {
-        stopAllMusic();
-        menuMusic.play();
+        if (!music) {
+            return;
+        } else {
+            stopAllMusic();
+            menuMusic.play();
+        }
+        return;
     }
 
     public void playGameMusic() {
-        stopAllMusic();
-        gameMusic.play();
+        if (!music) {
+            return;
+        } else {
+            stopAllMusic();
+            gameMusic.play();
+        }
+        return;
     }
 
     public void playJump() {
-        jumpSound.play(0.09f);
+        if (!sound) {
+            return;
+        } else {
+            jumpSound.play(0.09f);
+        }
+        return;
     }
 
     public void stopJump() {
-        jumpSound.stop();
+        if (!sound) {
+            return;
+        } else {
+            jumpSound.stop();
+        }
+        return;
     }
 
     public void playCrash() {
-        crashSound.play(0.25f);
+        if (!sound) {
+            return;
+        } else {
+            crashSound.play(0.25f);
+        }
+        return;
     }
 
     private void stopAllMusic() {
-        introMusic.stop();
-        menuMusic.stop();
-        gameMusic.stop();
+        if (!music) {
+            return;
+        } else {
+            introMusic.stop();
+            menuMusic.stop();
+            gameMusic.stop();
+        }
+        return;
+    }
+
+    public void muteSound() {
+        sound = false;
+    }
+
+    public void muteMusic() {
+        stopAllMusic();
+        music = false;
+    }
+
+    public void unMuteSound() {
+        sound = true;
+    }
+
+    public void unMuteMusic() {
+        music = true;
+        playMenuMusic();
     }
 }
