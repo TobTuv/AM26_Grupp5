@@ -1,0 +1,68 @@
+package io.github.jumpyBirb.data;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import io.github.jumpyBirb.game.GameState;
+
+public class Settings {
+
+    private int settingsIndex = 0;
+
+    private final String[] items = { "Reset Score", "Music ON/OFF", "Sound ON/OFF", "CREDITS", "MENU" };
+    private GameState nextState = null;
+
+    public void update() {
+        handleInput();
+    }
+
+    public GameState consumeNextState() {
+        GameState state = nextState;
+        nextState = null;
+        return state;
+    }
+
+    private void handleInput() {
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+            settingsIndex = (settingsIndex + 1) % items.length;
+        }
+
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+           settingsIndex = (settingsIndex + 1) % items.length;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            settingsIndex = (settingsIndex - 1 + items.length) % items.length;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            select();
+        }
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            select();
+        }
+    }
+
+    private void select() {
+        switch (settingsIndex) {
+            case 0 -> nextState = GameState.RESET_SCORE;
+            case 1 -> nextState = GameState.MUSIC;
+            case 2 -> nextState = GameState.SOUND;
+            case 3 -> nextState = GameState.CREDITS;
+            case 4 -> nextState = GameState.MENU;
+        }
+    }
+
+    public void render(SpriteBatch batch, BitmapFont font) {
+        float startX = 100;
+        float startY = Gdx.graphics.getHeight() - 200;
+        float lineHeight = 60;
+
+        for (int i = 0; i < items.length; i++) {
+            String text = (i == settingsIndex) ? "> " + items[i] : items[i];
+            font.draw(batch, text, startX, startY - i * lineHeight);
+        }
+    }
+}
