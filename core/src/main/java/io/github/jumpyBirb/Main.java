@@ -180,7 +180,7 @@ public class Main extends ApplicationAdapter {
         nameStage = new Stage(new ScreenViewport());
 
         nameField = new TextField("", skin);
-        nameField.setMessageText(playerName);
+        nameField.setMessageText(playerName.trim());
         nameField.setMaxLength(12);
         nameField.setSize(300, 50);
         nameField.setPosition(
