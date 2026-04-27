@@ -6,6 +6,8 @@ dependencies {
   api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
   api "org.apache.groovy:groovy-all:$groovyVersion"
 
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
   }
@@ -20,4 +22,8 @@ sourceSets {
         java.srcDirs = ["src/main/java"]
         resources.srcDirs = ["assets"]
     }
+}
+
+test {
+  useJUnitPlatform()
 }
