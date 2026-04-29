@@ -176,7 +176,8 @@ public class Main extends ApplicationAdapter {
         assets = new GameAssets();
 
         intro = new Intro(assets.logoText);
-        gameState = GameState.INTRO;
+        gameState = GameState.NAME_INPUT;
+        ignoreFirstNameInputFrame = true;
 
         skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
         nameStage = new Stage(new ScreenViewport());
@@ -213,7 +214,7 @@ public class Main extends ApplicationAdapter {
         podY = POD_START_Y;
 
         audio = new AudioManager(assets);
-        audio.playIntroMusic();
+
 
     }
 
@@ -442,10 +443,10 @@ public class Main extends ApplicationAdapter {
 
             GameState next = menu.consumeNextState();
             if (next != null) {
-                gameState = next;
-
-                if (gameState == GameState.NAME_INPUT) {
-                    ignoreFirstNameInputFrame = true;
+                if (next == GameState.RUNNING) {
+                    startGame();
+                } else {
+                    gameState = next;
                 }
             }
 
@@ -492,7 +493,8 @@ public class Main extends ApplicationAdapter {
                 }
 
                 Gdx.input.setInputProcessor(null);
-                startGame();
+                gameState = GameState.INTRO;
+                audio.playIntroMusic();
             }
 
             return;
@@ -642,10 +644,8 @@ public class Main extends ApplicationAdapter {
         gameHasStarted = false;
 
         gameState = GameState.RUNNING;
-        // player.jump(calculateJumpForce());
 
         audio.playGameMusic();
-        // audio.playJump();
     }
 
     /**

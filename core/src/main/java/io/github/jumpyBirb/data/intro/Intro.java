@@ -10,11 +10,11 @@ import com.badlogic.gdx.utils.Align;
 
 public class Intro {
 
-    private TextWriter text;
-    private BitmapFont font;
-    private GlyphLayout layout;
+    private final TextWriter text;
+    private final BitmapFont font;
+    private final GlyphLayout layout;
 
-    private Texture logoText;
+    private final Texture logoText;
 
     private IntroPhase phase = IntroPhase.TEXT;
     private float phaseTimer = 0f;

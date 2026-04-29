@@ -47,7 +47,7 @@ public class Menu {
 
     private void select() {
         switch (menuIndex) {
-            case 0 -> nextState = GameState.NAME_INPUT;
+            case 0 -> nextState = GameState.RUNNING;
             case 1 -> nextState = GameState.HIGH_SCORE;
             case 2 -> nextState = GameState.SETTINGS;
         }
