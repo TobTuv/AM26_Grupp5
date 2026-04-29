@@ -121,6 +121,8 @@ public class Main extends ApplicationAdapter {
     private boolean sound = true;
     private boolean music = true;
 
+    private boolean gameHasStarted = false;
+
     private AudioManager audio;
 
     private GameState gameState;
@@ -542,7 +544,12 @@ public class Main extends ApplicationAdapter {
 
         if (jumpPressed()) {
             player.jump(calculateJumpForce());
+            gameHasStarted = true;
             audio.playJump();
+        }
+
+        if (!gameHasStarted) {
+            return;
         }
 
         background.update(delta);
@@ -586,11 +593,13 @@ public class Main extends ApplicationAdapter {
 
     private boolean menuConfirmPressed() {
         return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
-                || Gdx.input.isKeyJustPressed(Input.Keys.ENTER);
+                || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)
+        || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
 
     private boolean skipPressed() {
         return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
+            || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)
                 || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
 
@@ -636,11 +645,13 @@ public class Main extends ApplicationAdapter {
 
         scoreSaved = false;
 
+        gameHasStarted = false;
+
         gameState = GameState.RUNNING;
-        player.jump(calculateJumpForce());
+        // player.jump(calculateJumpForce());
 
         audio.playGameMusic();
-        audio.playJump();
+        // audio.playJump();
     }
 
     /**
