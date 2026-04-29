@@ -611,19 +611,6 @@ public class Main extends ApplicationAdapter {
     }
 
     /**
-     * Handles input when the game is not currently running.
-     *
-     * <p>
-     * If input is pressed at the start screen or after game over,
-     * a new run begins.
-     */
-    private void handleStartOrRestartInput() {
-        if (menuConfirmPressed()) {
-            startGame();
-        }
-    }
-
-    /**
      * Starts a new run.
      *
      * <p>
@@ -638,7 +625,7 @@ public class Main extends ApplicationAdapter {
      * </ul>
      *
      * <p>
-     * The player is also given an immediate jump to begin the run.
+     * The player waits on the platform until the first jump input.
      */
     private void startGame() {
         player.reset(PLAYER_START_Y);
