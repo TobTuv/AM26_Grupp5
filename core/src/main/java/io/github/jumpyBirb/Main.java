@@ -121,6 +121,8 @@ public class Main extends ApplicationAdapter {
     private boolean sound = true;
     private boolean music = true;
 
+    private boolean gameHasStarted = false;
+
     private AudioManager audio;
 
     private GameState gameState;
@@ -174,7 +176,8 @@ public class Main extends ApplicationAdapter {
         assets = new GameAssets();
 
         intro = new Intro(assets.logoText);
-        gameState = GameState.INTRO;
+        gameState = GameState.NAME_INPUT;
+        ignoreFirstNameInputFrame = true;
 
         skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
         nameStage = new Stage(new ScreenViewport());
@@ -211,7 +214,7 @@ public class Main extends ApplicationAdapter {
         podY = POD_START_Y;
 
         audio = new AudioManager(assets);
-        audio.playIntroMusic();
+
 
     }
 
@@ -440,10 +443,10 @@ public class Main extends ApplicationAdapter {
 
             GameState next = menu.consumeNextState();
             if (next != null) {
-                gameState = next;
-
-                if (gameState == GameState.NAME_INPUT) {
-                    ignoreFirstNameInputFrame = true;
+                if (next == GameState.RUNNING) {
+                    startGame();
+                } else {
+                    gameState = next;
                 }
             }
 
@@ -490,7 +493,8 @@ public class Main extends ApplicationAdapter {
                 }
 
                 Gdx.input.setInputProcessor(null);
-                startGame();
+                gameState = GameState.INTRO;
+                audio.playIntroMusic();
             }
 
             return;
@@ -502,6 +506,13 @@ public class Main extends ApplicationAdapter {
                 gameState = GameState.MENU;
             }
 
+            return;
+        }
+
+        if (gameState == GameState.GAME_OVER) {
+            if (menuConfirmPressed()) {
+                gameState = GameState.MENU;
+            }
             return;
         }
 
@@ -542,7 +553,12 @@ public class Main extends ApplicationAdapter {
 
         if (jumpPressed()) {
             player.jump(calculateJumpForce());
+            gameHasStarted = true;
             audio.playJump();
+        }
+
+        if (!gameHasStarted) {
+            return;
         }
 
         background.update(delta);
@@ -586,25 +602,14 @@ public class Main extends ApplicationAdapter {
 
     private boolean menuConfirmPressed() {
         return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
-                || Gdx.input.isKeyJustPressed(Input.Keys.ENTER);
+                || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)
+        || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
 
     private boolean skipPressed() {
         return Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
+            || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)
                 || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
-    }
-
-    /**
-     * Handles input when the game is not currently running.
-     *
-     * <p>
-     * If input is pressed at the start screen or after game over,
-     * a new run begins.
-     */
-    private void handleStartOrRestartInput() {
-        if (menuConfirmPressed()) {
-            startGame();
-        }
     }
 
     /**
@@ -622,7 +627,7 @@ public class Main extends ApplicationAdapter {
      * </ul>
      *
      * <p>
-     * The player is also given an immediate jump to begin the run.
+     * The player waits on the platform until the first jump input.
      */
     private void startGame() {
         player.reset(PLAYER_START_Y);
@@ -636,11 +641,11 @@ public class Main extends ApplicationAdapter {
 
         scoreSaved = false;
 
+        gameHasStarted = false;
+
         gameState = GameState.RUNNING;
-        player.jump(calculateJumpForce());
 
         audio.playGameMusic();
-        audio.playJump();
     }
 
     /**
@@ -667,9 +672,6 @@ public class Main extends ApplicationAdapter {
                 audio.stopJump();
                 audio.playCrash();
                 audio.playMenuMusic();
-            }
-            if (menuConfirmPressed()) {
-                gameState = GameState.MENU;
             }
         }
     }
