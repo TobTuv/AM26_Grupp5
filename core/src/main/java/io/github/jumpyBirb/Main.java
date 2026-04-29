@@ -507,6 +507,13 @@ public class Main extends ApplicationAdapter {
             return;
         }
 
+        if (gameState == GameState.GAME_OVER) {
+            if (menuConfirmPressed()) {
+                gameState = GameState.MENU;
+            }
+            return;
+        }
+
         if (gameState == GameState.RESET_SCORE) {
             Highscore.cleanHighScore();
             gameState = GameState.SETTINGS;
@@ -678,9 +685,6 @@ public class Main extends ApplicationAdapter {
                 audio.stopJump();
                 audio.playCrash();
                 audio.playMenuMusic();
-            }
-            if (menuConfirmPressed()) {
-                gameState = GameState.MENU;
             }
         }
     }
