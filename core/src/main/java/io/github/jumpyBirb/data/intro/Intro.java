@@ -18,6 +18,8 @@ public class Intro {
 
     private IntroPhase phase = IntroPhase.TEXT;
     private float phaseTimer = 0f;
+    private float blinkTimer = 0f;
+
 
     private static final float WAIT_AFTER_TEXT_TIME = 1f;
     private static final float LOGO_TIME = 20f;
@@ -64,11 +66,13 @@ public class Intro {
                 if (phaseTimer >= WAIT_AFTER_TEXT_TIME) {
                     phase = IntroPhase.LOGO;
                     phaseTimer = 0f;
+                    blinkTimer = 0f;
                 }
             }
 
             case LOGO -> {
                 phaseTimer += delta;
+                blinkTimer += delta;
 
                 if (phaseTimer >= LOGO_TIME) {
                     phase = IntroPhase.FINISHED;
@@ -118,10 +122,26 @@ public class Intro {
         float width = maxWidth * progress;
         float height = maxHeight * progress;
 
-        float x = Gdx.graphics.getWidth() / 2f - width / 2f;
-        float y = Gdx.graphics.getHeight() / 2f - height / 2f;
+        float logoX = Gdx.graphics.getWidth() / 2f - width / 2f;
+        float logoY = Gdx.graphics.getHeight() / 2f - height / 2f;
 
-        batch.draw(logoText, x, y, width, height);
+        batch.draw(logoText, logoX, logoY, width, height);
+
+        if (phaseTimer >= LOGO_SKIP_DELAY) {
+
+            String msg = "Press SPACE to skip";
+
+            layout.setText(font, msg);
+
+            float textX = Gdx.graphics.getWidth() / 2f - layout.width / 2f;
+            float textY = 100;
+
+            float alpha = (float)Math.abs(Math.sin(blinkTimer * 3));
+
+            font.setColor(1, 1, 1, alpha);
+            font.draw(batch, msg, textX, textY);
+            font.setColor(Color.WHITE);
+        }
     }
 
     public void skip() {
