@@ -65,7 +65,7 @@ public class GameAssets {
     public final Texture logo = new Texture("neon_rider_logo_hd2.png");
     public final Texture menuBackgroundNoBike = new Texture("menuBackground_empty.jpg");
     public final Texture gameOverBackground = new Texture("GameOverBackground.jpg");
-    public final Texture waitingToStartBackground = new Texture("menuBackgroundWaitingToStart.jpg");
+    public final Texture waitingToStartBackground = new Texture("menuBackgroundWaitingToStart.png");
 
     public final Texture logoText = new Texture("neonRunnerTextTwoRows.png");
 
