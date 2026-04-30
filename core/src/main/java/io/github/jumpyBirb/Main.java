@@ -16,10 +16,7 @@ import io.github.jumpyBirb.data.Player;
 import io.github.jumpyBirb.data.Score;
 import io.github.jumpyBirb.data.Settings;
 import io.github.jumpyBirb.data.intro.Intro;
-import io.github.jumpyBirb.game.AudioManager;
-import io.github.jumpyBirb.game.GameState;
-import io.github.jumpyBirb.game.ObstacleManager;
-import io.github.jumpyBirb.game.ParallaxBackground;
+import io.github.jumpyBirb.game.*;
 import io.github.jumpyBirb.graphics.GameAssets;
 import io.github.jumpyBirb.graphics.GameRenderer;
 
@@ -115,13 +112,13 @@ public class Main extends ApplicationAdapter {
     private Menu menu;
     private Settings settings;
     private String playerName = "Player";
-    private boolean ignoreFirstNameInputFrame = false;
     private boolean scoreSaved = false;
-    private boolean nameFieldFocused = false;
     private boolean sound = true;
     private boolean music = true;
 
     private boolean gameHasStarted = false;
+
+    private InputGate inputGate = new InputGate();
 
     private AudioManager audio;
 
@@ -177,7 +174,7 @@ public class Main extends ApplicationAdapter {
 
         intro = new Intro(assets.logoText);
         gameState = GameState.NAME_INPUT;
-        ignoreFirstNameInputFrame = true;
+        inputGate.block(1f);
 
         skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
         nameStage = new Stage(new ScreenViewport());
@@ -316,11 +313,6 @@ public class Main extends ApplicationAdapter {
                     Gdx.graphics.getHeight() / 2f - 80);
             batch.end();
 
-            // IGNORERA FÖRSTA FRAMEN EFTER STATE BYTE
-            if (ignoreFirstNameInputFrame) {
-                ignoreFirstNameInputFrame = false;
-                return;
-            }
         }
 
         if (gameState == GameState.GAME_OVER) {
@@ -418,19 +410,18 @@ public class Main extends ApplicationAdapter {
     private void update() {
         float delta = Gdx.graphics.getDeltaTime();
 
-        if (gameState == GameState.RESET_SCORE) {
-            Highscore.cleanHighScore();
-        }
+        inputGate.update(delta);
 
         if (gameState == GameState.INTRO) {
             intro.update(delta);
 
-            if (skipPressed()) {
+            if (inputGate.canAcceptInput() && skipPressed()) {
                 intro.skip();
             }
 
             if (intro.isFinished()) {
                 gameState = GameState.MENU;
+                inputGate.block(1f);
                 audio.playMenuMusic();
             }
 
@@ -439,7 +430,9 @@ public class Main extends ApplicationAdapter {
         }
 
         if (gameState == GameState.MENU) {
-            menu.update();
+            if (inputGate.canAcceptInput()) {
+                menu.update();
+            }
 
             GameState next = menu.consumeNextState();
             if (next != null) {
@@ -447,9 +440,9 @@ public class Main extends ApplicationAdapter {
                     startGame();
                 } else {
                     gameState = next;
+                    inputGate.block(1f);
                 }
             }
-
             return;
         }
 
@@ -482,7 +475,7 @@ public class Main extends ApplicationAdapter {
             }
 
             // ⭐ 2. Confirm
-            if (menuConfirmPressed()) {
+            if (inputGate.canAcceptInput() && menuConfirmPressed()) {
 
                 String input = nameField.getText().trim();
 
@@ -494,6 +487,7 @@ public class Main extends ApplicationAdapter {
 
                 Gdx.input.setInputProcessor(null);
                 gameState = GameState.INTRO;
+                inputGate.block(2f);
                 audio.playIntroMusic();
             }
 
@@ -502,16 +496,18 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.HIGH_SCORE) {
 
-            if (menuConfirmPressed()) {
+            if (inputGate.canAcceptInput() && menuConfirmPressed()) {
                 gameState = GameState.MENU;
+                inputGate.block(1f);
             }
 
             return;
         }
 
         if (gameState == GameState.GAME_OVER) {
-            if (menuConfirmPressed()) {
+            if (inputGate.canAcceptInput() && menuConfirmPressed()) {
                 gameState = GameState.MENU;
+                inputGate.block(1f);
             }
             return;
         }
@@ -655,24 +651,20 @@ public class Main extends ApplicationAdapter {
      * The current score is saved so it can still be displayed after the run ends.
      */
     private void gameOver() {
-        if (gameState == GameState.MENU) {
-            gameState = GameState.MENU;
-        } else {
-            if (gameState != GameState.GAME_OVER) {
+        if (gameState != GameState.GAME_OVER) {
+            score.stopScore();
+            finalScore = score.getScore();
 
-                score.stopScore();
-                finalScore = score.getScore();
-
-                if (!scoreSaved) {
-                    Highscore.save(playerName, (int) finalScore);
-                    scoreSaved = true;
-                }
-
-                gameState = GameState.GAME_OVER;
-                audio.stopJump();
-                audio.playCrash();
-                audio.playMenuMusic();
+            if (!scoreSaved) {
+                Highscore.save(playerName, (int) finalScore);
+                scoreSaved = true;
             }
+
+            gameState = GameState.GAME_OVER;
+            inputGate.block(1f);
+            audio.stopJump();
+            audio.playCrash();
+            audio.playMenuMusic();
         }
     }
 

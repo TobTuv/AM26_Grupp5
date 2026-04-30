@@ -22,6 +22,7 @@ public class Intro {
     private static final float WAIT_AFTER_TEXT_TIME = 1f;
     private static final float LOGO_TIME = 20f;
     private static final float LOGO_GROW_TIME = 1f;
+    private static final float LOGO_SKIP_DELAY = 3f;
 
     public Intro(Texture logoText) {
         FileHandle file = Gdx.files.internal("intro.txt");
@@ -126,7 +127,7 @@ public class Intro {
     public void skip() {
         if (phase == IntroPhase.TEXT) {
             text.skipToEnd();
-        } else if (phase == IntroPhase.LOGO) {
+        } else if (phase == IntroPhase.LOGO && phaseTimer >= LOGO_SKIP_DELAY) {
             phase = IntroPhase.FINISHED;
         }
     }
