@@ -124,7 +124,7 @@ public record GameRenderer(SpriteBatch batch,
             List<ObstaclePair> pairs,
             Score score,
             GameState gameState,
-            double finalScore,
+            long finalScore,
             float podX,
             float podY,
             float podWidth,
@@ -171,49 +171,6 @@ public record GameRenderer(SpriteBatch batch,
                     top.getHeight());
         }
 
-        // // Draw Obstacle
-        // for (ObstaclePair pair : pairs) {
-        //
-        // Obstacle bottom = pair.getBottom();
-        // Obstacle top = pair.getTop();
-        //
-        // float texW = assets.skyscraper.getWidth();
-        // float texH = assets.skyscraper.getHeight();
-        //
-        // float bottomH = bottom.getHeight();
-        // float bottomSrcH = Math.min(bottomH, texH);
-        //
-        // batch.draw(
-        // assets.skyscraper,
-        // bottom.getX(),
-        // bottom.getY(),
-        // bottom.getWidth(),
-        // bottomH,
-        // 0,
-        // 0, // TOP texture
-        // (int) texW,
-        // (int) bottomSrcH,
-        // false,
-        // false
-        // );
-        //
-        // float topH = top.getHeight();
-        // float topSrcH = Math.min(topH, texH);
-        //
-        // batch.draw(
-        // assets.skyscraper,
-        // top.getX(),
-        // top.getY(),
-        // top.getWidth(),
-        // topH,
-        // 0,
-        // (int)(texH - topSrcH), // BOTTOM texture
-        // (int) texW,
-        // (int) topSrcH,
-        // false,
-        // false
-        // );
-        // }
 
         // Draw the player.
         Texture playerTexture = getPlayerTexture(player);
@@ -258,14 +215,14 @@ public record GameRenderer(SpriteBatch batch,
         font.getData().setScale(2f);
 
         // Draw the current score near the top of the screen.
-        font.draw(batch, "Score: " + (int) score.getScore(), 250,
+        font.draw(batch, "Score: " + score.getVisualScore(), 250,
                 com.badlogic.gdx.Gdx.graphics.getHeight() - 20);
 
         // If the game is over, draw a game over message and final score.
         if (gameState == GameState.GAME_OVER) {
             font.getData().setScale(2f);
             font.draw(batch,
-                    "GAME OVER!\nYour score: " + (int) finalScore,
+                    "GAME OVER!\nYour score: " + finalScore,
                     com.badlogic.gdx.Gdx.graphics.getWidth() / 2f - 120,
                     com.badlogic.gdx.Gdx.graphics.getHeight() / 2f + 40);
         }

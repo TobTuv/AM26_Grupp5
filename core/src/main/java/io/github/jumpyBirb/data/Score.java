@@ -16,9 +16,6 @@ public class Score {
 
         while (timer >= 0.1f) {
             score *= 1.01;
-            //Temporarily reduced the issue by rounding the visual score,
-            // but not sure ot sure if this is the best long-term solution.
-            // Suggestion that saves only one finalScore and uses it consistently for both display and saving.
             visualScore = Math.round((score - 1) * 1000);
             timer -= 0.1f;
         }
