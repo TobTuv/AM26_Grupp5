@@ -2,8 +2,12 @@ package io.github.jumpyBirb.data;
 
 public class Score {
     private double score = 1;
-    private double visualScore = 0;
+    private long visualScore = 0;
     private float timer = 0f;
+
+    public long getVisualScore() {
+        return visualScore;
+    }
 
     public void update(float delta, boolean running) {
         if (!running) return;
@@ -34,7 +38,4 @@ public class Score {
         timer += 0.1f;
     }
 
-    public double getScore() {
-        return visualScore;
-    }
 }

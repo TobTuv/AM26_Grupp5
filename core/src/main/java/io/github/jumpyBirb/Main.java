@@ -123,7 +123,7 @@ public class Main extends ApplicationAdapter {
     private AudioManager audio;
 
     private GameState gameState;
-    private double finalScore = 0;
+    private long finalScore = 0;
     private Intro intro;
 
     private float screenWidth;
@@ -333,7 +333,7 @@ public class Main extends ApplicationAdapter {
                     Gdx.graphics.getHeight());
 
             font.draw(batch, "HIGH SCORE", 100, 450);
-            font.draw(batch, "Your score: " + Math.round(finalScore), 100, 600);
+            font.draw(batch, "Your score: " + finalScore, 100, 600);
 
             int y = 380;
             for (Highscore.Entry e : top5) {
@@ -644,6 +644,10 @@ public class Main extends ApplicationAdapter {
         audio.playGameMusic();
     }
 
+    private long getFinalScore() {
+        return score.getVisualScore();
+    }
+
     /**
      * Ends the current run and switches the game to GAME_OVER state.
      *
@@ -653,10 +657,10 @@ public class Main extends ApplicationAdapter {
     private void gameOver() {
         if (gameState != GameState.GAME_OVER) {
             score.stopScore();
-            finalScore = score.getScore();
+            finalScore = getFinalScore();
 
             if (!scoreSaved) {
-                Highscore.save(playerName, (int) finalScore);
+                Highscore.save(playerName, finalScore);
                 scoreSaved = true;
             }
 
