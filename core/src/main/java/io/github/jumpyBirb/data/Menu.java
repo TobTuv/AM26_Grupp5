@@ -9,9 +9,14 @@ import io.github.jumpyBirb.game.GameState;
 public class Menu {
 
     private int menuIndex = 0;
-
-    private final String[] items = { "Start", "High Score", "Settings" };
+    private final String[] items;
+    private GameState[] states;
     private GameState nextState = null;
+
+    public Menu(String[] items, GameState[] states) {
+        this.items = items;
+        this.states = states;
+    }
 
     public void update() {
         handleInput();
@@ -46,16 +51,21 @@ public class Menu {
     }
 
     private void select() {
-        switch (menuIndex) {
-            case 0 -> nextState = GameState.RUNNING;
-            case 1 -> nextState = GameState.HIGH_SCORE;
-            case 2 -> nextState = GameState.SETTINGS;
-        }
+        nextState = states[menuIndex];
     }
 
     public void render(SpriteBatch batch, BitmapFont font) {
         float startX = 100;
         float startY = Gdx.graphics.getHeight() - 200;
+        float lineHeight = 60;
+
+        for (int i = 0; i < items.length; i++) {
+            String text = (i == menuIndex) ? "> " + items[i] : items[i];
+            font.draw(batch, text, startX, startY - i * lineHeight);
+        }
+    }
+
+    public void render(SpriteBatch batch, BitmapFont font, float startX, float startY) {
         float lineHeight = 60;
 
         for (int i = 0; i < items.length; i++) {
