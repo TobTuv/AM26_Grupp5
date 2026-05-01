@@ -79,7 +79,7 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Viewport viewport;
 
-    private static final float GRAVITY = 25f;
+    private static final float GRAVITY = 30f;
     private static final float JUMP_FORCE = 6.0f;
     private static final float PLAYER_START_X = 3f;
     private static final float PLAYER_START_Y = 4.5f;
