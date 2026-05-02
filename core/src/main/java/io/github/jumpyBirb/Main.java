@@ -276,7 +276,7 @@ public class Main extends ApplicationAdapter {
             }
             case SETTINGS -> {
                 batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                settings.render(batch, font);
+                settings.render(batch, font, music, sound);
             }
         }
 
@@ -415,7 +415,7 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            settings.render(batch, font);
+            settings.render(batch, font, music, sound);
 
             batch.end();
 
