@@ -15,9 +15,9 @@ public class Highscore {
 
     public static class Entry {
         public String name;
-        public int score;
+        public long score;
 
-        public Entry(String name, int score) {
+        public Entry(String name, long score) {
             this.name = name;
             this.score = score;
         }
@@ -56,7 +56,7 @@ public class Highscore {
                 String[] parts = line.split(";");
                 if (parts.length == 2) {
                     String name = parts[0];
-                    int score = Integer.parseInt(parts[1]);
+                    long score = Long.parseLong(parts[1].trim());
                     list.add(new Entry(name, score));
                 }
             }
@@ -68,12 +68,12 @@ public class Highscore {
         return list;
     }
 
-    public static void save(String name, int score) {
+    public static void save(String name, long score) {
         List<Entry> list = load();
         list.add(new Entry(name, score));
 
         // Sortera listan fallande
-        list.sort(Comparator.comparingInt(e -> -e.score));
+        list.sort(Comparator.comparingLong(e -> -e.score));
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(getFile()))) {
             for (Entry e : list) {
@@ -87,7 +87,7 @@ public class Highscore {
 
     public static List<Entry> top(int count) {
         List<Entry> list = load();
-        list.sort(Comparator.comparingInt(e -> -e.score));
+        list.sort(Comparator.comparingLong(e -> -e.score));
 
         if (list.size() > count)
             return list.subList(0, count);

@@ -1,6 +1,7 @@
 package io.github.jumpyBirb.game;
 
 import com.badlogic.gdx.graphics.Texture;
+import io.github.jumpyBirb.Main;
 import io.github.jumpyBirb.data.Obstacle;
 import org.junit.jupiter.api.Test;
 
@@ -59,4 +60,5 @@ class ObstacleManagerTest {
 
         assertFalse(result);
     }
+
 }
