@@ -130,7 +130,7 @@ public record GameRenderer(SpriteBatch batch,
             float podWidth,
             float podHeight) {
         // RENDERER SKA INTE RITA I MENY, HIGH_SCORE, SETTINGS
-        if (gameState != GameState.RUNNING && gameState != GameState.GAME_OVER) {
+        if (gameState != GameState.RUNNING && gameState != GameState.DYING && gameState != GameState.GAME_OVER) {
             return;
         }
         // Clear the screen before drawing the next frame.
@@ -216,8 +216,16 @@ public record GameRenderer(SpriteBatch batch,
         // }
 
         // Draw the player.
-        Texture playerTexture = getPlayerTexture(player);
-        float rotation = getPlayerRotation(player);
+        Texture playerTexture;
+        float rotation;
+
+        if (gameState == GameState.DYING) {
+            playerTexture = assets.playerCrash;
+          rotation = getPlayerRotation(player);
+                   } else {
+            playerTexture = getPlayerTexture(player);
+            rotation = getPlayerRotation(player);
+        }
 
         batch.draw(
             playerTexture,

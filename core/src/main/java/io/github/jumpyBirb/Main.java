@@ -113,6 +113,8 @@ public class Main extends ApplicationAdapter {
     private Settings settings;
     private String playerName = "Player";
     private boolean scoreSaved = false;
+    private float dyingTimer = 0f;
+    private static final float DYING_DURATION = 1.2f;
     private boolean sound = true;
     private boolean music = true;
 
@@ -272,7 +274,7 @@ public class Main extends ApplicationAdapter {
 
         batch.end();
 
-        if (gameState == GameState.RUNNING) {
+        if (gameState == GameState.RUNNING || gameState == GameState.DYING) {
             renderer.draw(
                     background,
                     player,
@@ -504,6 +506,26 @@ public class Main extends ApplicationAdapter {
             return;
         }
 
+        if (gameState == GameState.DYING) {
+            dyingTimer += delta;
+
+            background.update(delta);
+
+            if (dyingTimer >= DYING_DURATION) {
+
+                if (!scoreSaved) {
+                    Highscore.save(playerName, (int) finalScore);
+                    scoreSaved = true;
+                }
+
+                gameState = GameState.GAME_OVER;
+                inputGate.block(1f);
+                audio.playMenuMusic();
+            }
+
+            return;
+        }
+
         if (gameState == GameState.GAME_OVER) {
             if (inputGate.canAcceptInput() && menuConfirmPressed()) {
                 gameState = GameState.MENU;
@@ -644,27 +666,29 @@ public class Main extends ApplicationAdapter {
         audio.playGameMusic();
     }
 
+    private double getFinalScore() {
+        return score.getScore();
+    }
+
     /**
      * Ends the current run and switches the game to GAME_OVER state.
      *
      * <p>
      * The current score is saved so it can still be displayed after the run ends.
      */
+
+
     private void gameOver() {
-        if (gameState != GameState.GAME_OVER) {
+        if (gameState != GameState.DYING && gameState != GameState.GAME_OVER) {
+
             score.stopScore();
-            finalScore = score.getScore();
+            finalScore = getFinalScore();
 
-            if (!scoreSaved) {
-                Highscore.save(playerName, (int) finalScore);
-                scoreSaved = true;
-            }
+            gameState = GameState.DYING;
+            dyingTimer = 0f;
 
-            gameState = GameState.GAME_OVER;
-            inputGate.block(1f);
             audio.stopJump();
             audio.playCrash();
-            audio.playMenuMusic();
         }
     }
 
