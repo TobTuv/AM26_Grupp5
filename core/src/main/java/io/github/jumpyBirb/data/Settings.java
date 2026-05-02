@@ -55,13 +55,21 @@ public class Settings {
         }
     }
 
-    public void render(SpriteBatch batch, BitmapFont font) {
+    public void render(SpriteBatch batch, BitmapFont font, boolean music, boolean sound) {
         float startX = 100;
         float startY = Gdx.graphics.getHeight() - 200;
         float lineHeight = 60;
 
-        for (int i = 0; i < items.length; i++) {
-            String text = (i == settingsIndex) ? "> " + items[i] : items[i];
+        String[] displayItems = {
+            "Reset Score",
+            "Music: " + (music ? "ON" : "OFF"),
+            "Sound: " + (sound ? "ON" : "OFF"),
+            "CREDITS",
+            "MENU"
+        };
+
+        for (int i = 0; i < displayItems.length; i++) {
+            String text = (i == settingsIndex) ? "> " + displayItems[i] : displayItems[i];
             font.draw(batch, text, startX, startY - i * lineHeight);
         }
     }
