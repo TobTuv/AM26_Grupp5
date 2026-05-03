@@ -10,7 +10,7 @@ public class Settings {
 
     private int settingsIndex = 0;
 
-    private final String[] items = { "Reset Score", "Music ON/OFF", "Sound ON/OFF", "CREDITS", "MENU" };
+    private final String[] items = { "Reset High-Score", "Music ON/OFF", "Sound ON/OFF", "CREDITS", "MENU", "Change name" };
     private GameState nextState = null;
 
     public void update() {
@@ -51,7 +51,8 @@ public class Settings {
             case 1 -> nextState = GameState.MUSIC;
             case 2 -> nextState = GameState.SOUND;
             case 3 -> nextState = GameState.CREDITS;
-            case 4 -> nextState = GameState.MENU;
+            case 4 -> nextState = GameState.NAME_INPUT;
+            case 5 -> nextState = GameState.MENU;
         }
     }
 
@@ -61,10 +62,11 @@ public class Settings {
         float lineHeight = 60;
 
         String[] displayItems = {
-            "Reset Score",
+            "Reset High-Score",
             "Music: " + (music ? "ON" : "OFF"),
             "Sound: " + (sound ? "ON" : "OFF"),
             "CREDITS",
+            "Change Name",
             "MENU"
         };
 
