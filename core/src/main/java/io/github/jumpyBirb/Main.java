@@ -12,11 +12,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
-import io.github.jumpyBirb.data.Highscore;
-import io.github.jumpyBirb.data.Menu;
-import io.github.jumpyBirb.data.Player;
-import io.github.jumpyBirb.data.Score;
-import io.github.jumpyBirb.data.Settings;
+import io.github.jumpyBirb.data.*;
 import io.github.jumpyBirb.data.intro.Intro;
 import io.github.jumpyBirb.game.*;
 import io.github.jumpyBirb.graphics.GameAssets;
@@ -116,6 +112,7 @@ public class Main extends ApplicationAdapter {
     private Menu menu;
     private Menu gameOverMenu;
     private Settings settings;
+    private Credits credits;
     private String playerName = "Player";
     private boolean scoreSaved = false;
     private float dyingTimer = 0f;
@@ -170,6 +167,8 @@ public class Main extends ApplicationAdapter {
             new String[]{"Start", "High Score", "Settings"},
             new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS}
         );
+        credits = new Credits();
+
         gameOverMenu = new Menu(
             new String[]{"Play Again", "Settings"},
             new GameState[]{GameState.RUNNING, GameState.SETTINGS}
@@ -456,6 +455,24 @@ public class Main extends ApplicationAdapter {
 
         }
 
+        if (gameState == GameState.CREDITS) {
+            batch.setProjectionMatrix(
+                new Matrix4().setToOrtho2D(
+                    0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()));
+
+            batch.begin();
+
+            batch.draw(assets.menuBackground, 0, 0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight());
+
+            credits.render(batch, font);
+
+            batch.end();
+        }
+
     }
 
     /**
@@ -636,7 +653,14 @@ public class Main extends ApplicationAdapter {
         }
 
         if (gameState == GameState.CREDITS) {
-            gameState = GameState.SETTINGS;
+            credits.update();
+
+            GameState next = credits.consumeNextState();
+            if (next != null) {
+                gameState = next;
+                inputGate.block(0.5f);
+            }
+
             return;
         }
 
