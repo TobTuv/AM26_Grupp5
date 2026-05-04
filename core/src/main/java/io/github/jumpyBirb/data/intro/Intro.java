@@ -62,6 +62,11 @@ public class Intro {
                 phaseTimer += delta;
                 blinkTimer += delta;
 
+                if (text.isFinished()) {
+                    phase = IntroPhase.WAIT_AFTER_TEXT;
+                    phaseTimer = 0f;
+                }
+
             }
 
             case WAIT_AFTER_TEXT -> {
