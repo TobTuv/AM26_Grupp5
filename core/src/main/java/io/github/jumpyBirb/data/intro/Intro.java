@@ -45,7 +45,7 @@ public class Intro {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter =
             new FreeTypeFontGenerator.FreeTypeFontParameter();
 
-        parameter.size = 20;
+        parameter.size = 40;
         parameter.color = Color.WHITE;
 
         font = generator.generateFont(parameter);
@@ -84,7 +84,7 @@ public class Intro {
             }
 
             case FINISHED -> {
-                // inget
+
             }
         }
     }
@@ -160,7 +160,8 @@ public class Intro {
             float textX = Gdx.graphics.getWidth() / 2f - layout.width / 2f;
             float textY = 100;
 
-            float alpha = (float)Math.abs(Math.sin(blinkTimer * 3));
+            float blinkTime = phaseTimer - LOGO_SKIP_DELAY;
+            float alpha = (float)Math.abs(Math.sin(blinkTime * 3));
 
             font.setColor(1, 1, 1, alpha);
             font.draw(batch, msg, textX, textY);
