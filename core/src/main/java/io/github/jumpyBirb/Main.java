@@ -531,6 +531,11 @@ public class Main extends ApplicationAdapter {
 
             GameState next = settings.consumeNextState();
             if (next != null) {
+
+                if (next == GameState.CREDITS) {
+                    credits.reset();
+                }
+
                 gameState = next;
             }
             return;
