@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.jumpyBirb.game.GameState;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 public class Credits {
 
     private GameState nextState = null;
@@ -15,6 +18,8 @@ public class Credits {
     private final BitmapFont font;
     private final GlyphLayout layout = new GlyphLayout();
     private float scrollY;
+    private static final float LINE_HEIGHT = 50f;
+    private static final float END_Y = 500f;
     private static final float SCROLL_SPEED = 40f;
 
     public Credits(BitmapFont font) {
@@ -25,20 +30,21 @@ public class Credits {
         scrollY = -lines.length * 50;
 
         this.font = font;
+
+        Collections.reverse(Arrays.asList(lines));
     }
 
     public void reset() {
-        scrollY = -lines.length * 50;
+        scrollY = -lines.length * LINE_HEIGHT;
     }
 
     public void update() {
         float delta = Gdx.graphics.getDeltaTime();
+
         scrollY += SCROLL_SPEED * delta;
 
-        float totalHeight = lines.length * 50;
-
-        if (scrollY > Gdx.graphics.getHeight() + totalHeight) {
-            scrollY = Gdx.graphics.getHeight() + totalHeight;
+        if (scrollY > END_Y) {
+            scrollY = END_Y;
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
@@ -56,18 +62,15 @@ public class Credits {
     }
 
     public void render(SpriteBatch batch) {
-        float x = Gdx.graphics.getWidth() / 2f; // center
-        float lineHeight = 50;
+        float x = 100;
 
         for (int i = 0; i < lines.length; i++) {
-            float y = scrollY + i * lineHeight;
-
-            layout.setText(font, lines[i]);
-            float centeredX = x - layout.width / 2f;
-
-            font.draw(batch, lines[i], centeredX, y);
+            float y = scrollY + i * LINE_HEIGHT;
+            font.draw(batch, lines[i], x, y);
         }
 
-        font.draw(batch, "Press SPACE to go back", 100, 80);
+        layout.setText(font, "Press SPACE to go back");
+        float xUiText = Gdx.graphics.getWidth() - layout.width - 50;
+        font.draw(batch, "Press SPACE to go back", xUiText, 80);
     }
 }
