@@ -102,7 +102,7 @@ public class Main extends ApplicationAdapter {
     private BitmapFont font;
     private GameAssets assets;
     private BitmapFont helpFont;
-
+    private float startBlinkTimer = 0f;
 
     private Stage nameStage;
     private TextField nameField;
@@ -187,7 +187,7 @@ public class Main extends ApplicationAdapter {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter =
             new FreeTypeFontGenerator.FreeTypeFontParameter();
 
-        parameter.size = 32; // justera storlek
+        parameter.size = 60;
 
         helpFont = generator.generateFont(parameter);
         generator.dispose();
@@ -322,7 +322,11 @@ public class Main extends ApplicationAdapter {
             float x = Gdx.graphics.getWidth() - layout.width - 50;
             float y = Gdx.graphics.getHeight() / 2f;
 
+            float alpha = (float)Math.abs(Math.sin(startBlinkTimer * 3));
+
+            helpFont.setColor(1, 1, 1, alpha);
             helpFont.draw(batch, msg, x, y);
+            helpFont.setColor(Color.WHITE);
 
             batch.end();
         }
@@ -551,6 +555,10 @@ public class Main extends ApplicationAdapter {
                 audio.playIntroMusic();
             }
             return;
+        }
+
+        if (gameState == GameState.RUNNING && !gameHasStarted) {
+            startBlinkTimer += delta;
         }
 
         if (gameState == GameState.HIGH_SCORE) {

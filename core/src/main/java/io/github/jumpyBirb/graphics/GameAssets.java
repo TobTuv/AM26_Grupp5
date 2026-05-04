@@ -137,6 +137,7 @@ public class GameAssets {
         gameOverBackground.dispose();
         waitingToStartBackground.dispose();
         logo.dispose();
+        logoText.dispose();
         for (Texture t : bottomObstacles) {
             t.dispose();
         }
