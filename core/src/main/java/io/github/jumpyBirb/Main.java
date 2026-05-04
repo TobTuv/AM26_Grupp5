@@ -179,15 +179,15 @@ public class Main extends ApplicationAdapter {
 
         settings = new Settings(assets.menuFont);
         menu = new Menu(
-            new String[]{"Start", "High Score", "Settings"},
-            new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS},
+            new String[]{"Start", "High Score", "Settings", "Exit Game"},
+            new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS, GameState.EXIT},
             assets.menuFont
         );
 
 
         gameOverMenu = new Menu(
-            new String[]{"Play Again", "Settings"},
-            new GameState[]{GameState.RUNNING, GameState.SETTINGS},
+            new String[]{"Play Again", "Settings", "Exit Game"},
+            new GameState[]{GameState.RUNNING, GameState.SETTINGS, GameState.EXIT},
             assets.menuFont
         );
         camera = new OrthographicCamera();
@@ -509,6 +509,11 @@ public class Main extends ApplicationAdapter {
 
             return;
 
+        }
+
+        if (gameState == GameState.EXIT) {
+            Gdx.app.exit();
+            return;
         }
 
         if (gameState == GameState.MENU) {
