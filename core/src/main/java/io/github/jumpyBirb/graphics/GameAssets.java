@@ -1,8 +1,11 @@
 package io.github.jumpyBirb.graphics;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 import java.util.List;
 
@@ -69,6 +72,11 @@ public class GameAssets {
 
     public final Texture logoText = new Texture("neonRunnerTextTwoRows.png");
 
+    public final BitmapFont creditsFont;
+    public final BitmapFont introFont;
+    public final BitmapFont uiFont;
+    public final BitmapFont gameUiFont;
+
     public final List<Texture> bottomObstacles = List.of(
         new Texture("retrowave_skyscrapers_bottom-01.png"),
         new Texture("retrowave_skyscrapers_bottom-02.png"),
@@ -109,6 +117,26 @@ public class GameAssets {
         introMusic.setVolume(0.6f);
         menuMusic.setVolume(0.6f);
         gameMusic.setVolume(0.6f);
+
+        FreeTypeFontGenerator generator =
+            new FreeTypeFontGenerator(Gdx.files.internal("fonts/bgothm.ttf"));
+
+        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        param.size = 40;
+        creditsFont = generator.generateFont(param);
+
+        param.size = 40;
+        introFont = generator.generateFont(param);
+
+        param.size = 30;
+        uiFont = generator.generateFont(param);
+
+        param.size = 50;
+        gameUiFont = generator.generateFont(param);
+
+        generator.dispose();
+
     }
 
 
@@ -138,6 +166,10 @@ public class GameAssets {
         waitingToStartBackground.dispose();
         logo.dispose();
         logoText.dispose();
+        creditsFont.dispose();
+        introFont.dispose();
+        uiFont.dispose();
+
         for (Texture t : bottomObstacles) {
             t.dispose();
         }

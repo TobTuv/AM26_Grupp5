@@ -5,7 +5,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.Align;
 import io.github.jumpyBirb.game.InputGate;
 
@@ -22,7 +21,6 @@ public class Intro {
     private float blinkTimer = 0f;
     private boolean waitingForSecondClick = false;
 
-
     private static final float WAIT_AFTER_TEXT_TIME = 1f;
     private static final float LOGO_TIME = 20f;
     private static final float LOGO_GROW_TIME = 1f;
@@ -30,26 +28,15 @@ public class Intro {
 
     private final InputGate inputGate = new InputGate();
 
-    public Intro(Texture logoText) {
+    public Intro(Texture logoText, BitmapFont font) {
         FileHandle file = Gdx.files.internal("intro.txt");
         String content = file.readString();
 
         this.logoText = logoText;
+        this.font = font;
 
         text = new TextWriter(content, 0.04f);
         layout = new GlyphLayout();
-
-        FreeTypeFontGenerator generator =
-            new FreeTypeFontGenerator(Gdx.files.internal("fonts/bgothm.ttf"));
-
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter =
-            new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        parameter.size = 40;
-        parameter.color = Color.WHITE;
-
-        font = generator.generateFont(parameter);
-        generator.dispose();
     }
 
     public void update(float delta) {
@@ -208,10 +195,6 @@ public class Intro {
     }
     public boolean isFinished() {
         return phase == IntroPhase.FINISHED;
-    }
-
-    public void dispose() {
-        font.dispose();
     }
 
     private enum IntroPhase {
