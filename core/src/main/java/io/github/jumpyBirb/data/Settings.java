@@ -10,7 +10,7 @@ public class Settings {
 
     private int settingsIndex = 0;
 
-    private final String[] items = { "Reset High-Score", "Music ON/OFF", "Sound ON/OFF", "CREDITS", "MENU", "Change name" };
+    private final String[] items = { "Reset High-Score", "Music ON/OFF", "Sound ON/OFF", "CREDITS", "Change name", "MENU" };
     private GameState nextState = null;
 
     public void update() {
