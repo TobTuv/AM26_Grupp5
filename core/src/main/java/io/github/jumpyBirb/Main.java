@@ -1,6 +1,8 @@
 package io.github.jumpyBirb;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -99,6 +101,8 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont font;
     private GameAssets assets;
+    private BitmapFont helpFont;
+
 
     private Stage nameStage;
     private TextField nameField;
@@ -176,6 +180,17 @@ public class Main extends ApplicationAdapter {
 
         camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
         camera.update();
+
+        FreeTypeFontGenerator generator =
+            new FreeTypeFontGenerator(Gdx.files.internal("fonts/bgothm.ttf"));
+
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter =
+            new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        parameter.size = 32; // justera storlek
+
+        helpFont = generator.generateFont(parameter);
+        generator.dispose();
 
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -294,6 +309,22 @@ public class Main extends ApplicationAdapter {
                     podY,
                     POD_WIDTH,
                     POD_HEIGHT);
+        }
+
+        if (gameState == GameState.RUNNING && !gameHasStarted) {
+            batch.begin();
+
+            String msg = "Press SPACE to begin";
+
+            GlyphLayout layout = new GlyphLayout();
+            layout.setText(helpFont, msg);
+
+            float x = Gdx.graphics.getWidth() - layout.width - 50;
+            float y = Gdx.graphics.getHeight() / 2f;
+
+            helpFont.draw(batch, msg, x, y);
+
+            batch.end();
         }
 
         if (gameState == GameState.NAME_INPUT) {
