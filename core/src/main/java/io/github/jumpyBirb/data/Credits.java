@@ -20,7 +20,7 @@ public class Credits {
     private float scrollY;
     private static final float LINE_HEIGHT = 50f;
     private static final float END_Y = 500f;
-    private static final float SCROLL_SPEED = 40f;
+    private static final float SCROLL_SPEED = 80f;
 
     public Credits(BitmapFont font) {
         FileHandle file = Gdx.files.internal("credits.txt");
