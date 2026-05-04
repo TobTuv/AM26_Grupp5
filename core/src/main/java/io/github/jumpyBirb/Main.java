@@ -252,8 +252,6 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight()));
 
-        //  font.getData().setScale(2f);
-        // font.setColor(Color.WHITE);
 
         batch.begin();
 
