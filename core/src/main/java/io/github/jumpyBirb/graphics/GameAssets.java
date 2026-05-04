@@ -29,7 +29,7 @@ import java.util.List;
  * This allows obstacles to be randomly assigned different appearances
  * at spawn time, improving visual variety without changing game logic.
  *
-* <p>Design note:
+ * <p>Design note:
  * Separating textures into lists allows systems like ObstacleManager
  * to perform random selection without hardcoding assets in gameplay logic.
  *
@@ -68,6 +68,7 @@ public class GameAssets {
     public final Texture logo = new Texture("neon_rider_logo_hd2.png");
     public final Texture menuBackgroundNoBike = new Texture("menuBackground_empty.jpg");
     public final Texture gameOverBackground = new Texture("GameOverBackground.jpg");
+    public final Texture startBackground = new Texture("startBackground.jpg");
     public final Texture waitingToStartBackground = new Texture("menuBackgroundWaitingToStart.png");
 
     public final Texture logoText = new Texture("neonRunnerTextTwoRows.png");
@@ -76,6 +77,7 @@ public class GameAssets {
     public final BitmapFont introFont;
     public final BitmapFont uiFont;
     public final BitmapFont gameUiFont;
+    public final BitmapFont menuFont;
 
     public final List<Texture> bottomObstacles = List.of(
         new Texture("retrowave_skyscrapers_bottom-01.png"),
@@ -118,24 +120,36 @@ public class GameAssets {
         menuMusic.setVolume(0.6f);
         gameMusic.setVolume(0.6f);
 
-        FreeTypeFontGenerator generator =
+        FreeTypeFontGenerator uiGenerator =
             new FreeTypeFontGenerator(Gdx.files.internal("fonts/bgothm.ttf"));
 
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
         param.size = 40;
-        creditsFont = generator.generateFont(param);
+        creditsFont = uiGenerator.generateFont(param);
 
         param.size = 40;
-        introFont = generator.generateFont(param);
+        introFont = uiGenerator.generateFont(param);
 
         param.size = 30;
-        uiFont = generator.generateFont(param);
+        uiFont = uiGenerator.generateFont(param);
 
         param.size = 50;
-        gameUiFont = generator.generateFont(param);
+        gameUiFont = uiGenerator.generateFont(param);
 
-        generator.dispose();
+        uiGenerator.dispose();
+
+
+        FreeTypeFontGenerator menuGenerator =
+            new FreeTypeFontGenerator(Gdx.files.internal("fonts/superchargesemistraight.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter menuParam =
+            new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        menuParam.size = 65;
+        menuFont = menuGenerator.generateFont(menuParam);
+
+        menuGenerator.dispose();
+
 
     }
 
@@ -169,6 +183,9 @@ public class GameAssets {
         creditsFont.dispose();
         introFont.dispose();
         uiFont.dispose();
+        gameUiFont.dispose();
+        menuFont.dispose();
+        startBackground.dispose();
 
         for (Texture t : bottomObstacles) {
             t.dispose();

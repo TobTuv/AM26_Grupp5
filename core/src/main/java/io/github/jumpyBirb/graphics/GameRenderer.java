@@ -2,7 +2,6 @@ package io.github.jumpyBirb.graphics;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.jumpyBirb.data.Obstacle;
@@ -13,7 +12,6 @@ import io.github.jumpyBirb.game.ObstaclePair;
 import io.github.jumpyBirb.game.ParallaxBackground;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Matrix4;
 
 import java.util.List;
@@ -62,11 +60,10 @@ import java.util.List;
  * or how obstacles move.
  */
 public record GameRenderer(SpriteBatch batch,
-        BitmapFont font,
-        GameAssets assets,
-        OrthographicCamera camera,
-        float worldWidth,
-        float worldHeight) {
+                           GameAssets assets,
+                           OrthographicCamera camera,
+                           float worldWidth,
+                           float worldHeight) {
 
     private Texture getPlayerTexture(Player player) {
         float velocity = player.getVelocity();
@@ -119,16 +116,16 @@ public record GameRenderer(SpriteBatch batch,
      * @param podHeight  height of the starting platform
      */
     public void draw(
-            ParallaxBackground background,
-            Player player,
-            List<ObstaclePair> pairs,
-            Score score,
-            GameState gameState,
-            long finalScore,
-            float podX,
-            float podY,
-            float podWidth,
-            float podHeight) {
+        ParallaxBackground background,
+        Player player,
+        List<ObstaclePair> pairs,
+        Score score,
+        GameState gameState,
+        long finalScore,
+        float podX,
+        float podY,
+        float podWidth,
+        float podHeight) {
         // RENDERER SKA INTE RITA I MENY, HIGH_SCORE, SETTINGS
         if (gameState != GameState.RUNNING && gameState != GameState.DYING && gameState != GameState.GAME_OVER) {
             return;
@@ -157,18 +154,18 @@ public record GameRenderer(SpriteBatch batch,
             Obstacle top = pair.getTop();
 
             batch.draw(
-                    bottom.getTexture(),
-                    bottom.getX(),
-                    bottom.getY(),
-                    bottom.getWidth(),
-                    bottom.getHeight());
+                bottom.getTexture(),
+                bottom.getX(),
+                bottom.getY(),
+                bottom.getWidth(),
+                bottom.getHeight());
 
             batch.draw(
-                    top.getTexture(),
-                    top.getX(),
-                    top.getY(),
-                    top.getWidth(),
-                    top.getHeight());
+                top.getTexture(),
+                top.getX(),
+                top.getY(),
+                top.getWidth(),
+                top.getHeight());
         }
 
 
@@ -178,8 +175,8 @@ public record GameRenderer(SpriteBatch batch,
 
         if (gameState == GameState.DYING) {
             playerTexture = assets.playerCrash;
-          rotation = getPlayerRotation(player);
-                   } else {
+            rotation = getPlayerRotation(player);
+        } else {
             playerTexture = getPlayerTexture(player);
             rotation = getPlayerRotation(player);
         }
@@ -209,30 +206,29 @@ public record GameRenderer(SpriteBatch batch,
         //
 
         batch.setProjectionMatrix(
-                new Matrix4().setToOrtho2D(
-                        0, 0,
-                        Gdx.graphics.getWidth(),
-                        Gdx.graphics.getHeight()));
+            new Matrix4().setToOrtho2D(
+                0, 0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight()));
 
         // Start new batch for score
         batch.begin();
 
         // Set size and color on font
-        font.setUseIntegerPositions(false);
-        font.setColor(Color.WHITE);
-        font.getData().setScale(2f);
+        assets.gameUiFont.setUseIntegerPositions(false);
+        assets.gameUiFont.setColor(Color.WHITE);
 
         // Draw the current score near the top of the screen.
-        font.draw(batch, "Score: " + score.getVisualScore(), 250,
-                com.badlogic.gdx.Gdx.graphics.getHeight() - 20);
+        assets.gameUiFont.draw(batch, "Score: " + score.getVisualScore(),
+            250, Gdx.graphics.getHeight() - 20);
+
 
         // If the game is over, draw a game over message and final score.
         if (gameState == GameState.GAME_OVER) {
-            font.getData().setScale(2f);
-            font.draw(batch,
-                    "GAME OVER!\nYour score: " + finalScore,
-                    com.badlogic.gdx.Gdx.graphics.getWidth() / 2f - 120,
-                    com.badlogic.gdx.Gdx.graphics.getHeight() / 2f + 40);
+            assets.uiFont.draw(batch,
+                "GAME OVER!\nYour score: " + finalScore,
+                Gdx.graphics.getWidth() / 2f - 120,
+                Gdx.graphics.getHeight() / 2f + 40);
         }
 
         // End the score drawing session.

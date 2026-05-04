@@ -9,9 +9,14 @@ import io.github.jumpyBirb.game.GameState;
 public class Settings {
 
     private int settingsIndex = 0;
+    private final BitmapFont font;
 
     private final String[] items = { "Reset High-Score", "Music ON/OFF", "Sound ON/OFF", "CREDITS", "Change name", "MENU" };
     private GameState nextState = null;
+
+    public Settings(BitmapFont font) {
+        this.font = font;
+    }
 
     public void update() {
         handleInput();
@@ -56,10 +61,10 @@ public class Settings {
         }
     }
 
-    public void render(SpriteBatch batch, BitmapFont font, boolean music, boolean sound) {
+    public void render(SpriteBatch batch, boolean music, boolean sound) {
         float startX = 100;
         float startY = Gdx.graphics.getHeight() - 200;
-        float lineHeight = 60;
+        float lineHeight = font.getLineHeight() + 10;
 
         String[] displayItems = {
             "Reset High-Score",
