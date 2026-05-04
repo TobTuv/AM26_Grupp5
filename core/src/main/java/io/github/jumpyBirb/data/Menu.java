@@ -12,10 +12,12 @@ public class Menu {
     private final String[] items;
     private GameState[] states;
     private GameState nextState = null;
+    private final BitmapFont font;
 
-    public Menu(String[] items, GameState[] states) {
+    public Menu(String[] items, GameState[] states, BitmapFont font) {
         this.items = items;
         this.states = states;
+        this.font = font;
     }
 
     public void update() {
@@ -54,10 +56,10 @@ public class Menu {
         nextState = states[menuIndex];
     }
 
-    public void render(SpriteBatch batch, BitmapFont font) {
+    public void render(SpriteBatch batch) {
         float startX = 100;
         float startY = Gdx.graphics.getHeight() - 200;
-        float lineHeight = 60;
+        float lineHeight = font.getLineHeight() + 10;
 
         for (int i = 0; i < items.length; i++) {
             String text = (i == menuIndex) ? "> " + items[i] : items[i];
@@ -65,8 +67,8 @@ public class Menu {
         }
     }
 
-    public void render(SpriteBatch batch, BitmapFont font, float startX, float startY) {
-        float lineHeight = 60;
+    public void render(SpriteBatch batch, float startX, float startY) {
+        float lineHeight = font.getLineHeight() + 10;
 
         for (int i = 0; i < items.length; i++) {
             String text = (i == menuIndex) ? "> " + items[i] : items[i];

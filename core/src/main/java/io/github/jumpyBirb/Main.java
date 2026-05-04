@@ -94,7 +94,8 @@ public class Main extends ApplicationAdapter {
     private static final float MIN_OBSTACLE_HEIGHT = 4.5f;
 
     private SpriteBatch batch;
-    private BitmapFont font;
+    private BitmapFont uiFont;
+    private BitmapFont gameUiFont;
     private GameAssets assets;
     private float startBlinkTimer = 0f;
 
@@ -161,16 +162,24 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
 
-        settings = new Settings();
+        batch = new SpriteBatch();
+        assets = new GameAssets();
+
+        uiFont = assets.uiFont;
+        gameUiFont = assets.gameUiFont;
+
+        settings = new Settings(assets.menuFont);
         menu = new Menu(
             new String[]{"Start", "High Score", "Settings"},
-            new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS}
+            new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS},
+            assets.menuFont
         );
 
 
         gameOverMenu = new Menu(
             new String[]{"Play Again", "Settings"},
-            new GameState[]{GameState.RUNNING, GameState.SETTINGS}
+            new GameState[]{GameState.RUNNING, GameState.SETTINGS},
+            assets.menuFont
         );
         camera = new OrthographicCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
@@ -178,12 +187,6 @@ public class Main extends ApplicationAdapter {
 
         camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
         camera.update();
-
-        batch = new SpriteBatch();
-        assets = new GameAssets();
-
-        font = new BitmapFont();
-        font.getData().setScale(0.03f);
 
         credits = new Credits(assets.creditsFont);
         intro = new Intro(assets.logoText, assets.introFont);
@@ -208,7 +211,7 @@ public class Main extends ApplicationAdapter {
         screenHeight = WORLD_HEIGHT;
         ceiling = WORLD_HEIGHT;
 
-        renderer = new GameRenderer(batch, font, assets, camera, screenWidth, screenHeight);
+        renderer = new GameRenderer(batch, assets, camera, screenWidth, screenHeight);
         player = new Player(PLAYER_START_X, PLAYER_START_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
         score = new Score();
         obstacleManager = new ObstacleManager(
@@ -249,8 +252,6 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight()));
 
-        font.getData().setScale(2f);
-        font.setColor(Color.WHITE);
 
         batch.begin();
 
@@ -275,13 +276,15 @@ public class Main extends ApplicationAdapter {
                 intro.render(batch);
             }
 
+
             case START, MENU -> {
                 batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                menu.render(batch, font);
+                menu.render(batch);
             }
+
             case SETTINGS -> {
                 batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                settings.render(batch, font, music, sound);
+                settings.render(batch, music, sound);
             }
         }
 
@@ -331,7 +334,7 @@ public class Main extends ApplicationAdapter {
                     Gdx.graphics.getHeight()));
 
             batch.begin();
-            batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            batch.draw(assets.startBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             batch.end();
 
             Gdx.input.setInputProcessor(nameStage);
@@ -340,10 +343,10 @@ public class Main extends ApplicationAdapter {
             nameStage.draw();
 
             batch.begin();
-            font.draw(batch, "Enter your name:",
+            uiFont.draw(batch, "Enter your name:",
                 Gdx.graphics.getWidth() / 2f - 150,
                 Gdx.graphics.getHeight() / 2f + 80);
-            font.draw(batch, "Press SPACE to continue",
+            uiFont.draw(batch, "Press SPACE to continue",
                 Gdx.graphics.getWidth() / 2f - 150,
                 Gdx.graphics.getHeight() / 2f - 80);
             batch.end();
@@ -367,19 +370,18 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            font.draw(batch, "HIGH SCORE", 100, 450);
-            font.draw(batch, "Your score: " + finalScore, 100, 600);
+            uiFont.draw(batch, "HIGH SCORE", 100, 450);
+            uiFont.draw(batch, "Your score: " + finalScore, 100, 600);
 
             int y = 380;
             for (Highscore.Entry e : top5) {
-                font.draw(batch, e.name + ": " + e.score, 100, y);
+                uiFont.draw(batch, e.name + ": " + e.score, 100, y);
                 y -= 40;
             }
 
 
             gameOverMenu.render(
                 batch,
-                font,
                 350, 450
             );
             batch.end();
@@ -409,18 +411,18 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            font.draw(batch, "HIGH SCORES", 100, 700);
+            uiFont.draw(batch, "HIGH SCORES", 100, 700);
 
             // Visa top 10 i menyn
             List<Highscore.Entry> top10 = Highscore.top(10);
 
             int y = 650;
             for (Highscore.Entry e : top10) {
-                font.draw(batch, e.name + ": " + e.score, 100, y);
+                uiFont.draw(batch, e.name + ": " + e.score, 100, y);
                 y -= 40;
             }
 
-            gameOverMenu.render(batch, font, 100, 100);
+            gameOverMenu.render(batch, 100, 100);
 
             batch.end();
             return;
@@ -440,7 +442,7 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            settings.render(batch, font, music, sound);
+            settings.render(batch, music, sound);
 
             batch.end();
 
