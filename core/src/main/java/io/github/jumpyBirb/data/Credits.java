@@ -56,18 +56,17 @@ public class Credits {
     }
 
     public void render(SpriteBatch batch) {
-        float x = Gdx.graphics.getWidth() / 2f; // center
+        float x = 100;
         float lineHeight = 50;
 
         for (int i = 0; i < lines.length; i++) {
             float y = scrollY + i * lineHeight;
 
-            layout.setText(font, lines[i]);
-            float centeredX = x - layout.width / 2f;
-
-            font.draw(batch, lines[i], centeredX, y);
+            font.draw(batch, lines[i], x, y);
         }
 
-        font.draw(batch, "Press SPACE to go back", 100, 80);
+        layout.setText(font, "Press SPACE to go back");
+        float xUiText = Gdx.graphics.getWidth() - layout.width - 50;
+        font.draw(batch, "Press SPACE to go back", xUiText, 80);
     }
 }
