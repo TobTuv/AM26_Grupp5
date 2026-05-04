@@ -468,7 +468,7 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            credits.render(batch, font);
+            credits.render(batch);
 
             batch.end();
         }
@@ -839,5 +839,7 @@ public class Main extends ApplicationAdapter {
         batch.dispose();
         font.dispose();
         assets.dispose();
+        credits.dispose();
+        intro.dispose();
     }
 }
