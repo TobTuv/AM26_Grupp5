@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.Align;
+import io.github.jumpyBirb.game.InputGate;
 
 public class Intro {
 
@@ -18,11 +19,16 @@ public class Intro {
 
     private IntroPhase phase = IntroPhase.TEXT;
     private float phaseTimer = 0f;
+    private float blinkTimer = 0f;
+    private boolean waitingForSecondClick = false;
+
 
     private static final float WAIT_AFTER_TEXT_TIME = 1f;
     private static final float LOGO_TIME = 20f;
     private static final float LOGO_GROW_TIME = 1f;
     private static final float LOGO_SKIP_DELAY = 3f;
+
+    private final InputGate inputGate = new InputGate();
 
     public Intro(Texture logoText) {
         FileHandle file = Gdx.files.internal("intro.txt");
@@ -47,15 +53,15 @@ public class Intro {
     }
 
     public void update(float delta) {
+        inputGate.update(delta);
+
         switch (phase) {
 
             case TEXT -> {
                 text.update(delta);
+                phaseTimer += delta;
+                blinkTimer += delta;
 
-                if (text.isFinished()) {
-                    phase = IntroPhase.WAIT_AFTER_TEXT;
-                    phaseTimer = 0f;
-                }
             }
 
             case WAIT_AFTER_TEXT -> {
@@ -64,11 +70,13 @@ public class Intro {
                 if (phaseTimer >= WAIT_AFTER_TEXT_TIME) {
                     phase = IntroPhase.LOGO;
                     phaseTimer = 0f;
+                    blinkTimer = 0f;
                 }
             }
 
             case LOGO -> {
                 phaseTimer += delta;
+                blinkTimer += delta;
 
                 if (phaseTimer >= LOGO_TIME) {
                     phase = IntroPhase.FINISHED;
@@ -105,7 +113,27 @@ public class Intro {
             true
         );
 
+        float alpha = Math.min(phaseTimer / 1.5f, 1f);
+
+        font.setColor(1, 1, 1, alpha);
         font.draw(batch, layout, x, y);
+        font.setColor(Color.WHITE);
+
+        if (waitingForSecondClick) {
+
+            String msg = "Press SPACE to skip";
+
+            layout.setText(font, msg);
+
+            float textX = Gdx.graphics.getWidth() / 2f - layout.width / 2f;
+            float textY = 60;
+
+            float blinkAlpha = Math.abs((float)Math.sin(blinkTimer * 3));
+
+            font.setColor(1, 1, 1, blinkAlpha);
+            font.draw(batch, msg, textX, textY);
+            font.setColor(Color.WHITE);
+        }
     }
 
     private void renderLogo(SpriteBatch batch) {
@@ -118,20 +146,60 @@ public class Intro {
         float width = maxWidth * progress;
         float height = maxHeight * progress;
 
-        float x = Gdx.graphics.getWidth() / 2f - width / 2f;
-        float y = Gdx.graphics.getHeight() / 2f - height / 2f;
+        float logoX = Gdx.graphics.getWidth() / 2f - width / 2f;
+        float logoY = Gdx.graphics.getHeight() / 2f - height / 2f;
 
-        batch.draw(logoText, x, y, width, height);
+        batch.draw(logoText, logoX, logoY, width, height);
+
+        if (phaseTimer >= LOGO_SKIP_DELAY) {
+
+            String msg = "Press SPACE to begin";
+
+            layout.setText(font, msg);
+
+            float textX = Gdx.graphics.getWidth() / 2f - layout.width / 2f;
+            float textY = 100;
+
+            float alpha = (float)Math.abs(Math.sin(blinkTimer * 3));
+
+            font.setColor(1, 1, 1, alpha);
+            font.draw(batch, msg, textX, textY);
+            font.setColor(Color.WHITE);
+        }
     }
 
     public void skip() {
+        if (!inputGate.canAcceptInput()) {
+            return;
+        }
+
         if (phase == IntroPhase.TEXT) {
-            text.skipToEnd();
+
+
+            if (!text.isFinished()) {
+
+                if (!waitingForSecondClick) {
+
+                    waitingForSecondClick = true;
+                    blinkTimer = 0f;
+                    inputGate.block(0.2f);
+                } else {
+
+                    text.skipToEnd();
+                    waitingForSecondClick = false;
+
+                    phase = IntroPhase.WAIT_AFTER_TEXT;
+                    phaseTimer = 0f;
+
+                    inputGate.block(0.2f);
+                }
+
+                return;
+            }
         } else if (phase == IntroPhase.LOGO && phaseTimer >= LOGO_SKIP_DELAY) {
             phase = IntroPhase.FINISHED;
         }
     }
-
     public boolean isFinished() {
         return phase == IntroPhase.FINISHED;
     }

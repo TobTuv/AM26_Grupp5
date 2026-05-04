@@ -508,17 +508,17 @@ public class Main extends ApplicationAdapter {
                 String input = nameField.getText().trim();
 
                 if (input.isEmpty()) {
-                    playerName = "Player";
-                } else {
-                    playerName = input;
+                    nameField.setMessageText("Player");
+                    return;
                 }
+
+                playerName = input;
 
                 Gdx.input.setInputProcessor(null);
                 gameState = GameState.INTRO;
                 inputGate.block(2f);
                 audio.playIntroMusic();
             }
-
             return;
         }
 
