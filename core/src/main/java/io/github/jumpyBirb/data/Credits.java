@@ -2,6 +2,7 @@ package io.github.jumpyBirb.data;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.jumpyBirb.game.GameState;
@@ -30,20 +31,9 @@ public class Credits {
         float y = Gdx.graphics.getHeight() - 180;
         float lineHeight = 50;
 
-        String[] lines = {
-            "CREDITS",
-            "",
-            "Game by:",
-            "Xxx",
-            "Prdouced ny",
-            "",
-            "Music:",
-            "Your music credits here",
-            ""
-        };
+        FileHandle file = Gdx.files.internal("intro.txt");
+        String content = file.readString();
 
-        for (int i = 0; i < lines.length; i++) {
-            font.draw(batch, lines[i], x, y - i * lineHeight);
-        }
+
     }
 }
