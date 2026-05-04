@@ -96,6 +96,7 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont uiFont;
     private BitmapFont gameUiFont;
+    private BitmapFont highScoreFont;
     private GameAssets assets;
     private float startBlinkTimer = 0f;
 
@@ -110,6 +111,7 @@ public class Main extends ApplicationAdapter {
     private GameRenderer renderer;
     private Menu menu;
     private Menu gameOverMenu;
+    private Menu highScoreMenu;
     private Settings settings;
     private Credits credits;
     private String playerName = "Player";
@@ -167,6 +169,13 @@ public class Main extends ApplicationAdapter {
 
         uiFont = assets.uiFont;
         gameUiFont = assets.gameUiFont;
+        highScoreFont = assets.highScoreFont;
+
+        highScoreMenu = new Menu(
+            new String[]{"MENU"},
+            new GameState[]{GameState.MENU},
+            assets.menuFont
+        );
 
         settings = new Settings(assets.menuFont);
         menu = new Menu(
@@ -188,7 +197,7 @@ public class Main extends ApplicationAdapter {
         camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
         camera.update();
 
-        credits = new Credits(assets.creditsFont);
+        credits = new Credits(assets.creditsFont, assets.menuFont);
         intro = new Intro(assets.logoText, assets.introFont);
         gameState = GameState.NAME_INPUT;
         inputGate.block(1f);
@@ -370,13 +379,13 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            gameUiFont.draw(batch, "HIGH SCORE", 100, 450);
-            gameUiFont.draw(batch, "Your score: " + finalScore, 100, 600);
+            highScoreFont.draw(batch, "HIGH SCORE", 100, 450);
+            highScoreFont.draw(batch, "Your score: " + finalScore, 100, 600);
 
             int y = 380;
             for (Highscore.Entry e : top5) {
-                gameUiFont.draw(batch, e.name + ": " + e.score, 100, y);
-                y -= assets.gameUiFont.getLineHeight() + 10;
+                highScoreFont.draw(batch, e.name + ": " + e.score, 100, y);
+                y -= assets.highScoreFont.getLineHeight() + 10;
             }
 
 
@@ -422,7 +431,7 @@ public class Main extends ApplicationAdapter {
                 y -= assets.gameUiFont.getLineHeight() + 10;
             }
 
-            gameOverMenu.render(batch, 500, 400);
+            highScoreMenu.render(batch, 500, 400);
 
             batch.end();
             return;
@@ -578,8 +587,13 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.HIGH_SCORE) {
 
-            if (inputGate.canAcceptInput() && menuConfirmPressed()) {
-                gameState = GameState.MENU;
+            if (inputGate.canAcceptInput()) {
+                highScoreMenu.update();
+            }
+
+            GameState next = highScoreMenu.consumeNextState();
+            if (next != null) {
+                gameState = next;
                 inputGate.block(1f);
             }
 

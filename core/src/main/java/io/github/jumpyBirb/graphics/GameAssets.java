@@ -78,6 +78,7 @@ public class GameAssets {
     public final BitmapFont uiFont;
     public final BitmapFont gameUiFont;
     public final BitmapFont menuFont;
+    public final BitmapFont highScoreFont;
 
     public final List<Texture> bottomObstacles = List.of(
         new Texture("retrowave_skyscrapers_bottom-01.png"),
@@ -136,6 +137,9 @@ public class GameAssets {
 
         param.size = 50;
         gameUiFont = uiGenerator.generateFont(param);
+
+        param.size = 30;
+        highScoreFont = uiGenerator.generateFont(param);
 
         uiGenerator.dispose();
 

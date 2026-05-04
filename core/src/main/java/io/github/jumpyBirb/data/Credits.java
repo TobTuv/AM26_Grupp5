@@ -15,21 +15,23 @@ public class Credits {
 
     private GameState nextState = null;
     private final String[] lines;
-    private final BitmapFont font;
+    private final BitmapFont creditFont;
+    private final BitmapFont menuFont;
     private final GlyphLayout layout = new GlyphLayout();
     private float scrollY;
     private static final float LINE_HEIGHT = 50f;
     private static final float END_Y = 500f;
     private static final float SCROLL_SPEED = 80f;
 
-    public Credits(BitmapFont font) {
+    public Credits(BitmapFont creditFont, BitmapFont menuFont) {
         FileHandle file = Gdx.files.internal("credits.txt");
         String content = file.readString();
 
         lines = content.split("\\R");
         scrollY = -lines.length * 50;
 
-        this.font = font;
+        this.creditFont = creditFont;
+        this.menuFont = menuFont;
 
         Collections.reverse(Arrays.asList(lines));
     }
@@ -66,11 +68,11 @@ public class Credits {
 
         for (int i = 0; i < lines.length; i++) {
             float y = scrollY + i * LINE_HEIGHT;
-            font.draw(batch, lines[i], x, y);
+            creditFont.draw(batch, lines[i], x, y);
         }
 
-        layout.setText(font, "Press SPACE to go back");
+        layout.setText(menuFont, "> SETTINGS");
         float xUiText = Gdx.graphics.getWidth() - layout.width - 50;
-        font.draw(batch, "Press SPACE to go back", xUiText, 80);
+        menuFont.draw(batch, "> SETTINGS", xUiText, 80);
     }
 }
