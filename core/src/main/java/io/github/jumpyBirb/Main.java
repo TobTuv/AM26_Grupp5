@@ -299,16 +299,16 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.RUNNING || gameState == GameState.DYING) {
             renderer.draw(
-                    background,
-                    player,
-                    obstacleManager.getPairs(),
-                    score,
-                    gameState,
-                    finalScore,
-                    podX,
-                    podY,
-                    POD_WIDTH,
-                    POD_HEIGHT);
+                background,
+                player,
+                obstacleManager.getPairs(),
+                score,
+                gameState,
+                finalScore,
+                podX,
+                podY,
+                POD_WIDTH,
+                POD_HEIGHT);
         }
 
         if (gameState == GameState.RUNNING && !gameHasStarted) {
@@ -573,8 +573,6 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.DYING) {
             dyingTimer += delta;
-
-            background.update(delta);
 
             if (dyingTimer >= DYING_DURATION) {
 
