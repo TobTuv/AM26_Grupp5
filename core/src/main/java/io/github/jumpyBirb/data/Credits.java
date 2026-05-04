@@ -31,7 +31,7 @@ public class Credits {
         float y = Gdx.graphics.getHeight() - 180;
         float lineHeight = 50;
 
-        FileHandle file = Gdx.files.internal("intro.txt");
+        FileHandle file = Gdx.files.internal("credits.txt");
         String content = file.readString();
 
 
