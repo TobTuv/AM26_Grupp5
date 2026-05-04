@@ -370,19 +370,19 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            uiFont.draw(batch, "HIGH SCORE", 100, 450);
-            uiFont.draw(batch, "Your score: " + finalScore, 100, 600);
+            gameUiFont.draw(batch, "HIGH SCORE", 100, 450);
+            gameUiFont.draw(batch, "Your score: " + finalScore, 100, 600);
 
             int y = 380;
             for (Highscore.Entry e : top5) {
-                uiFont.draw(batch, e.name + ": " + e.score, 100, y);
-                y -= 40;
+                gameUiFont.draw(batch, e.name + ": " + e.score, 100, y);
+                y -= assets.gameUiFont.getLineHeight() + 10;
             }
 
 
             gameOverMenu.render(
                 batch,
-                350, 450
+                600, 400
             );
             batch.end();
 
@@ -411,18 +411,18 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            uiFont.draw(batch, "HIGH SCORES", 100, 700);
+            gameUiFont.draw(batch, "HIGH SCORES", 100, 850);
 
             // Visa top 10 i menyn
             List<Highscore.Entry> top10 = Highscore.top(10);
 
-            int y = 650;
+            int y = 750;
             for (Highscore.Entry e : top10) {
-                uiFont.draw(batch, e.name + ": " + e.score, 100, y);
-                y -= 40;
+                gameUiFont.draw(batch, e.name + ": " + e.score, 100, y);
+                y -= assets.gameUiFont.getLineHeight() + 10;
             }
 
-            gameOverMenu.render(batch, 100, 100);
+            gameOverMenu.render(batch, 500, 400);
 
             batch.end();
             return;

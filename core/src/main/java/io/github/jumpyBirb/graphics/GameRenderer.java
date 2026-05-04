@@ -225,7 +225,7 @@ public record GameRenderer(SpriteBatch batch,
 
         // If the game is over, draw a game over message and final score.
         if (gameState == GameState.GAME_OVER) {
-            assets.uiFont.draw(batch,
+            assets.gameUiFont.draw(batch,
                 "GAME OVER!\nYour score: " + finalScore,
                 Gdx.graphics.getWidth() / 2f - 120,
                 Gdx.graphics.getHeight() / 2f + 40);
