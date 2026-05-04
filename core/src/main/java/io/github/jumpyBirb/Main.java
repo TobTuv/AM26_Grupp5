@@ -118,6 +118,7 @@ public class Main extends ApplicationAdapter {
     private static final float DYING_DURATION = 1.2f;
     private boolean sound = true;
     private boolean music = true;
+    private GameState previousState = null;
 
     private boolean gameHasStarted = false;
 
@@ -242,6 +243,7 @@ public class Main extends ApplicationAdapter {
     public void render() {
         ScreenUtils.clear(Color.BLACK);
         update();
+        handleCursor();
 
         // UI ska ritas i pixel-space
         batch.setProjectionMatrix(
@@ -822,6 +824,17 @@ public class Main extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
+    }
+
+    private void handleCursor() {
+        if (gameState != previousState) {
+            if (gameState == GameState.NAME_INPUT) {
+                Gdx.input.setCursorCatched(false);
+            } else {
+                Gdx.input.setCursorCatched(true);
+            }
+            previousState = gameState;
+        }
     }
 
     /**
