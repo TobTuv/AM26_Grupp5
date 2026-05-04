@@ -2,7 +2,6 @@ package io.github.jumpyBirb;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -97,7 +96,6 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont font;
     private GameAssets assets;
-    private BitmapFont helpFont;
     private float startBlinkTimer = 0f;
 
     private Stage nameStage;
@@ -167,7 +165,7 @@ public class Main extends ApplicationAdapter {
             new String[]{"Start", "High Score", "Settings"},
             new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS}
         );
-        credits = new Credits();
+
 
         gameOverMenu = new Menu(
             new String[]{"Play Again", "Settings"},
@@ -180,23 +178,14 @@ public class Main extends ApplicationAdapter {
         camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
         camera.update();
 
-        FreeTypeFontGenerator generator =
-            new FreeTypeFontGenerator(Gdx.files.internal("fonts/bgothm.ttf"));
-
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter =
-            new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        parameter.size = 60;
-
-        helpFont = generator.generateFont(parameter);
-        generator.dispose();
-
         batch = new SpriteBatch();
-        font = new BitmapFont();
-        font.getData().setScale(0.03f);
         assets = new GameAssets();
 
-        intro = new Intro(assets.logoText);
+        font = new BitmapFont();
+        font.getData().setScale(0.03f);
+
+        credits = new Credits(assets.creditsFont);
+        intro = new Intro(assets.logoText, assets.introFont);
         gameState = GameState.NAME_INPUT;
         inputGate.block(1f);
 
@@ -316,16 +305,16 @@ public class Main extends ApplicationAdapter {
             String msg = "Press SPACE to begin";
 
             GlyphLayout layout = new GlyphLayout();
-            layout.setText(helpFont, msg);
+            layout.setText(assets.gameUiFont, msg);
 
             float x = Gdx.graphics.getWidth() - layout.width - 50;
             float y = Gdx.graphics.getHeight() / 2f;
 
             float alpha = (float)Math.abs(Math.sin(startBlinkTimer * 3));
 
-            helpFont.setColor(1, 1, 1, alpha);
-            helpFont.draw(batch, msg, x, y);
-            helpFont.setColor(Color.WHITE);
+            assets.gameUiFont.setColor(1, 1, 1, alpha);
+            assets.gameUiFont.draw(batch, msg, x, y);
+            assets.gameUiFont.setColor(Color.WHITE);
 
             batch.end();
         }
@@ -531,6 +520,11 @@ public class Main extends ApplicationAdapter {
 
             GameState next = settings.consumeNextState();
             if (next != null) {
+
+                if (next == GameState.CREDITS) {
+                    credits.reset();
+                }
+
                 gameState = next;
             }
             return;
@@ -837,9 +831,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         batch.dispose();
-        font.dispose();
         assets.dispose();
-        credits.dispose();
-        intro.dispose();
+
     }
 }
