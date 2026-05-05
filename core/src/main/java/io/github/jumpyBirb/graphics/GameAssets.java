@@ -138,7 +138,7 @@ public class GameAssets {
         param.size = 50;
         gameUiFont = uiGenerator.generateFont(param);
 
-        param.size = 30;
+        param.size = 50;
         highScoreFont = uiGenerator.generateFont(param);
 
         uiGenerator.dispose();

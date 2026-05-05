@@ -71,8 +71,8 @@ public class Credits {
             creditFont.draw(batch, lines[i], x, y);
         }
 
-        layout.setText(menuFont, "> SETTINGS");
+        layout.setText(menuFont, "> settings");
         float xUiText = Gdx.graphics.getWidth() - layout.width - 50;
-        menuFont.draw(batch, "> SETTINGS", xUiText, 80);
+        menuFont.draw(batch, "> settings", xUiText, 100);
     }
 }

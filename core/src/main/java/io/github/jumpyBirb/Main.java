@@ -96,7 +96,6 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont uiFont;
     private BitmapFont gameUiFont;
-    private BitmapFont menuFont;
     private BitmapFont highScoreFont;
     private GameAssets assets;
     private float startBlinkTimer = 0f;
@@ -113,7 +112,6 @@ public class Main extends ApplicationAdapter {
     private Menu menu;
     private Menu gameOverMenu;
     private Menu highScoreMenu;
-    private Menu confirmMenu;
     private Settings settings;
     private Credits credits;
     private String playerName = "Player";
@@ -174,26 +172,21 @@ public class Main extends ApplicationAdapter {
         highScoreFont = assets.highScoreFont;
 
         highScoreMenu = new Menu(
-            new String[]{"MENU"},
+            new String[]{"menu"},
             new GameState[]{GameState.MENU},
             assets.menuFont
-        );
-        confirmMenu = new Menu(
-            new String[]{"Yes", "No"},
-            new GameState[]{GameState.RESET_SCORE, GameState.SETTINGS,},
-            menuFont
         );
 
         settings = new Settings(assets.menuFont);
         menu = new Menu(
-            new String[]{"Start", "High Score", "Settings", "Exit Game"},
+            new String[]{"start", "high score", "settings", "exit game"},
             new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS, GameState.EXIT},
             assets.menuFont
         );
 
 
         gameOverMenu = new Menu(
-            new String[]{"Play Again", "Settings", "Exit Game"},
+            new String[]{"play again", "settings", "exit game"},
             new GameState[]{GameState.RUNNING, GameState.SETTINGS, GameState.EXIT},
             assets.menuFont
         );
@@ -206,7 +199,7 @@ public class Main extends ApplicationAdapter {
 
         credits = new Credits(assets.creditsFont, assets.menuFont);
         intro = new Intro(assets.logoText, assets.introFont);
-        gameState = GameState.SETTINGS;
+        gameState = GameState.NAME_INPUT;
         inputGate.block(1f);
 
         skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
@@ -363,7 +356,7 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth() / 2f - 150,
                 Gdx.graphics.getHeight() / 2f + 80);
             uiFont.draw(batch, "Press SPACE to continue",
-                Gdx.graphics.getWidth() / 2f - 150,
+                Gdx.graphics.getWidth() / 2f - 220,
                 Gdx.graphics.getHeight() / 2f - 80);
             batch.end();
 
@@ -397,8 +390,8 @@ public class Main extends ApplicationAdapter {
 
 
             gameOverMenu.render(
-                batch, menuFont,
-                600, 400
+                batch,
+                1380, 300
             );
             batch.end();
 
@@ -427,7 +420,7 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            gameUiFont.draw(batch, "HIGH SCORES", 100, 850);
+            gameUiFont.draw(batch, "high scores", 100, 850);
 
             // Visa top 10 i menyn
             List<Highscore.Entry> top10 = Highscore.top(10);
@@ -438,7 +431,7 @@ public class Main extends ApplicationAdapter {
                 y -= assets.gameUiFont.getLineHeight() + 10;
             }
 
-            highScoreMenu.render(batch,assets.menuFont, 500, 400);
+            highScoreMenu.render(batch, 1550, 100);
 
             batch.end();
             return;
@@ -461,29 +454,6 @@ public class Main extends ApplicationAdapter {
             settings.render(batch, music, sound);
 
             batch.end();
-
-            if (gameState == GameState.CONFIRM_RESET) {
-
-                batch.setProjectionMatrix(
-                    new Matrix4().setToOrtho2D(
-                        0, 0,
-                        Gdx.graphics.getWidth(),
-                        Gdx.graphics.getHeight()));
-
-                batch.begin();
-
-                batch.draw(assets.menuBackground, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
-
-                assets.menuFont.draw(batch, "Reset High Score?", 100, 500);
-
-                confirmMenu.render(batch, assets.menuFont, 100, 400);
-
-                batch.end();
-
-                return;
-            }
 
         }
 
@@ -669,20 +639,9 @@ public class Main extends ApplicationAdapter {
             return;
         }
 
-        if (gameState == GameState.CONFIRM_RESET) {
-
-            confirmMenu.update();
-
-            GameState next = confirmMenu.consumeNextState();
-
-            if (next != null) {
-                if (next == GameState.RESET_SCORE) {
-                    Highscore.cleanHighScore();
-                }
-
-                gameState = GameState.SETTINGS;
-            }
-
+        if (gameState == GameState.RESET_SCORE) {
+            Highscore.cleanHighScore();
+            gameState = GameState.SETTINGS;
             return;
         }
 
