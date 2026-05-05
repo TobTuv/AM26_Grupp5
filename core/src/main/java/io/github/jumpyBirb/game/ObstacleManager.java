@@ -52,14 +52,6 @@ import io.github.jumpyBirb.data.Obstacle;
 public class ObstacleManager {
     private final List<ObstaclePair> obstaclePairs = new ArrayList<>();
 
-    public List<Obstacle> getAllObstacles() {
-        List<Obstacle> all = new ArrayList<>();
-        for (ObstaclePair pair : obstaclePairs) {
-            all.addAll(pair.getObstacles());
-        }
-        return all;
-    }
-
     /**
      * Returns all obstacle pairs currently active in the game.
      *
@@ -88,6 +80,7 @@ public class ObstacleManager {
      *
      * @param obstacleWidth     width of each spawned obstacle
      * @param minObstacleHeight minimum obstacle height allowed
+     * @param obstacleHeight    height of each spawned obstacle
      * @param screenWidth       width of the game screen
      * @param screenHeight      height of the game screen
      * @param topTextures       list of textures used for top obstacles
@@ -214,10 +207,6 @@ public class ObstacleManager {
             }
         }
         return false;
-    }
-
-    public List<ObstaclePair> getObstacles() {
-        return obstaclePairs;
     }
 
     /**

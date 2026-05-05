@@ -1,4 +1,4 @@
-package io.github.jumpyBirb.data;
+package io.github.jumpyBirb.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -6,11 +6,17 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import io.github.jumpyBirb.game.GameState;
+import io.github.jumpyBirb.core.GameState;
 
 import java.util.Arrays;
 import java.util.Collections;
 
+/**
+ * Handles the scrolling credits screen.
+ *
+ * <p>Credits are loaded from {@code credits.txt}, scroll upward over time,
+ * and return to the settings menu when the player confirms.
+ */
 public class Credits {
 
     private GameState nextState = null;
@@ -28,7 +34,7 @@ public class Credits {
         String content = file.readString();
 
         lines = content.split("\\R");
-        scrollY = -lines.length * 50;
+        scrollY = -lines.length * LINE_HEIGHT;
 
         this.creditFont = creditFont;
         this.menuFont = menuFont;

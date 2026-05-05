@@ -1,9 +1,17 @@
-package io.github.jumpyBirb.game;
+package io.github.jumpyBirb.core;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import io.github.jumpyBirb.graphics.GameAssets;
 
+/**
+ * Handles all audio playback in the game.
+ *
+ * <p>This class centralizes control of background music and sound effects.
+ * It also keeps track of whether music and sound effects are enabled.
+ *
+ * <p>Only one music track should play at a time, so starting a new music track
+ * stops the others first.
+ */
 public class AudioManager {
     private final Music introMusic;
     private final Music menuMusic;
@@ -22,71 +30,46 @@ public class AudioManager {
     }
 
     public void playIntroMusic() {
-        if (!music) {
-            return;
-        } else {
-            stopAllMusic();
-            introMusic.play();
-        }
-        return;
+        if (!music) return;
+
+        stopAllMusic();
+        introMusic.play();
     }
 
     public void playMenuMusic() {
-        if (!music) {
-            return;
-        } else {
-            stopAllMusic();
-            menuMusic.play();
-        }
-        return;
+        if (!music) return;
+
+        stopAllMusic();
+        menuMusic.play();
     }
 
     public void playGameMusic() {
-        if (!music) {
-            return;
-        } else {
-            stopAllMusic();
-            gameMusic.play();
-        }
-        return;
+        if (!music) return;
+
+        stopAllMusic();
+        gameMusic.play();
     }
 
     public void playJump() {
-        if (!sound) {
-            return;
-        } else {
-            jumpSound.play(0.09f);
-        }
-        return;
+        if (!sound) return;
+
+        jumpSound.play(0.09f);
     }
 
     public void stopJump() {
-        if (!sound) {
-            return;
-        } else {
             jumpSound.stop();
-        }
-        return;
     }
 
     public void playCrash() {
-        if (!sound) {
-            return;
-        } else {
-            crashSound.play(0.25f);
-        }
-        return;
+        if (!sound) return;
+
+        crashSound.play(0.25f);
     }
 
     private void stopAllMusic() {
-        if (!music) {
-            return;
-        } else {
             introMusic.stop();
             menuMusic.stop();
             gameMusic.stop();
-        }
-        return;
     }
 
     public void muteSound() {

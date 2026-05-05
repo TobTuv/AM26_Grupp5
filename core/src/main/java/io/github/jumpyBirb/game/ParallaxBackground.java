@@ -76,6 +76,22 @@ public class ParallaxBackground {
         speed3 = 2.2f;
     }
 
+    /**
+     * Creates a parallax background with custom movement speeds.
+     *
+     * <p>This is useful when the same parallax system should be reused
+     * in different parts of the game, for example slower movement in the intro
+     * and faster movement during gameplay.
+     *
+     * @param layer1 furthest background layer
+     * @param layer2 middle layer
+     * @param layer3 closest layer
+     * @param screenWidth width of the world/screen area to draw across
+     * @param screenHeight height of the world/screen area to draw across
+     * @param speed1 horizontal speed for layer1
+     * @param speed2 horizontal speed for layer2
+     * @param speed3 horizontal speed for layer3
+     */
     public ParallaxBackground(Texture layer1, Texture layer2, Texture layer3,
                               float screenWidth, float screenHeight,
                               float speed1, float speed2, float speed3) {

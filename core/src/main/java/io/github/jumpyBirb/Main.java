@@ -10,17 +10,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import io.github.jumpyBirb.core.*;
 import io.github.jumpyBirb.data.*;
-import io.github.jumpyBirb.data.intro.Intro;
+import io.github.jumpyBirb.screens.intro.Intro;
 import io.github.jumpyBirb.game.*;
-import io.github.jumpyBirb.graphics.GameAssets;
-import io.github.jumpyBirb.graphics.GameRenderer;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.github.jumpyBirb.screens.Credits;
+import io.github.jumpyBirb.screens.Menu;
+import io.github.jumpyBirb.screens.Settings;
 
 import java.util.List;
 
@@ -37,7 +39,8 @@ import java.util.List;
  * <ul>
  * <li>creating and setting up core game objects</li>
  * <li>running the update loop every frame</li>
- * <li>sending the current game state to the renderer</li>
+ * <li>rendering menus, intro, UI overlays, name input, high score and game over screens</li>
+ * <li>delegating gameplay-world rendering to {@link GameRenderer}</li>
  * <li>handling high-level game flow such as start, restart, and game over</li>
  * </ul>
  *
@@ -48,7 +51,7 @@ import java.util.List;
  * <li>{@link Score} handles score logic</li>
  * <li>{@link ObstacleManager} handles spawning and updating obstacles</li>
  * <li>{@link ParallaxBackground} handles parallax movement and drawing</li>
- * <li>{@link GameRenderer} handles rendering</li>
+ * <li>{@link GameRenderer} handles gameplay-world rendering</li>
  * <li>{@link GameAssets} handles textures</li>
  * </ul>
  *
@@ -164,8 +167,8 @@ public class Main extends ApplicationAdapter {
      *
      * <p>
      * This method creates the rendering objects, loads assets,
-     * reads screen size, creates the game systems, and sets the game to START
-     * state.
+     * reads screen size, creates the game systems, and sets
+     * the initial game state to NAME_INPUT state.
      */
     @Override
     public void create() {
@@ -277,6 +280,12 @@ public class Main extends ApplicationAdapter {
      * <p>
      * This is the main game loop.
      * First the game logic is updated, then the current state is rendered.
+     * <p>
+     * Rendering uses for now two coordinate systems:
+     * <ul>
+     * <li>world viewport: 16x9 gameplay world</li>
+     * <li>UI viewport: 1920x1080 menus, text and overlays</li>
+     * </ul>
      */
     @Override
     public void render() {
@@ -339,14 +348,22 @@ public class Main extends ApplicationAdapter {
                     background,
                     player,
                     obstacleManager.getPairs(),
-                    score,
                     gameState,
-                    finalScore,
                     podX,
                     podY,
                     POD_WIDTH,
                     POD_HEIGHT
                 );
+
+                uiViewport.apply();
+                batch.setProjectionMatrix(uiCamera.combined);
+
+                batch.begin();
+
+                gameUiFont.setColor(Color.WHITE);
+                gameUiFont.draw(batch, "Score: " + score.getVisualScore(), 250, UI_HEIGHT - 20);
+
+                batch.end();
 
                 if (gameState == GameState.RUNNING && !gameHasStarted) {
                     uiViewport.apply();
@@ -411,7 +428,7 @@ public class Main extends ApplicationAdapter {
                 batch.end();
             }
             case GAME_OVER -> {
-                List<Highscore.Entry> top5 = Highscore.top(5);
+                List<HighScore.Entry> top5 = HighScore.top(5);
 
                 batch.begin();
 
@@ -422,7 +439,7 @@ public class Main extends ApplicationAdapter {
                 highScoreFont.draw(batch, "Your score: " + finalScore, 100, 600);
 
                 int y = 380;
-                for (Highscore.Entry e : top5) {
+                for (HighScore.Entry e : top5) {
                     highScoreFont.draw(batch, e.name + ": " + e.score, 100, y);
                     y -= assets.highScoreFont.getLineHeight() + 10;
                 }
@@ -433,7 +450,7 @@ public class Main extends ApplicationAdapter {
             }
 
             case HIGH_SCORE -> {
-                List<Highscore.Entry> top10 = Highscore.top(10);
+                List<HighScore.Entry> top10 = HighScore.top(10);
 
                 batch.begin();
 
@@ -443,7 +460,7 @@ public class Main extends ApplicationAdapter {
                 gameUiFont.draw(batch, "high scores", 100, 850);
 
                 int y = 750;
-                for (Highscore.Entry e : top10) {
+                for (HighScore.Entry e : top10) {
                     gameUiFont.draw(batch, e.name + ": " + e.score, 100, y);
                     y -= assets.gameUiFont.getLineHeight() + 10;
                 }
@@ -628,7 +645,7 @@ public class Main extends ApplicationAdapter {
             if (dyingTimer >= DYING_DURATION) {
 
                 if (!scoreSaved) {
-                    Highscore.save(playerName, (int) finalScore);
+                    HighScore.save(playerName, (int) finalScore);
                     scoreSaved = true;
                 }
 
@@ -649,7 +666,7 @@ public class Main extends ApplicationAdapter {
 
             if (next != null) {
                 if (next == GameState.RESET_SCORE) {
-                    Highscore.cleanHighScore();
+                    HighScore.cleanHighScore();
                 }
 
                 gameState = GameState.SETTINGS;
@@ -793,12 +810,9 @@ public class Main extends ApplicationAdapter {
      * <p>
      * The current score is saved so it can still be displayed after the run ends.
      */
-
-
     private void gameOver() {
         if (gameState != GameState.DYING && gameState != GameState.GAME_OVER) {
 
-            score.stopScore();
             finalScore = getFinalScore();
 
             gameState = GameState.DYING;
@@ -841,7 +855,7 @@ public class Main extends ApplicationAdapter {
      * to different screen sizes.
      *
      * @param width  the new window width in pixels
-     * @param height the new window width in pixels
+     * @param height the new window height in pixels
      */
     @Override
     public void resize(int width, int height) {

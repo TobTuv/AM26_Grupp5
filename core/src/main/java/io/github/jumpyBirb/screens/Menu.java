@@ -1,16 +1,23 @@
-package io.github.jumpyBirb.data;
+package io.github.jumpyBirb.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import io.github.jumpyBirb.game.GameState;
+import io.github.jumpyBirb.core.GameState;
 
+/**
+ * Handles a simple selectable menu.
+ *
+ * <p>The menu stores a list of labels and matching game states.
+ * It handles navigation input, renders the selected option,
+ * and exposes the selected state through {@code consumeNextState()}.
+ */
 public class Menu {
 
     private int menuIndex = 0;
     private final String[] items;
-    private GameState[] states;
+    private final GameState[] states;
     private GameState nextState = null;
     private final BitmapFont font;
 

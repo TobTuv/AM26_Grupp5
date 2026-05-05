@@ -1,4 +1,4 @@
-package io.github.jumpyBirb.data.intro;
+package io.github.jumpyBirb.screens.intro;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -6,8 +6,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.utils.Align;
-import io.github.jumpyBirb.game.InputGate;
+import io.github.jumpyBirb.core.InputGate;
 
+/**
+ * Handles the intro sequence before the main menu.
+ *
+ * <p>The intro first shows text with a typewriter effect,
+ * then transitions to the logo screen.
+ *
+ * <p>The intro can be skipped in steps, but input is delayed slightly
+ * to avoid accidental double-skipping.
+ */
 public class Intro {
 
     private final TextWriter text;
@@ -35,7 +44,8 @@ public class Intro {
         this.logoText = logoText;
         this.font = font;
 
-        text = new TextWriter(content, 0.04f);
+        float maxTextWidth = 1920f - 160f;
+        text = new TextWriter(content, font, maxTextWidth,0.04f);
         layout = new GlyphLayout();
     }
 
@@ -193,6 +203,7 @@ public class Intro {
             phase = IntroPhase.FINISHED;
         }
     }
+
     public boolean isFinished() {
         return phase == IntroPhase.FINISHED;
     }
