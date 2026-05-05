@@ -67,7 +67,7 @@ public class Menu {
         }
     }
 
-    public void render(SpriteBatch batch, BitmapFont font, float startX, float startY) {
+    public void render(SpriteBatch batch, float startX, float startY) {
         float lineHeight = font.getLineHeight() + 10;
 
         for (int i = 0; i < items.length; i++) {

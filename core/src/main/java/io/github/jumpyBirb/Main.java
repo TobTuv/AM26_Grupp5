@@ -112,6 +112,7 @@ public class Main extends ApplicationAdapter {
     private Menu menu;
     private Menu gameOverMenu;
     private Menu highScoreMenu;
+    private Menu confirmMenu;
     private Settings settings;
     private Credits credits;
     private String playerName = "Player";
@@ -181,6 +182,12 @@ public class Main extends ApplicationAdapter {
         menu = new Menu(
             new String[]{"start", "high score", "settings", "exit game"},
             new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS, GameState.EXIT},
+            assets.menuFont
+        );
+
+        confirmMenu = new Menu(
+            new String[]{"yes", "no"},
+            new GameState[]{GameState.CONFIRM_RESET, GameState.SETTINGS},
             assets.menuFont
         );
 
@@ -331,6 +338,21 @@ public class Main extends ApplicationAdapter {
             assets.gameUiFont.setColor(Color.WHITE);
 
             batch.end();
+        }
+
+        if (gameState == GameState.CONFIRM_RESET) {
+            batch.begin();
+
+            batch.draw(assets.menuBackground, 0, 0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight());
+
+            gameUiFont.draw(batch, "Reset High Score?", 100, 500);
+
+            confirmMenu.render(batch, 100, 400);
+
+            batch.end();
+            return;
         }
 
         if (gameState == GameState.NAME_INPUT) {
@@ -618,6 +640,24 @@ public class Main extends ApplicationAdapter {
                 gameState = GameState.GAME_OVER;
                 inputGate.block(1f);
                 audio.playMenuMusic();
+            }
+
+            return;
+        }
+
+
+        if (gameState == GameState.CONFIRM_RESET) {
+
+            confirmMenu.update();
+
+            GameState next = confirmMenu.consumeNextState();
+
+            if (next != null) {
+                if (next == GameState.RESET_SCORE) {
+                    Highscore.cleanHighScore();
+                }
+
+                gameState = GameState.SETTINGS;
             }
 
             return;
