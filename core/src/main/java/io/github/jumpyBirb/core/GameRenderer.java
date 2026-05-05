@@ -1,10 +1,9 @@
-package io.github.jumpyBirb.assets;
+package io.github.jumpyBirb.core;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.jumpyBirb.data.Obstacle;
 import io.github.jumpyBirb.data.Player;
-import io.github.jumpyBirb.game.GameState;
 import io.github.jumpyBirb.game.ObstaclePair;
 import io.github.jumpyBirb.game.ParallaxBackground;
 import com.badlogic.gdx.graphics.OrthographicCamera;

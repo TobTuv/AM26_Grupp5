@@ -1,4 +1,4 @@
-package io.github.jumpyBirb.data.intro;
+package io.github.jumpyBirb.screens.intro;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.utils.Align;
-import io.github.jumpyBirb.game.InputGate;
+import io.github.jumpyBirb.core.InputGate;
 
 /**
  * Handles the intro sequence before the main menu.

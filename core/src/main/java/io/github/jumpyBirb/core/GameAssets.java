@@ -1,4 +1,4 @@
-package io.github.jumpyBirb.assets;
+package io.github.jumpyBirb.core;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;

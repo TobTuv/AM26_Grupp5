@@ -1,4 +1,4 @@
-package io.github.jumpyBirb.data.intro;
+package io.github.jumpyBirb.screens.intro;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;

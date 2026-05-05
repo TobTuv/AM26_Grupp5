@@ -1,10 +1,10 @@
-package io.github.jumpyBirb.data;
+package io.github.jumpyBirb.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import io.github.jumpyBirb.game.GameState;
+import io.github.jumpyBirb.core.GameState;
 
 /**
  * Handles a simple selectable menu.

@@ -1,8 +1,7 @@
-package io.github.jumpyBirb.game;
+package io.github.jumpyBirb.core;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import io.github.jumpyBirb.assets.GameAssets;
 
 /**
  * Handles all audio playback in the game.

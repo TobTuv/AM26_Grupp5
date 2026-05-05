@@ -10,17 +10,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import io.github.jumpyBirb.core.*;
 import io.github.jumpyBirb.data.*;
-import io.github.jumpyBirb.data.intro.Intro;
+import io.github.jumpyBirb.screens.intro.Intro;
 import io.github.jumpyBirb.game.*;
-import io.github.jumpyBirb.assets.GameAssets;
-import io.github.jumpyBirb.assets.GameRenderer;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.github.jumpyBirb.screens.Credits;
+import io.github.jumpyBirb.screens.Menu;
+import io.github.jumpyBirb.screens.Settings;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package io.github.jumpyBirb.game;
+package io.github.jumpyBirb.core;
 
 /**
  * Simple utility for temporarily blocking input.
