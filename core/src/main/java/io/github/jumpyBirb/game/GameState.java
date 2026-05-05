@@ -12,6 +12,8 @@ public enum GameState {
     INTRO,
     SOUND,
     MUSIC,
+    RESOLUTION,
+    FULLSCREEN,
     CREDITS,
     RESET_SCORE,
     CONFIRM_RESET,
