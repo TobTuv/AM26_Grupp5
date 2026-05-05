@@ -391,7 +391,7 @@ public class Main extends ApplicationAdapter {
 
             gameOverMenu.render(
                 batch,
-                600, 400
+                1380, 300
             );
             batch.end();
 
@@ -431,7 +431,7 @@ public class Main extends ApplicationAdapter {
                 y -= assets.gameUiFont.getLineHeight() + 10;
             }
 
-            highScoreMenu.render(batch, 500, 400);
+            highScoreMenu.render(batch, 1550, 100);
 
             batch.end();
             return;
