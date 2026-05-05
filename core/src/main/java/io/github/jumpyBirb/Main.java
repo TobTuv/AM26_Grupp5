@@ -269,11 +269,13 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getHeight()));
 
 
-        batch.begin();
-
         switch (gameState) {
 
+
             case INTRO -> {
+
+                batch.begin();
+
                 batch.draw(assets.background, 0, 0,
                     Gdx.graphics.getWidth(),
                     Gdx.graphics.getHeight());
@@ -289,215 +291,168 @@ public class Main extends ApplicationAdapter {
                 batch.draw(assets.parallax4, 0, 0,
                     Gdx.graphics.getWidth(),
                     Gdx.graphics.getHeight());
+
                 intro.render(batch);
+
+                batch.end();
             }
 
 
             case START, MENU -> {
+                batch.begin();
+
                 batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 menu.render(batch);
+
+                batch.end();
             }
 
             case SETTINGS -> {
+                batch.begin();
+
                 batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 settings.render(batch, music, sound);
-            }
-        }
 
-        batch.end();
-
-        if (gameState == GameState.RUNNING || gameState == GameState.DYING) {
-            renderer.draw(
-                background,
-                player,
-                obstacleManager.getPairs(),
-                score,
-                gameState,
-                finalScore,
-                podX,
-                podY,
-                POD_WIDTH,
-                POD_HEIGHT);
-        }
-
-        if (gameState == GameState.RUNNING && !gameHasStarted) {
-            batch.begin();
-
-            String msg = "Press SPACE to begin";
-
-            GlyphLayout layout = new GlyphLayout();
-            layout.setText(assets.gameUiFont, msg);
-
-            float x = Gdx.graphics.getWidth() - layout.width - 50;
-            float y = Gdx.graphics.getHeight() / 2f;
-
-            float alpha = (float) Math.abs(Math.sin(startBlinkTimer * 3));
-
-            assets.gameUiFont.setColor(1, 1, 1, alpha);
-            assets.gameUiFont.draw(batch, msg, x, y);
-            assets.gameUiFont.setColor(Color.WHITE);
-
-            batch.end();
-        }
-
-        if (gameState == GameState.CONFIRM_RESET) {
-            batch.begin();
-
-            batch.draw(assets.menuBackground, 0, 0,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight());
-
-            gameUiFont.draw(batch, "Reset High Score?", 100, 500);
-
-            confirmMenu.render(batch, 100, 400);
-
-            batch.end();
-            return;
-        }
-
-        if (gameState == GameState.NAME_INPUT) {
-            ScreenUtils.clear(Color.BLACK);
-
-            batch.setProjectionMatrix(
-                new Matrix4().setToOrtho2D(
-                    0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight()));
-
-            batch.begin();
-            batch.draw(assets.startBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            batch.end();
-
-            Gdx.input.setInputProcessor(nameStage);
-
-            nameStage.act(Gdx.graphics.getDeltaTime());
-            nameStage.draw();
-
-            batch.begin();
-            uiFont.draw(batch, "Enter your name:",
-                Gdx.graphics.getWidth() / 2f - 150,
-                Gdx.graphics.getHeight() / 2f + 80);
-            uiFont.draw(batch, "Press SPACE to continue",
-                Gdx.graphics.getWidth() / 2f - 220,
-                Gdx.graphics.getHeight() / 2f - 80);
-            batch.end();
-
-        }
-
-        if (gameState == GameState.GAME_OVER) {
-
-            batch.setProjectionMatrix(
-                new Matrix4().setToOrtho2D(
-                    0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight()));
-
-            // visa topp 5
-            List<Highscore.Entry> top5 = Highscore.top(5);
-
-            batch.begin();
-
-            batch.draw(assets.gameOverBackground, 0, 0,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight());
-
-            highScoreFont.draw(batch, "HIGH SCORE", 100, 450);
-            highScoreFont.draw(batch, "Your score: " + finalScore, 100, 600);
-
-            int y = 380;
-            for (Highscore.Entry e : top5) {
-                highScoreFont.draw(batch, e.name + ": " + e.score, 100, y);
-                y -= assets.highScoreFont.getLineHeight() + 10;
+                batch.end();
             }
 
+            case RUNNING, DYING -> {
+                renderer.draw(
+                    background,
+                    player,
+                    obstacleManager.getPairs(),
+                    score,
+                    gameState,
+                    finalScore,
+                    podX,
+                    podY,
+                    POD_WIDTH,
+                    POD_HEIGHT
+                );
 
-            gameOverMenu.render(
-                batch,
-                1380, 300
-            );
-            batch.end();
+                if (gameState == GameState.RUNNING && !gameHasStarted) {
+                    batch.begin();
 
-            GameState next = gameOverMenu.consumeNextState();
-            if (next != null) {
-                if (next == GameState.RUNNING) {
-                    startGame();
-                } else {
-                    gameState = next;
+                    String msg = "Press SPACE to begin";
+
+                    GlyphLayout layout = new GlyphLayout();
+                    layout.setText(assets.gameUiFont, msg);
+
+                    float x = Gdx.graphics.getWidth() - layout.width - 50;
+                    float y = Gdx.graphics.getHeight() / 2f;
+
+                    float alpha = (float) Math.abs(Math.sin(startBlinkTimer * 3));
+
+                    assets.gameUiFont.setColor(1, 1, 1, alpha);
+                    assets.gameUiFont.draw(batch, msg, x, y);
+                    assets.gameUiFont.setColor(Color.WHITE);
+
+                    batch.end();
                 }
             }
 
-            return;
-        }
+            case CONFIRM_RESET -> {
+                batch.begin();
 
-        if (gameState == GameState.HIGH_SCORE) {
-
-            batch.setProjectionMatrix(
-                new Matrix4().setToOrtho2D(
-                    0, 0,
+                batch.draw(assets.menuBackground, 0, 0,
                     Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight()));
-            batch.begin();
+                    Gdx.graphics.getHeight());
 
-            batch.draw(assets.menuBackground, 0, 0,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight());
+                gameUiFont.draw(batch, "Reset High Score?", 100, 500);
 
-            gameUiFont.draw(batch, "high scores", 100, 850);
+                confirmMenu.render(batch, 100, 400);
 
-            // Visa top 10 i menyn
-            List<Highscore.Entry> top10 = Highscore.top(10);
-
-            int y = 750;
-            for (Highscore.Entry e : top10) {
-                gameUiFont.draw(batch, e.name + ": " + e.score, 100, y);
-                y -= assets.gameUiFont.getLineHeight() + 10;
+                batch.end();
             }
 
-            highScoreMenu.render(batch, 1550, 100);
+            case NAME_INPUT -> {
+                batch.begin();
 
-            batch.end();
-            return;
-        }
-
-        if (gameState == GameState.SETTINGS) {
-
-            batch.setProjectionMatrix(
-                new Matrix4().setToOrtho2D(
-                    0, 0,
+                batch.draw(assets.startBackground, 0, 0,
                     Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight()));
+                    Gdx.graphics.getHeight());
 
-            batch.begin();
+                batch.end();
 
-            batch.draw(assets.menuBackground, 0, 0,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight());
+                Gdx.input.setInputProcessor(nameStage);
 
-            settings.render(batch, music, sound);
+                nameStage.act(Gdx.graphics.getDeltaTime());
+                nameStage.draw();
 
-            batch.end();
+                batch.begin();
 
-        }
+                uiFont.draw(batch, "Enter your name:",
+                    Gdx.graphics.getWidth() / 2f - 150,
+                    Gdx.graphics.getHeight() / 2f + 80);
 
-        if (gameState == GameState.CREDITS) {
-            batch.setProjectionMatrix(
-                new Matrix4().setToOrtho2D(
-                    0, 0,
+                uiFont.draw(batch, "Press SPACE to continue",
+                    Gdx.graphics.getWidth() / 2f - 220,
+                    Gdx.graphics.getHeight() / 2f - 80);
+
+                batch.end();
+            }
+            case GAME_OVER -> {
+                List<Highscore.Entry> top5 = Highscore.top(5);
+
+                batch.begin();
+
+                batch.draw(assets.gameOverBackground, 0, 0,
                     Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight()));
+                    Gdx.graphics.getHeight());
 
-            batch.begin();
+                highScoreFont.draw(batch, "HIGH SCORE", 100, 450);
+                highScoreFont.draw(batch, "Your score: " + finalScore, 100, 600);
 
-            batch.draw(assets.menuBackground, 0, 0,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight());
+                int y = 380;
+                for (Highscore.Entry e : top5) {
+                    highScoreFont.draw(batch, e.name + ": " + e.score, 100, y);
+                    y -= assets.highScoreFont.getLineHeight() + 10;
+                }
 
-            credits.render(batch);
+                gameOverMenu.render(batch, 1380, 300);
 
-            batch.end();
+                batch.end();
+            }
+
+            case HIGH_SCORE -> {
+                List<Highscore.Entry> top10 = Highscore.top(10);
+
+                batch.begin();
+
+                batch.draw(assets.menuBackground, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight());
+
+                gameUiFont.draw(batch, "high scores", 100, 850);
+
+                int y = 750;
+                for (Highscore.Entry e : top10) {
+                    gameUiFont.draw(batch, e.name + ": " + e.score, 100, y);
+                    y -= assets.gameUiFont.getLineHeight() + 10;
+                }
+
+                highScoreMenu.render(batch, 1550, 100);
+
+                batch.end();
+            }
+
+            case CREDITS -> {
+                batch.begin();
+
+                batch.draw(assets.menuBackground, 0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight());
+
+                credits.render(batch);
+
+                batch.end();
+            }
+
+            default -> {
+            }
         }
-
     }
+
 
     /**
      * Updates one frame of game logic.
@@ -561,12 +516,35 @@ public class Main extends ApplicationAdapter {
             GameState next = settings.consumeNextState();
             if (next != null) {
 
+                if (next == GameState.MUSIC) {
+                    if (music) {
+                        audio.muteMusic();
+                        music = false;
+                    } else {
+                        audio.unMuteMusic();
+                        music = true;
+                    }
+                    return;
+                }
+
+                if (next == GameState.SOUND) {
+                    if (sound) {
+                        audio.muteSound();
+                        sound = false;
+                    } else {
+                        audio.unMuteSound();
+                        sound = true;
+                    }
+                    return;
+                }
+
                 if (next == GameState.CREDITS) {
                     credits.reset();
                 }
 
                 gameState = next;
             }
+
             return;
         }
 
@@ -676,36 +654,6 @@ public class Main extends ApplicationAdapter {
                 }
             }
 
-            return;
-        }
-
-        if (gameState == GameState.RESET_SCORE) {
-            Highscore.cleanHighScore();
-            gameState = GameState.SETTINGS;
-            return;
-        }
-
-        if (gameState == GameState.MUSIC) {
-            if (music == true) {
-                audio.muteMusic();
-                music = false;
-            } else {
-                audio.unMuteMusic();
-                music = true;
-            }
-            gameState = GameState.SETTINGS;
-            return;
-        }
-
-        if (gameState == GameState.SOUND) {
-            if (sound == true) {
-                audio.muteSound();
-                sound = false;
-            } else {
-                audio.unMuteSound();
-                sound = true;
-            }
-            gameState = GameState.SETTINGS;
             return;
         }
 
@@ -906,6 +854,7 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         batch.dispose();
         assets.dispose();
-
+        skin.dispose();
+        nameStage.dispose();
     }
 }

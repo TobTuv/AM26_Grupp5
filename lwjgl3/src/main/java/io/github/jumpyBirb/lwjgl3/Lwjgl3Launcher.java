@@ -4,7 +4,9 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import io.github.jumpyBirb.Main;
 
-/** Launches the desktop (LWJGL3) application. */
+/**
+ * Launches the desktop (LWJGL3) application.
+ */
 public class Lwjgl3Launcher {
     public static void main(String[] args) {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
@@ -31,7 +33,7 @@ public class Lwjgl3Launcher {
         configuration.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
         //// You can change these files; they are in lwjgl3/src/main/resources/ .
         //// They can also be loaded from the root of assets/ .
-        configuration.setWindowIcon("neonrunnerx256.png","neonrunnerx128.png", "neonrunnerx64.png", "neonrunnerx32.png", "neonrunnerx16.png");
+        configuration.setWindowIcon("neonrunnerx256.png", "neonrunnerx128.png", "neonrunnerx64.png", "neonrunnerx32.png", "neonrunnerx16.png");
 
         //// This could improve compatibility with Windows machines with buggy OpenGL drivers, Macs
         //// with Apple Silicon that have to emulate compatibility with OpenGL anyway, and more.
