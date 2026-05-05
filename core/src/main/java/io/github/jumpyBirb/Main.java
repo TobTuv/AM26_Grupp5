@@ -111,6 +111,9 @@ public class Main extends ApplicationAdapter {
     private GameRenderer renderer;
     private Menu menu;
     private Menu gameOverMenu;
+    private Menu confirmMenu;
+    private Menu highScoreMenu;
+    private boolean highScoreHasSelection = false;
     private Settings settings;
     private String playerName = "Player";
     private boolean scoreSaved = false;
@@ -163,12 +166,20 @@ public class Main extends ApplicationAdapter {
 
         settings = new Settings();
         menu = new Menu(
-            new String[]{"Start", "High Score", "Settings"},
-            new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS}
+            new String[]{"Start", "High Score", "Settings", "Exit"},
+            new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS, GameState.EXIT}
+        );
+        confirmMenu = new Menu(
+            new String[]{"Yes", "No"},
+            new GameState[]{GameState.RESET_SCORE, GameState.SETTINGS}
+        );
+        highScoreMenu = new Menu(
+            new String[]{"Back"},
+            new GameState[]{GameState.MENU}
         );
         gameOverMenu = new Menu(
-            new String[]{"Play Again", "Settings"},
-            new GameState[]{GameState.RUNNING, GameState.SETTINGS}
+            new String[]{"Play Again", "Settings", "Exit"},
+            new GameState[]{GameState.RUNNING, GameState.SETTINGS, GameState.EXIT}
         );
         camera = new OrthographicCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
@@ -394,9 +405,19 @@ public class Main extends ApplicationAdapter {
                 font.draw(batch, e.name + ": " + e.score, 100, y);
                 y -= 40;
             }
+            //highScoreMenu.render(batch, font, 100, 200);
+            float x = 100;
+            float backY = 200;
 
-            gameOverMenu.render(batch, font, 100, 100);
+            String text;
 
+            if (highScoreHasSelection) {
+                text = "> Back";
+            } else {
+                text = "Back";
+            }
+
+            font.draw(batch, text, x, backY);
             batch.end();
             return;
         }
@@ -416,9 +437,30 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getHeight());
 
             settings.render(batch, font, music, sound);
+            batch.end();
+
+        }
+        if (gameState == GameState.CONFIRM_RESET) {
+
+            batch.setProjectionMatrix(
+                new Matrix4().setToOrtho2D(
+                    0, 0,
+                    Gdx.graphics.getWidth(),
+                    Gdx.graphics.getHeight()));
+
+            batch.begin();
+
+            batch.draw(assets.menuBackground, 0, 0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight());
+
+            font.draw(batch, "Reset High Score?", 100, 500);
+
+            confirmMenu.render(batch, font, 100, 400);
 
             batch.end();
 
+            return;
         }
 
     }
@@ -466,7 +508,9 @@ public class Main extends ApplicationAdapter {
             if (next != null) {
                 if (next == GameState.RUNNING) {
                     startGame();
-                } else {
+                } else if (next == GameState.EXIT) {
+                    Gdx.app.exit();
+            } else {
                     gameState = next;
                     inputGate.block(1f);
                 }
@@ -524,10 +568,19 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.HIGH_SCORE) {
 
-            if (inputGate.canAcceptInput() && menuConfirmPressed()) {
-                gameState = GameState.MENU;
+            highScoreMenu.update();
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.UP)
+                || Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+                highScoreHasSelection = true;
+            }
+
+            GameState next = highScoreMenu.consumeNextState();
+            if (next != null) {
+                gameState = next;
                 inputGate.block(1f);
             }
+
 
             return;
         }
@@ -542,6 +595,7 @@ public class Main extends ApplicationAdapter {
                 if (!scoreSaved) {
                     Highscore.save(playerName, (int) finalScore);
                     scoreSaved = true;
+
                 }
 
                 gameState = GameState.GAME_OVER;
@@ -560,6 +614,8 @@ public class Main extends ApplicationAdapter {
             if (next != null) {
                 if (next == GameState.RUNNING) {
                     startGame();
+                } else if (next == GameState.EXIT) {
+                    Gdx.app.exit();
                 } else {
                     gameState = next;
                 }
@@ -568,9 +624,20 @@ public class Main extends ApplicationAdapter {
             return;
         }
 
-        if (gameState == GameState.RESET_SCORE) {
-            Highscore.cleanHighScore();
-            gameState = GameState.SETTINGS;
+        if (gameState == GameState.CONFIRM_RESET) {
+
+            confirmMenu.update();
+
+            GameState next = confirmMenu.consumeNextState();
+
+            if (next != null) {
+                if (next == GameState.RESET_SCORE) {
+                    Highscore.cleanHighScore();
+                }
+
+                gameState = GameState.SETTINGS;
+            }
+
             return;
         }
 
