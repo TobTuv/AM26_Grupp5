@@ -78,9 +78,8 @@ public class Settings {
         }
     }
 
-    public void render(SpriteBatch batch, boolean music, boolean sound) {
-        float startX = 100;
-        float startY = Gdx.graphics.getHeight() - 200;
+    public void render(SpriteBatch batch, float startX, float startY, boolean music, boolean sound) {
+
         float lineHeight = font.getLineHeight() + 10;
 
         String[] displayItems = {

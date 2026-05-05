@@ -63,16 +63,17 @@ public class Credits {
         return state;
     }
 
-    public void render(SpriteBatch batch) {
-        float x = 100;
-
+    public void render(SpriteBatch batch, float startX, float rightX) {
         for (int i = 0; i < lines.length; i++) {
             float y = scrollY + i * LINE_HEIGHT;
-            creditFont.draw(batch, lines[i], x, y);
+            creditFont.draw(batch, lines[i], startX, y);
         }
 
-        layout.setText(menuFont, "> settings");
-        float xUiText = Gdx.graphics.getWidth() - layout.width - 50;
-        menuFont.draw(batch, "> settings", xUiText, 100);
+        String backText = "> settings";
+
+        layout.setText(menuFont, backText);
+        float xUiText = rightX - layout.width;
+
+        menuFont.draw(batch, backText, xUiText, 100);
     }
 }
