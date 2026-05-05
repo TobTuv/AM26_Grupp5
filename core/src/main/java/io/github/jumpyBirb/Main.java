@@ -555,16 +555,6 @@ public class Main extends ApplicationAdapter {
             return;
         }
 
-        if (settings.consumeResolutionChanged()) {
-            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-            camera.position.set(
-                Gdx.graphics.getWidth() / 2f,
-                Gdx.graphics.getHeight() / 2f,
-                0
-            );
-            camera.update();
-        }
-
         if (gameState == GameState.SETTINGS) {
             settings.update();
 
