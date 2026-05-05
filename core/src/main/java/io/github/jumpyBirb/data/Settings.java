@@ -10,8 +10,24 @@ public class Settings {
 
     private int settingsIndex = 0;
     private final BitmapFont font;
+    private boolean inResolutionMenu = false;
+    private int resolutionIndex = 0;
+    private boolean resolutionChanged = false;
 
-    private final String[] items = { "Reset High-Score", "Music ON/OFF", "Sound ON/OFF", "CREDITS", "Change name", "MENU" };
+    public boolean consumeResolutionChanged() {
+        boolean temp = resolutionChanged;
+        resolutionChanged = false;
+        return temp;
+    }
+
+    private final String[] resolutions = {
+        "1280 x 720",
+        "1920 x 1080",
+        "FULLSCREEN"
+    };
+
+
+    private final String[] items = {"Reset High-Score", "Music ON/OFF", "Sound ON/OFF", "FULLSCREEN ON/OFF", "CREDITS", "Change name", "MENU"};
     private GameState nextState = null;
 
     public Settings(BitmapFont font) {
@@ -30,34 +46,35 @@ public class Settings {
 
     private void handleInput() {
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            settingsIndex = (settingsIndex + 1) % items.length;
-        }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+                settingsIndex = (settingsIndex + 1) % items.length;
+            }
 
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
-           settingsIndex = (settingsIndex + 1) % items.length;
-        }
+            if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+                settingsIndex = (settingsIndex + 1) % items.length;
+            }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            settingsIndex = (settingsIndex - 1 + items.length) % items.length;
-        }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+                settingsIndex = (settingsIndex - 1 + items.length) % items.length;
+            }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            select();
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                select();
+            }
+            if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+                select();
+            }
         }
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            select();
-        }
-    }
 
     private void select() {
         switch (settingsIndex) {
-            case 0 -> nextState = GameState.RESET_SCORE;
+            case 0 -> nextState = GameState.CONFIRM_RESET;
             case 1 -> nextState = GameState.MUSIC;
             case 2 -> nextState = GameState.SOUND;
-            case 3 -> nextState = GameState.CREDITS;
-            case 4 -> nextState = GameState.NAME_INPUT;
-            case 5 -> nextState = GameState.MENU;
+            case 3 -> toggleFullscreen();
+            case 4 -> nextState = GameState.CREDITS;
+            case 5 -> nextState = GameState.NAME_INPUT;
+            case 6 -> nextState = GameState.MENU;
         }
     }
 
@@ -70,6 +87,7 @@ public class Settings {
             "Reset High-Score",
             "Music: " + (music ? "ON" : "OFF"),
             "Sound: " + (sound ? "ON" : "OFF"),
+            "Fullscreen ON/OFF ",
             "Credits",
             "Change Name",
             "Menu"
@@ -78,6 +96,14 @@ public class Settings {
         for (int i = 0; i < displayItems.length; i++) {
             String text = (i == settingsIndex) ? "> " + displayItems[i] : displayItems[i];
             font.draw(batch, text, startX, startY - i * lineHeight);
+        }
+    }
+
+    private void toggleFullscreen() {
+        if (Gdx.graphics.isFullscreen()) {
+            Gdx.graphics.setWindowedMode(1280, 720);
+        } else {
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
         }
     }
 }
