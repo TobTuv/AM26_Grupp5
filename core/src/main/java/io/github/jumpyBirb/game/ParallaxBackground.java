@@ -76,6 +76,20 @@ public class ParallaxBackground {
         speed3 = 2.2f;
     }
 
+    public ParallaxBackground(Texture layer1, Texture layer2, Texture layer3,
+                              float screenWidth, float screenHeight,
+                              float speed1, float speed2, float speed3) {
+        this.layer1 = layer1;
+        this.layer2 = layer2;
+        this.layer3 = layer3;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+
+        this.speed1 = speed1;
+        this.speed2 = speed2;
+        this.speed3 = speed3;
+    }
+
     /**
      * Updates the position of each background layer.
      *

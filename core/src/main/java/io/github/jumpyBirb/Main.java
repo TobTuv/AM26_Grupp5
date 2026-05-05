@@ -111,6 +111,7 @@ public class Main extends ApplicationAdapter {
     private Score score;
     private ObstacleManager obstacleManager;
     private ParallaxBackground background;
+    private ParallaxBackground introBackground;
     private GameRenderer renderer;
     private Menu menu;
     private Menu gameOverMenu;
@@ -250,6 +251,17 @@ public class Main extends ApplicationAdapter {
             screenWidth,
             screenHeight);
 
+        introBackground = new ParallaxBackground(
+            assets.parallax1,
+            assets.parallax2,
+            assets.parallax3,
+            screenWidth,
+            screenHeight,
+            0.02f,
+            0.0f,
+            1.6f
+        );
+
         podX = POD_START_X;
         podY = POD_START_Y;
 
@@ -279,18 +291,20 @@ public class Main extends ApplicationAdapter {
 
 
             case INTRO -> {
+                viewport.apply();
+                batch.setProjectionMatrix(camera.combined);
 
                 batch.begin();
 
-                batch.draw(assets.background, 0, 0, UI_WIDTH, UI_HEIGHT);
-                batch.draw(assets.parallax1, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
-                batch.draw(assets.parallax2, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
-                batch.draw(assets.parallax3, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
-                batch.draw(assets.parallax4, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
+                batch.draw(assets.background, 0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+                introBackground.draw(batch);
+
+                batch.end();
+
+                uiViewport.apply();
+                batch.setProjectionMatrix(uiCamera.combined);
+
+                batch.begin();
 
                 intro.render(batch, UI_WIDTH, UI_HEIGHT);
 
@@ -474,6 +488,7 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.INTRO) {
             intro.update(delta);
+            introBackground.update(delta);
 
             if (inputGate.canAcceptInput() && skipPressed()) {
                 intro.skip();
