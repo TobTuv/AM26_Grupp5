@@ -81,20 +81,20 @@ public class Intro {
         }
     }
 
-    public void render(SpriteBatch batch) {
+    public void render(SpriteBatch batch, float uiWidth, float uiHeight) {
         if (phase == IntroPhase.TEXT || phase == IntroPhase.WAIT_AFTER_TEXT) {
-            renderText(batch);
+            renderText(batch, uiWidth, uiHeight);
         }
 
         if (phase == IntroPhase.LOGO) {
-            renderLogo(batch);
+            renderLogo(batch, uiWidth, uiHeight);
         }
     }
 
-    private void renderText(SpriteBatch batch) {
+    private void renderText(SpriteBatch batch, float uiWidth, float uiHeight) {
         float x = 80;
-        float y = Gdx.graphics.getHeight() - 100;
-        float width = Gdx.graphics.getWidth() - 160;
+        float y = uiHeight - 100;
+        float width = uiWidth - 160;
 
         layout.setText(
             font,
@@ -117,7 +117,7 @@ public class Intro {
 
             layout.setText(font, msg);
 
-            float textX = Gdx.graphics.getWidth() / 2f - layout.width / 2f;
+            float textX = uiWidth / 2f - layout.width / 2f;
             float textY = 60;
 
             float blinkAlpha = Math.abs((float)Math.sin(blinkTimer * 3));
@@ -128,7 +128,7 @@ public class Intro {
         }
     }
 
-    private void renderLogo(SpriteBatch batch) {
+    private void renderLogo(SpriteBatch batch, float uiWidth, float uiHeight) {
         float progress = phaseTimer / LOGO_GROW_TIME;
         progress = Math.min(progress, 1f);
 
@@ -138,8 +138,8 @@ public class Intro {
         float width = maxWidth * progress;
         float height = maxHeight * progress;
 
-        float logoX = Gdx.graphics.getWidth() / 2f - width / 2f;
-        float logoY = Gdx.graphics.getHeight() / 2f - height / 2f;
+        float logoX = uiWidth / 2f - width / 2f;
+        float logoY = uiHeight / 2f - height / 2f;
 
         batch.draw(logoText, logoX, logoY, width, height);
 
@@ -149,7 +149,7 @@ public class Intro {
 
             layout.setText(font, msg);
 
-            float textX = Gdx.graphics.getWidth() / 2f - layout.width / 2f;
+            float textX = uiWidth / 2f - layout.width / 2f;
             float textY = 100;
 
             float blinkTime = phaseTimer - LOGO_SKIP_DELAY;

@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
@@ -21,7 +20,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.List;
@@ -75,6 +73,11 @@ public class Main extends ApplicationAdapter {
     private static final float WORLD_HEIGHT = 9f;
     private OrthographicCamera camera;
     private Viewport viewport;
+    private static final float UI_WIDTH = 1920f;
+    private static final float UI_HEIGHT = 1080f;
+
+    private OrthographicCamera uiCamera;
+    private Viewport uiViewport;
 
     private static final float GRAVITY = 30f;
     private static final float JUMP_FORCE = 6.0f;
@@ -204,21 +207,28 @@ public class Main extends ApplicationAdapter {
         camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
         camera.update();
 
+        uiCamera = new OrthographicCamera();
+        uiViewport = new FitViewport(UI_WIDTH, UI_HEIGHT, uiCamera);
+        uiViewport.apply();
+
+        uiCamera.position.set(UI_WIDTH / 2f, UI_HEIGHT / 2f, 0);
+        uiCamera.update();
+
         credits = new Credits(assets.creditsFont, assets.menuFont);
         intro = new Intro(assets.logoText, assets.introFont);
         gameState = GameState.NAME_INPUT;
         inputGate.block(1f);
 
         skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
-        nameStage = new Stage(new ScreenViewport());
+        nameStage = new Stage(new FitViewport(UI_WIDTH, UI_HEIGHT));
 
         nameField = new TextField("", skin);
         nameField.setMessageText(playerName.trim());
         nameField.setMaxLength(12);
         nameField.setSize(300, 50);
         nameField.setPosition(
-            Gdx.graphics.getWidth() / 2f - 150,
-            Gdx.graphics.getHeight() / 2f);
+            UI_WIDTH / 2f - 150,
+            UI_HEIGHT / 2f);
         nameField.setTextFieldFilter((textField, c) -> Character.isLetterOrDigit(c) || c == '_');
 
         nameStage.addActor(nameField);
@@ -261,13 +271,9 @@ public class Main extends ApplicationAdapter {
         update();
         handleCursor();
 
-        // UI ska ritas i pixel-space
-        batch.setProjectionMatrix(
-            new Matrix4().setToOrtho2D(
-                0, 0,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight()));
 
+        uiViewport.apply();
+        batch.setProjectionMatrix(uiCamera.combined);
 
         switch (gameState) {
 
@@ -276,23 +282,17 @@ public class Main extends ApplicationAdapter {
 
                 batch.begin();
 
-                batch.draw(assets.background, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                batch.draw(assets.background, 0, 0, UI_WIDTH, UI_HEIGHT);
                 batch.draw(assets.parallax1, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                    UI_WIDTH, UI_HEIGHT);
                 batch.draw(assets.parallax2, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                    UI_WIDTH, UI_HEIGHT);
                 batch.draw(assets.parallax3, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                    UI_WIDTH, UI_HEIGHT);
                 batch.draw(assets.parallax4, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                    UI_WIDTH, UI_HEIGHT);
 
-                intro.render(batch);
+                intro.render(batch, UI_WIDTH, UI_HEIGHT);
 
                 batch.end();
             }
@@ -301,8 +301,8 @@ public class Main extends ApplicationAdapter {
             case START, MENU -> {
                 batch.begin();
 
-                batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                menu.render(batch);
+                batch.draw(assets.menuBackground, 0, 0, UI_WIDTH, UI_HEIGHT);
+                menu.render(batch, 100, UI_HEIGHT - 200);
 
                 batch.end();
             }
@@ -310,13 +310,16 @@ public class Main extends ApplicationAdapter {
             case SETTINGS -> {
                 batch.begin();
 
-                batch.draw(assets.menuBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                settings.render(batch, music, sound);
+                batch.draw(assets.menuBackground, 0, 0, UI_WIDTH, UI_HEIGHT);
+                settings.render(batch, 100, UI_HEIGHT - 200, music, sound);
 
                 batch.end();
             }
 
             case RUNNING, DYING -> {
+                viewport.apply();
+                batch.setProjectionMatrix(camera.combined);
+
                 renderer.draw(
                     background,
                     player,
@@ -331,6 +334,9 @@ public class Main extends ApplicationAdapter {
                 );
 
                 if (gameState == GameState.RUNNING && !gameHasStarted) {
+                    uiViewport.apply();
+                    batch.setProjectionMatrix(uiCamera.combined);
+
                     batch.begin();
 
                     String msg = "Press SPACE to begin";
@@ -338,8 +344,8 @@ public class Main extends ApplicationAdapter {
                     GlyphLayout layout = new GlyphLayout();
                     layout.setText(assets.gameUiFont, msg);
 
-                    float x = Gdx.graphics.getWidth() - layout.width - 50;
-                    float y = Gdx.graphics.getHeight() / 2f;
+                    float x = UI_WIDTH - layout.width - 50;
+                    float y = UI_HEIGHT / 2f;
 
                     float alpha = (float) Math.abs(Math.sin(startBlinkTimer * 3));
 
@@ -355,8 +361,7 @@ public class Main extends ApplicationAdapter {
                 batch.begin();
 
                 batch.draw(assets.menuBackground, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                    UI_WIDTH, UI_HEIGHT);
 
                 gameUiFont.draw(batch, "Reset High Score?", 100, 500);
 
@@ -369,8 +374,7 @@ public class Main extends ApplicationAdapter {
                 batch.begin();
 
                 batch.draw(assets.startBackground, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                    UI_WIDTH, UI_HEIGHT);
 
                 batch.end();
 
@@ -382,12 +386,12 @@ public class Main extends ApplicationAdapter {
                 batch.begin();
 
                 uiFont.draw(batch, "Enter your name:",
-                    Gdx.graphics.getWidth() / 2f - 150,
-                    Gdx.graphics.getHeight() / 2f + 80);
+                    UI_WIDTH / 2f - 150,
+                    UI_HEIGHT / 2f + 80);
 
                 uiFont.draw(batch, "Press SPACE to continue",
-                    Gdx.graphics.getWidth() / 2f - 220,
-                    Gdx.graphics.getHeight() / 2f - 80);
+                    UI_WIDTH / 2f - 220,
+                    UI_HEIGHT / 2f - 80);
 
                 batch.end();
             }
@@ -397,8 +401,7 @@ public class Main extends ApplicationAdapter {
                 batch.begin();
 
                 batch.draw(assets.gameOverBackground, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                    UI_WIDTH, UI_HEIGHT);
 
                 highScoreFont.draw(batch, "HIGH SCORE", 100, 450);
                 highScoreFont.draw(batch, "Your score: " + finalScore, 100, 600);
@@ -420,8 +423,7 @@ public class Main extends ApplicationAdapter {
                 batch.begin();
 
                 batch.draw(assets.menuBackground, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                    UI_WIDTH, UI_HEIGHT);
 
                 gameUiFont.draw(batch, "high scores", 100, 850);
 
@@ -440,10 +442,9 @@ public class Main extends ApplicationAdapter {
                 batch.begin();
 
                 batch.draw(assets.menuBackground, 0, 0,
-                    Gdx.graphics.getWidth(),
-                    Gdx.graphics.getHeight());
+                    UI_WIDTH, UI_HEIGHT);
 
-                credits.render(batch);
+                credits.render(batch, 100, UI_WIDTH - 50);
 
                 batch.end();
             }
@@ -829,6 +830,8 @@ public class Main extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
+        uiViewport.update(width, height, true);
+        nameStage.getViewport().update(width, height, true);
     }
 
     private void handleCursor() {

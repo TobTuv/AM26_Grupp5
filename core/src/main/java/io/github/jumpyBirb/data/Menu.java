@@ -56,17 +56,6 @@ public class Menu {
         nextState = states[menuIndex];
     }
 
-    public void render(SpriteBatch batch) {
-        float startX = 100;
-        float startY = Gdx.graphics.getHeight() - 200;
-        float lineHeight = font.getLineHeight() + 10;
-
-        for (int i = 0; i < items.length; i++) {
-            String text = (i == menuIndex) ? "> " + items[i] : items[i];
-            font.draw(batch, text, startX, startY - i * lineHeight);
-        }
-    }
-
     public void render(SpriteBatch batch, float startX, float startY) {
         float lineHeight = font.getLineHeight() + 10;
 
