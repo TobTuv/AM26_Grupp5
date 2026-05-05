@@ -1,34 +1,13 @@
 package io.github.jumpyBirb.data;
 
 /**
- * Represents the player character in the game.
+ * Represents the player character.
  *
- * <p>The player is modeled as a simple rectangle with:
- * <ul>
- *     <li>a fixed horizontal position (x)</li>
- *     <li>a vertical position (y) that changes over time</li>
- *     <li>a size (width, height)</li>
- *     <li>a vertical velocity affected by gravity and jumps</li>
- * </ul>
+ * <p>The player has a fixed horizontal position and moves vertically
+ * based on velocity and gravity.
  *
- * <p>This class is responsible for:
- * <ul>
- *     <li>handling movement (jumping + gravity)</li>
- *     <li>tracking position</li>
- *     <li>checking simple boundary collisions (top and bottom)</li>
- * </ul>
- *
- * <p>This class does NOT handle:
- * <ul>
- *     <li>input (keyboard/mouse) → handled in Main</li>
- *     <li>collision with obstacles → handled elsewhere</li>
- *     <li>rendering → handled by GameRenderer</li>
- * </ul>
- *
- * <p>Why this class exists:
- * Previously, all player logic was inside Main, which made the code large
- * and harder to maintain. By moving player-specific behavior into this class,
- * we isolate responsibility and make the code easier to understand and modify.
+ * <p>This class handles movement and simple boundary checks.
+ * Input, collisions, and rendering are handled elsewhere.
  */
 public class Player {
     private final float x;

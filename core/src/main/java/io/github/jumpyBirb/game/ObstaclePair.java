@@ -19,7 +19,7 @@ import java.util.List;
  * <p>This class is responsible for:
  * <ul>
  *     <li>updating both obstacles' movement</li>
- *     <li>checking collision against the player</li>
+ *     <li>checking collision with a given bounding box</li>
  *     <li>determining when the pair is off screen</li>
  *     <li>tracking whether the player has passed the pair (for scoring)</li>
  * </ul>
@@ -67,6 +67,12 @@ public class ObstaclePair {
             || bottom.collidesWith(x, y, w, h);
     }
 
+    /**
+     * Returns both obstacles in this pair as a list.
+     *
+     * <p>Mainly useful for iteration when both obstacles should be treated
+     * uniformly (e.g. rendering or bulk operations).
+     */
     public List<Obstacle> getObstacles() {
         return List.of(top, bottom);
     }

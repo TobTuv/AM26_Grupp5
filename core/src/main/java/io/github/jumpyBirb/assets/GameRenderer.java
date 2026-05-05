@@ -1,19 +1,13 @@
-package io.github.jumpyBirb.graphics;
+package io.github.jumpyBirb.assets;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.jumpyBirb.data.Obstacle;
 import io.github.jumpyBirb.data.Player;
-import io.github.jumpyBirb.data.Score;
 import io.github.jumpyBirb.game.GameState;
 import io.github.jumpyBirb.game.ObstaclePair;
 import io.github.jumpyBirb.game.ParallaxBackground;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Matrix4;
-
 import java.util.List;
 
 /**
@@ -30,8 +24,6 @@ import java.util.List;
  * <li>starting platform</li>
  * <li>player</li>
  * <li>obstacles</li>
- * <li>score text</li>
- * <li>game over text</li>
  * </ul>
  *
  * <p>
@@ -46,8 +38,7 @@ import java.util.List;
  * of rendering-related dependencies:
  * <ul>
  * <li>{@code SpriteBatch} for drawing</li>
- * <li>{@code BitmapFont} for text</li>
- * <li>{@code GameAssets} for textures</li>
+ * <li>{@code GameAssets} for textures and fonts</li>
  * <li>{@code OrthographicCamera} for setting the viewport size</li>
  * <li>screen size values for positioning and scaling</li>
  * </ul>
@@ -93,12 +84,9 @@ public record GameRenderer(SpriteBatch batch,
      * <p>
      * This method:
      * <ul>
-     * <li>clears the screen</li>
      * <li>draws the static background</li>
      * <li>draws the parallax background layers</li>
-     * <li>draws the platform, player, and obstacles</li>
-     * <li>draws the current score</li>
-     * <li>draws game over text if the game is over</li>
+     * <li>draws the platform, player (including crash state), and obstacles</li>
      * </ul>
      *
      * <p>
@@ -107,9 +95,8 @@ public record GameRenderer(SpriteBatch batch,
      *
      * @param background parallax background system
      * @param player     current player object
-     * @param score      score object used for displaying current score
-     * @param gameState  current game state
-     * @param finalScore score to display on game over
+     * @param pairs      obstacle pairs to draw, containing one bottom and one top obstacle
+     * @param gameState current game state (only RUNNING, DYING and GAME_OVER are rendered)
      * @param podX       x-position of the starting platform
      * @param podY       y-position of the starting platform
      * @param podWidth   width of the starting platform
@@ -119,9 +106,7 @@ public record GameRenderer(SpriteBatch batch,
         ParallaxBackground background,
         Player player,
         List<ObstaclePair> pairs,
-        Score score,
         GameState gameState,
-        long finalScore,
         float podX,
         float podY,
         float podWidth,
@@ -130,8 +115,6 @@ public record GameRenderer(SpriteBatch batch,
         if (gameState != GameState.RUNNING && gameState != GameState.DYING && gameState != GameState.GAME_OVER) {
             return;
         }
-        // Clear the screen before drawing the next frame.
-        ScreenUtils.clear(Color.BLACK); //flyttar tillfälligt till main
 
         // describes where things in the game world should be rendered onto the screen.
         batch.setProjectionMatrix(camera.combined);
@@ -204,35 +187,6 @@ public record GameRenderer(SpriteBatch batch,
         batch.end();
 
         //
-
-        batch.setProjectionMatrix(
-            new Matrix4().setToOrtho2D(
-                0, 0,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight()));
-
-        // Start new batch for score
-        batch.begin();
-
-        // Set size and color on font
-        assets.gameUiFont.setUseIntegerPositions(false);
-        assets.gameUiFont.setColor(Color.WHITE);
-
-        // Draw the current score near the top of the screen.
-        assets.gameUiFont.draw(batch, "Score: " + score.getVisualScore(),
-            250, Gdx.graphics.getHeight() - 20);
-
-
-        // If the game is over, draw a game over message and final score.
-        if (gameState == GameState.GAME_OVER) {
-            assets.gameUiFont.draw(batch,
-                "GAME OVER!\nYour score: " + finalScore,
-                Gdx.graphics.getWidth() / 2f - 120,
-                Gdx.graphics.getHeight() / 2f + 40);
-        }
-
-        // End the score drawing session.
-        batch.end();
 
     }
 }

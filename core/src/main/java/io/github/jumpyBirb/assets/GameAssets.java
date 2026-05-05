@@ -1,4 +1,4 @@
-package io.github.jumpyBirb.graphics;
+package io.github.jumpyBirb.assets;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import java.util.List;
 
 /**
- * Holds and manages all textures used in the game.
+ * Holds and manages all game assets, including textures, fonts, music, and sounds.
  *
  * <p>This class centralizes asset loading so that:
  * <ul>
@@ -40,14 +40,13 @@ import java.util.List;
  * <p>Usage:
  * <ul>
  *     <li>Create one instance of GameAssets in Main</li>
- *      <li>Pass it to classes that need textures (e.g. GameRenderer, ObstacleManager)</li> *     <li>Call {@code dispose()} when the game shuts down</li>
+ *      <li>Pass it to classes that need textures (e.g. GameRenderer, ObstacleManager)</li>
+ *     <li>Call {@code dispose()} when the game shuts down</li>
  * </ul>
  *
  * <p>Possible future improvements:
  * <ul>
- *     <li>use LibGDX AssetManager for asynchronous loading</li>
- *     <li>group assets by type (UI, player, obstacles, etc.)</li>
- *     <li>add sounds/music here as well</li>
+ *     <li>use LibGDX AssetManager for asynchronous loading and cleaner asset management</li>>
  * </ul>
  */
 public class GameAssets {
@@ -159,7 +158,7 @@ public class GameAssets {
 
 
     /**
-     * Releases all textures from memory.
+     * Releases all loaded assets from memory.
      *
      * <p>This method MUST be called when the game closes.
      * Otherwise, memory (especially GPU memory) will leak.

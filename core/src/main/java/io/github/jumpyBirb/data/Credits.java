@@ -11,6 +11,12 @@ import io.github.jumpyBirb.game.GameState;
 import java.util.Arrays;
 import java.util.Collections;
 
+/**
+ * Handles the scrolling credits screen.
+ *
+ * <p>Credits are loaded from {@code credits.txt}, scroll upward over time,
+ * and return to the settings menu when the player confirms.
+ */
 public class Credits {
 
     private GameState nextState = null;
@@ -28,7 +34,7 @@ public class Credits {
         String content = file.readString();
 
         lines = content.split("\\R");
-        scrollY = -lines.length * 50;
+        scrollY = -lines.length * LINE_HEIGHT;
 
         this.creditFont = creditFont;
         this.menuFont = menuFont;

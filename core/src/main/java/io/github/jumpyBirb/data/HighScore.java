@@ -8,9 +8,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Highscore {
+/**
+ * Handles storing and loading high scores from a file.
+ *
+ * <p>Scores are saved as "name;score" and sorted in descending order.
+ * Provides methods to save new scores, load all scores, and get top results.
+ */
+public class HighScore {
 
-    // Filen finns i assets
     private static final String FILE_NAME = "highscore.txt";
 
     public static class Entry {
@@ -34,7 +39,6 @@ public class Highscore {
     private static File getFile() {
         FileHandle handle = Gdx.files.local(FILE_NAME);
 
-        // Skapa filen om den inte finns
         if (!handle.exists()) {
             handle.writeString("", false);
         }
@@ -72,7 +76,6 @@ public class Highscore {
         List<Entry> list = load();
         list.add(new Entry(name, score));
 
-        // Sortera listan fallande
         list.sort(Comparator.comparingLong(e -> -e.score));
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(getFile()))) {
