@@ -172,21 +172,21 @@ public class Main extends ApplicationAdapter {
         highScoreFont = assets.highScoreFont;
 
         highScoreMenu = new Menu(
-            new String[]{"MENU"},
+            new String[]{"menu"},
             new GameState[]{GameState.MENU},
             assets.menuFont
         );
 
         settings = new Settings(assets.menuFont);
         menu = new Menu(
-            new String[]{"Start", "High Score", "Settings", "Exit Game"},
+            new String[]{"start", "high score", "settings", "exit game"},
             new GameState[]{GameState.RUNNING, GameState.HIGH_SCORE, GameState.SETTINGS, GameState.EXIT},
             assets.menuFont
         );
 
 
         gameOverMenu = new Menu(
-            new String[]{"Play Again", "Settings", "Exit Game"},
+            new String[]{"play again", "settings", "exit game"},
             new GameState[]{GameState.RUNNING, GameState.SETTINGS, GameState.EXIT},
             assets.menuFont
         );
@@ -356,7 +356,7 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth() / 2f - 150,
                 Gdx.graphics.getHeight() / 2f + 80);
             uiFont.draw(batch, "Press SPACE to continue",
-                Gdx.graphics.getWidth() / 2f - 150,
+                Gdx.graphics.getWidth() / 2f - 220,
                 Gdx.graphics.getHeight() / 2f - 80);
             batch.end();
 
@@ -420,7 +420,7 @@ public class Main extends ApplicationAdapter {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
 
-            gameUiFont.draw(batch, "HIGH SCORES", 100, 850);
+            gameUiFont.draw(batch, "high scores", 100, 850);
 
             // Visa top 10 i menyn
             List<Highscore.Entry> top10 = Highscore.top(10);
