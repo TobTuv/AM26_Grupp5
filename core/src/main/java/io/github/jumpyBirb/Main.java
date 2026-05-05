@@ -187,7 +187,7 @@ public class Main extends ApplicationAdapter {
 
         confirmMenu = new Menu(
             new String[]{"yes", "no"},
-            new GameState[]{GameState.CONFIRM_RESET, GameState.SETTINGS},
+            new GameState[]{GameState.RESET_SCORE, GameState.SETTINGS},
             assets.menuFont
         );
 
