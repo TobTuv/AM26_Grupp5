@@ -70,9 +70,9 @@ public class Settings {
             "Reset High-Score",
             "Music: " + (music ? "ON" : "OFF"),
             "Sound: " + (sound ? "ON" : "OFF"),
-            "CREDITS",
+            "Credits",
             "Change Name",
-            "MENU"
+            "Menu"
         };
 
         for (int i = 0; i < displayItems.length; i++) {
