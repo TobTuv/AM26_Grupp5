@@ -126,6 +126,7 @@ public class Main extends ApplicationAdapter {
     private boolean sound = true;
     private boolean music = true;
     private GameState previousState = null;
+    private boolean previousFullscreen = false;
 
     private boolean gameHasStarted = false;
 
@@ -850,13 +851,18 @@ public class Main extends ApplicationAdapter {
     }
 
     private void handleCursor() {
-        if (gameState != previousState) {
-            if (gameState == GameState.NAME_INPUT) {
+        boolean isFullscreen = Gdx.graphics.isFullscreen();
+
+        if (gameState != previousState || isFullscreen != previousFullscreen) {
+
+            if (gameState == GameState.NAME_INPUT || !isFullscreen) {
                 Gdx.input.setCursorCatched(false);
             } else {
                 Gdx.input.setCursorCatched(true);
             }
+
             previousState = gameState;
+            previousFullscreen = isFullscreen;
         }
     }
 
