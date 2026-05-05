@@ -52,7 +52,7 @@ public class Settings {
 
     private void select() {
         switch (settingsIndex) {
-            case 0 -> nextState = GameState.RESET_SCORE;
+            case 0 -> nextState = GameState.CONFIRM_RESET;
             case 1 -> nextState = GameState.MUSIC;
             case 2 -> nextState = GameState.SOUND;
             case 3 -> nextState = GameState.CREDITS;

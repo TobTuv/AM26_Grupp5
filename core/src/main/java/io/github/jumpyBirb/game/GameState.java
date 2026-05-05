@@ -14,5 +14,6 @@ public enum GameState {
     MUSIC,
     CREDITS,
     RESET_SCORE,
+    CONFIRM_RESET,
     EXIT
 }
