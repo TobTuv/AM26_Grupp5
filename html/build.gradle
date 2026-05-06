@@ -81,7 +81,7 @@ dependencies {
  // implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion:sources"
   //implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion:sources"
   implementation project(':core')
-  implementation files("../core/src/main/java")
+
 
 
   constraints {
@@ -169,5 +169,9 @@ sourceSets.main.java.srcDirs = [
   "src/main/java/",
   "../core/src/main/java/"
 ]
+
+tasks.named("compileGwt") {
+  dependsOn(":core:classes")
+}
 
 eclipse.project.name = appName + "-html"

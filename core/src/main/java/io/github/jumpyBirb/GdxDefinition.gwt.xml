@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to="html">
+    <inherits name="com.badlogic.gdx.backends.gdx_backends_gwt"/>
+
+    <source path="" />
+    <source path="data" />
+    <source path="data/intro" />
+    <source path="game" />
+    <source path="graphics" />
+
+    <entry-point class="io.github.jumpyBirb.gwt.GwtLauncher"/>
+
+    <set-configuration-property name="gdx.assetpath" value="../assets"/>
+    <set-configuration-property name="xsiframe.failIfScriptTag" value="FALSE"/>
+    <set-property name="user.agent" value="gecko1_8, safari"/>
+    <collapse-property name="user.agent" values="*"/>
+</module>
