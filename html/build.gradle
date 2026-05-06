@@ -78,7 +78,10 @@ dependencies {
   implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
   implementation "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
   implementation "com.google.jsinterop:jsinterop-annotations:2.1.0:sources"
-  api project(':core')
+ // implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion:sources"
+  //implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion:sources"
+  implementation project(':core')
+  implementation files("../core/src/main/java")
 
 
   constraints {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <source path="" />
+    <source path="data" />
+    <source path="data/intro" />
+    <source path="game" />
+    <source path="graphics" />
+</module>

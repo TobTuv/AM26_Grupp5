@@ -277,46 +277,41 @@ public class Main extends ApplicationAdapter {
 
         switch (gameState) {
 
-
-            case INTRO -> {
-
+            case INTRO:
                 batch.begin();
 
                 batch.draw(assets.background, 0, 0, UI_WIDTH, UI_HEIGHT);
-                batch.draw(assets.parallax1, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
-                batch.draw(assets.parallax2, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
-                batch.draw(assets.parallax3, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
-                batch.draw(assets.parallax4, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
+                batch.draw(assets.parallax1, 0, 0, UI_WIDTH, UI_HEIGHT);
+                batch.draw(assets.parallax2, 0, 0, UI_WIDTH, UI_HEIGHT);
+                batch.draw(assets.parallax3, 0, 0, UI_WIDTH, UI_HEIGHT);
+                batch.draw(assets.parallax4, 0, 0, UI_WIDTH, UI_HEIGHT);
 
                 intro.render(batch, UI_WIDTH, UI_HEIGHT);
 
                 batch.end();
-            }
+                break;
 
-
-            case START, MENU -> {
+            case START:
+            case MENU:
                 batch.begin();
 
                 batch.draw(assets.menuBackground, 0, 0, UI_WIDTH, UI_HEIGHT);
                 menu.render(batch, 100, UI_HEIGHT - 200);
 
                 batch.end();
-            }
+                break;
 
-            case SETTINGS -> {
+            case SETTINGS:
                 batch.begin();
 
                 batch.draw(assets.menuBackground, 0, 0, UI_WIDTH, UI_HEIGHT);
                 settings.render(batch, 100, UI_HEIGHT - 200, music, sound);
 
                 batch.end();
-            }
+                break;
 
-            case RUNNING, DYING -> {
+            case RUNNING:
+            case DYING:
                 viewport.apply();
                 batch.setProjectionMatrix(camera.combined);
 
@@ -355,26 +350,22 @@ public class Main extends ApplicationAdapter {
 
                     batch.end();
                 }
-            }
+                break;
 
-            case CONFIRM_RESET -> {
+            case CONFIRM_RESET:
                 batch.begin();
 
-                batch.draw(assets.menuBackground, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
-
+                batch.draw(assets.menuBackground, 0, 0, UI_WIDTH, UI_HEIGHT);
                 gameUiFont.draw(batch, "Reset High Score?", 100, 500);
-
                 confirmMenu.render(batch, 100, 400);
 
                 batch.end();
-            }
+                break;
 
-            case NAME_INPUT -> {
+            case NAME_INPUT:
                 batch.begin();
 
-                batch.draw(assets.startBackground, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
+                batch.draw(assets.startBackground, 0, 0, UI_WIDTH, UI_HEIGHT);
 
                 batch.end();
 
@@ -394,14 +385,14 @@ public class Main extends ApplicationAdapter {
                     UI_HEIGHT / 2f - 80);
 
                 batch.end();
-            }
-            case GAME_OVER -> {
+                break;
+
+            case GAME_OVER:
                 List<Highscore.Entry> top5 = Highscore.top(5);
 
                 batch.begin();
 
-                batch.draw(assets.gameOverBackground, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
+                batch.draw(assets.gameOverBackground, 0, 0, UI_WIDTH, UI_HEIGHT);
 
                 highScoreFont.draw(batch, "HIGH SCORE", 100, 450);
                 highScoreFont.draw(batch, "Your score: " + finalScore, 100, 600);
@@ -415,42 +406,40 @@ public class Main extends ApplicationAdapter {
                 gameOverMenu.render(batch, 1380, 300);
 
                 batch.end();
-            }
+                break;
 
-            case HIGH_SCORE -> {
+            case HIGH_SCORE:
                 List<Highscore.Entry> top10 = Highscore.top(10);
 
                 batch.begin();
 
-                batch.draw(assets.menuBackground, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
+                batch.draw(assets.menuBackground, 0, 0, UI_WIDTH, UI_HEIGHT);
 
                 gameUiFont.draw(batch, "high scores", 100, 850);
 
-                int y = 750;
+                int highScoreY = 750;
                 for (Highscore.Entry e : top10) {
-                    gameUiFont.draw(batch, e.name + ": " + e.score, 100, y);
-                    y -= assets.gameUiFont.getLineHeight() + 10;
+                    gameUiFont.draw(batch, e.name + ": " + e.score, 100, highScoreY);
+                    highScoreY -= assets.gameUiFont.getLineHeight() + 10;
                 }
 
                 highScoreMenu.render(batch, 1550, 100);
 
                 batch.end();
-            }
+                break;
 
-            case CREDITS -> {
+            case CREDITS:
                 batch.begin();
 
-                batch.draw(assets.menuBackground, 0, 0,
-                    UI_WIDTH, UI_HEIGHT);
+                batch.draw(assets.menuBackground, 0, 0, UI_WIDTH, UI_HEIGHT);
 
                 credits.render(batch, 100, UI_WIDTH - 50);
 
                 batch.end();
-            }
+                break;
 
-            default -> {
-            }
+            default:
+                break;
         }
     }
 

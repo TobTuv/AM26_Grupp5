@@ -68,13 +68,24 @@ public class Settings {
 
     private void select() {
         switch (settingsIndex) {
-            case 0 -> nextState = GameState.CONFIRM_RESET;
-            case 1 -> nextState = GameState.MUSIC;
-            case 2 -> nextState = GameState.SOUND;
-            case 3 -> toggleFullscreen();
-            case 4 -> nextState = GameState.CREDITS;
-            case 5 -> nextState = GameState.NAME_INPUT;
-            case 6 -> nextState = GameState.MENU;
+            case 0:
+                nextState = GameState.CONFIRM_RESET;
+                break;
+            case 1:
+                nextState = GameState.MUSIC;
+                break;
+            case 2:
+                nextState = GameState.SOUND;
+                break;
+            case 3:
+                nextState = GameState.CREDITS;
+                break;
+            case 4:
+                nextState = GameState.MENU;
+                break;
+            default:
+                nextState = null;
+                break;
         }
     }
 

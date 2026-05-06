@@ -44,7 +44,7 @@ public class Intro {
 
         switch (phase) {
 
-            case TEXT -> {
+            case TEXT:
                 text.update(delta);
                 phaseTimer += delta;
                 blinkTimer += delta;
@@ -53,10 +53,9 @@ public class Intro {
                     phase = IntroPhase.WAIT_AFTER_TEXT;
                     phaseTimer = 0f;
                 }
+                break;
 
-            }
-
-            case WAIT_AFTER_TEXT -> {
+            case WAIT_AFTER_TEXT:
                 phaseTimer += delta;
 
                 if (phaseTimer >= WAIT_AFTER_TEXT_TIME) {
@@ -64,20 +63,22 @@ public class Intro {
                     phaseTimer = 0f;
                     blinkTimer = 0f;
                 }
-            }
+                break;
 
-            case LOGO -> {
+            case LOGO:
                 phaseTimer += delta;
                 blinkTimer += delta;
 
                 if (phaseTimer >= LOGO_TIME) {
                     phase = IntroPhase.FINISHED;
                 }
-            }
+                break;
 
-            case FINISHED -> {
+            case FINISHED:
+                break;
 
-            }
+            default:
+                break;
         }
     }
 

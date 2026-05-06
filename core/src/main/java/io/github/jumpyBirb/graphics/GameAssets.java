@@ -5,7 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+//import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 import java.util.List;
 
@@ -121,7 +121,7 @@ public class GameAssets {
         menuMusic.setVolume(0.6f);
         gameMusic.setVolume(0.6f);
 
-        FreeTypeFontGenerator uiGenerator =
+       /* FreeTypeFontGenerator uiGenerator =
             new FreeTypeFontGenerator(Gdx.files.internal("fonts/bgothm.ttf"));
 
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -153,10 +153,17 @@ public class GameAssets {
         menuFont = menuGenerator.generateFont(menuParam);
 
         menuGenerator.dispose();
+*/
 
 
+
+        creditsFont = new BitmapFont(Gdx.files.internal("ui/font-subtitle.fnt"));
+        introFont = new BitmapFont(Gdx.files.internal("ui/font-subtitle.fnt"));
+        uiFont = new BitmapFont(Gdx.files.internal("ui/font.fnt"));
+        gameUiFont = new BitmapFont(Gdx.files.internal("ui/font-window.fnt"));
+        highScoreFont = new BitmapFont(Gdx.files.internal("ui/font-list.fnt"));
+        menuFont = new BitmapFont(Gdx.files.internal("ui/font-window.fnt"));
     }
-
 
     /**
      * Releases all textures from memory.
