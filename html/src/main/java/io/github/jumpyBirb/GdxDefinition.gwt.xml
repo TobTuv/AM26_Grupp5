@@ -10,15 +10,15 @@
 
   <!-- "Inherits" lines are how GWT knows where to look for code and configuration in other projects or libraries. -->
   <inherits name="com.badlogic.gdx.backends.gdx_backends_gwt" />
-  <inherits name="Box2DLights" />
-  <inherits name="com.badlogic.ashley_gwt" />
-  <inherits name="com.badlogic.gdx.controllers" />
-  <inherits name="com.badlogic.gdx.controllers.controllers-gwt" />
-  <inherits name="com.badlogic.gdx.physics.box2d.box2d-gwt" />
-  <inherits name="io.github.some_example_name.Main" />
+  <!--inherits name="Box2DLights" /-->
+  <!--inherits name="com.badlogic.ashley_gwt" /-->
+  <!--inherits name="com.badlogic.gdx.controllers" /-->
+  <!--inherits name="com.badlogic.gdx.controllers.controllers-gwt" /-->
+  <!--inherits name="com.badlogic.gdx.physics.box2d.box2d-gwt" /-->
+    <!--inherits name="io.github.jumpyBirb" /-->
 
   <!-- You must change this if you rename packages later, or rename GwtLauncher. -->
-  <entry-point class="io.github.some_example_name.gwt.GwtLauncher" />
+  <entry-point class="io.github.jumpyBirb.gwt.GwtLauncher" />
 
   <!-- Reflection includes may be needed for your code or library code. Each value is separated by periods ('.'). -->
   <!-- You can include a full package by not including the name of a type at the end. -->

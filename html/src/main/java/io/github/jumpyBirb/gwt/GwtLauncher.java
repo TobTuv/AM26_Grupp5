@@ -1,9 +1,10 @@
-package io.github.some_example_name.gwt;
+package io.github.jumpyBirb.gwt;
+
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import io.github.some_example_name.Main;
+import io.github.jumpyBirb.Main;
 
 /** Launches the GWT application. */
 public class GwtLauncher extends GwtApplication {
