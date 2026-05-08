@@ -59,11 +59,24 @@ import java.util.List;
  * dies,
  * or how obstacles move.
  */
-public record GameRenderer(SpriteBatch batch,
-                           GameAssets assets,
-                           OrthographicCamera camera,
-                           float worldWidth,
-                           float worldHeight) {
+public class GameRenderer {
+    private final SpriteBatch batch;
+    private final GameAssets assets;
+    private final OrthographicCamera camera;
+    private final float worldWidth;
+    private final float worldHeight;
+
+    public GameRenderer(SpriteBatch batch,
+                        GameAssets assets,
+                        OrthographicCamera camera,
+                        float worldWidth,
+                        float worldHeight) {
+        this.batch = batch;
+        this.assets = assets;
+        this.camera = camera;
+        this.worldWidth = worldWidth;
+        this.worldHeight = worldHeight;
+    }
 
     private Texture getPlayerTexture(Player player) {
         float velocity = player.getVelocity();
