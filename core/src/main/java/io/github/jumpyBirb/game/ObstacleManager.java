@@ -50,10 +50,10 @@ import io.github.jumpyBirb.data.Obstacle;
  * </ul>
  */
 public class ObstacleManager {
-    private final List<ObstaclePair> obstaclePairs = new ArrayList<>();
+    private final List<ObstaclePair> obstaclePairs = new ArrayList<ObstaclePair>();
 
     public List<Obstacle> getAllObstacles() {
-        List<Obstacle> all = new ArrayList<>();
+        List<Obstacle> all = new ArrayList<Obstacle>();
         for (ObstaclePair pair : obstaclePairs) {
             all.addAll(pair.getObstacles());
         }

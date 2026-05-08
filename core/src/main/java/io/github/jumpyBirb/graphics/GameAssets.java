@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 //import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Holds and manages all textures used in the game.
@@ -80,17 +81,8 @@ public class GameAssets {
     public final BitmapFont menuFont;
     public final BitmapFont highScoreFont;
 
-    public final List<Texture> bottomObstacles = List.of(
-        new Texture("retrowave_skyscrapers_bottom-01.png"),
-        new Texture("retrowave_skyscrapers_bottom-02.png"),
-        new Texture("retrowave_skyscrapers_bottom-03.png")
-    );
-
-    public final List<Texture> topObstacles = List.of(
-        new Texture("retrowave_skyscrapers_top-01.png"),
-        new Texture("retrowave_skyscrapers_top-02.png"),
-        new Texture("retrowave_skyscrapers_top-03.png")
-    );
+    public final List<Texture> bottomObstacles = new ArrayList<Texture>();
+    public final List<Texture> topObstacles = new ArrayList<Texture>();
 
     public final Music introMusic = com.badlogic.gdx.Gdx.audio.newMusic(
         com.badlogic.gdx.Gdx.files.internal("intro-music.mp3")
@@ -113,6 +105,14 @@ public class GameAssets {
     );
 
     public GameAssets() {
+        bottomObstacles.add(new Texture("retrowave_skyscrapers_bottom-01.png"));
+        bottomObstacles.add(new Texture("retrowave_skyscrapers_bottom-02.png"));
+        bottomObstacles.add(new Texture("retrowave_skyscrapers_bottom-03.png"));
+
+        topObstacles.add(new Texture("retrowave_skyscrapers_top-01.png"));
+        topObstacles.add(new Texture("retrowave_skyscrapers_top-02.png"));
+        topObstacles.add(new Texture("retrowave_skyscrapers_top-03.png"));
+
         introMusic.setLooping(true);
         menuMusic.setLooping(true);
         gameMusic.setLooping(true);
@@ -120,41 +120,6 @@ public class GameAssets {
         introMusic.setVolume(0.6f);
         menuMusic.setVolume(0.6f);
         gameMusic.setVolume(0.6f);
-
-       /* FreeTypeFontGenerator uiGenerator =
-            new FreeTypeFontGenerator(Gdx.files.internal("fonts/bgothm.ttf"));
-
-        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        param.size = 40;
-        creditsFont = uiGenerator.generateFont(param);
-
-        param.size = 40;
-        introFont = uiGenerator.generateFont(param);
-
-        param.size = 30;
-        uiFont = uiGenerator.generateFont(param);
-
-        param.size = 50;
-        gameUiFont = uiGenerator.generateFont(param);
-
-        param.size = 50;
-        highScoreFont = uiGenerator.generateFont(param);
-
-        uiGenerator.dispose();
-
-
-        FreeTypeFontGenerator menuGenerator =
-            new FreeTypeFontGenerator(Gdx.files.internal("fonts/superchargesemistraight.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter menuParam =
-            new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        menuParam.size = 65;
-        menuFont = menuGenerator.generateFont(menuParam);
-
-        menuGenerator.dispose();
-*/
-
 
 
         creditsFont = new BitmapFont(Gdx.files.internal("ui/font-subtitle.fnt"));

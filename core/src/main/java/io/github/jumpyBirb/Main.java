@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 
 import io.github.jumpyBirb.data.*;
 import io.github.jumpyBirb.data.intro.Intro;
@@ -229,8 +230,12 @@ public class Main extends ApplicationAdapter {
         nameField.setPosition(
             UI_WIDTH / 2f - 150,
             UI_HEIGHT / 2f);
-        nameField.setTextFieldFilter((textField, c) -> Character.isLetterOrDigit(c) || c == '_');
-
+        nameField.setTextFieldFilter(new TextFieldFilter() {
+            @Override
+            public boolean acceptChar(TextField textField, char c) {
+                return Character.isLetterOrDigit(c) || c == '_';
+            }
+        });
         nameStage.addActor(nameField);
 
         screenWidth = WORLD_WIDTH;

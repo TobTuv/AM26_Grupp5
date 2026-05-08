@@ -2,6 +2,7 @@ package io.github.jumpyBirb.game;
 
 import io.github.jumpyBirb.data.Obstacle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,7 +69,11 @@ public class ObstaclePair {
     }
 
     public List<Obstacle> getObstacles() {
-        return List.of(top, bottom);
+        List<Obstacle> obstacles = new ArrayList<Obstacle>();
+        obstacles.add(top);
+        obstacles.add(bottom);
+        return obstacles;
+
     }
 
     public Obstacle getTop() {
