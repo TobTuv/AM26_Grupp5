@@ -1,17 +1,16 @@
 package io.github.jumpyBirb.data;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.Preferences;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class Highscore {
 
-    // Filen finns i assets
-    private static final String FILE_NAME = "highscore.txt";
+    private static final String PREF_NAME = "neon-runner-highscore";
+    private static final String KEY_SCORES = "scores";
 
     public static class Entry {
         public String name;
@@ -23,48 +22,50 @@ public class Highscore {
         }
     }
 
-    public static void cleanHighScore() {
-        try (FileWriter fw = new FileWriter(FILE_NAME, false)) {
-            fw.write("");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private static Preferences prefs() {
+        return Gdx.app.getPreferences(PREF_NAME);
     }
 
-    private static File getFile() {
-        FileHandle handle = Gdx.files.local(FILE_NAME);
-
-        // Skapa filen om den inte finns
-        if (!handle.exists()) {
-            handle.writeString("", false);
-        }
-
-        return handle.file();
+    public static void cleanHighScore() {
+        prefs().putString(KEY_SCORES, "");
+        prefs().flush();
     }
 
     public static List<Entry> load() {
-        List<Entry> list = new ArrayList<>();
-        File file = getFile();
+        List<Entry> list = new ArrayList<Entry>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
+        String data = prefs().getString(KEY_SCORES, "");
 
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty())
-                    continue;
+        if (data.trim().isEmpty()) {
+            return list;
+        }
 
-                String[] parts = line.split(";");
-                if (parts.length == 2) {
+        String[] lines = data.split("\\n");
+
+        for (String line : lines) {
+            if (line.trim().isEmpty()) {
+                continue;
+            }
+
+            String[] parts = line.split(";");
+
+            if (parts.length == 2) {
+                try {
                     String name = parts[0];
                     long score = Long.parseLong(parts[1].trim());
                     list.add(new Entry(name, score));
+                } catch (NumberFormatException e) {
+                    // Ignore broken score rows
                 }
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
+        list.sort(new Comparator<Entry>() {
+            @Override
+            public int compare(Entry a, Entry b) {
+                return Long.compare(b.score, a.score);
+            }
+        });
         return list;
     }
 
@@ -72,25 +73,32 @@ public class Highscore {
         List<Entry> list = load();
         list.add(new Entry(name, score));
 
-        // Sortera listan fallande
-        list.sort(Comparator.comparingLong(e -> -e.score));
-
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(getFile()))) {
-            for (Entry e : list) {
-                bw.write(e.name + ";" + e.score);
-                bw.newLine();
+        list.sort(new Comparator<Entry>() {
+            @Override
+            public int compare(Entry a, Entry b) {
+                return Long.compare(b.score, a.score);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        });
+
+        StringBuilder builder = new StringBuilder();
+
+        for (Entry e : list) {
+            builder.append(e.name)
+                .append(";")
+                .append(e.score)
+                .append("\n");
         }
+
+        prefs().putString(KEY_SCORES, builder.toString());
+        prefs().flush();
     }
 
     public static List<Entry> top(int count) {
         List<Entry> list = load();
-        list.sort(Comparator.comparingLong(e -> -e.score));
 
-        if (list.size() > count)
+        if (list.size() > count) {
             return list.subList(0, count);
+        }
 
         return list;
     }
