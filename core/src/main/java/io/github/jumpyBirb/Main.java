@@ -1,5 +1,6 @@
 package io.github.jumpyBirb;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -506,10 +507,14 @@ public class Main extends ApplicationAdapter {
         }
 
         if (gameState == GameState.SETTINGS) {
-            settings.update();
+            if (inputGate.canAcceptInput()) {
+                settings.update();
+            }
+
 
             GameState next = settings.consumeNextState();
             if (next != null) {
+                inputGate.block(0.25f);
 
                 if (next == GameState.MUSIC) {
                     if (music) {
@@ -621,7 +626,9 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.CONFIRM_RESET) {
 
-            confirmMenu.update();
+            if (inputGate.canAcceptInput()) {
+                confirmMenu.update();
+            }
 
             GameState next = confirmMenu.consumeNextState();
 
@@ -631,6 +638,7 @@ public class Main extends ApplicationAdapter {
                 }
 
                 gameState = GameState.SETTINGS;
+                inputGate.block(0.25f);
             }
 
             return;
@@ -638,10 +646,14 @@ public class Main extends ApplicationAdapter {
 
         if (gameState == GameState.GAME_OVER) {
 
-            gameOverMenu.update();
+            if (inputGate.canAcceptInput()) {
+                gameOverMenu.update();
+            }
 
             GameState next = gameOverMenu.consumeNextState();
             if (next != null) {
+                inputGate.block(0.25f);
+
                 if (next == GameState.RUNNING) {
                     startGame();
                 } else {
@@ -653,7 +665,9 @@ public class Main extends ApplicationAdapter {
         }
 
         if (gameState == GameState.CREDITS) {
-            credits.update();
+            if (inputGate.canAcceptInput()) {
+                credits.update();
+            }
 
             GameState next = credits.consumeNextState();
             if (next != null) {
@@ -830,11 +844,17 @@ public class Main extends ApplicationAdapter {
 
     private void handleCursor() {
         if (gameState != previousState) {
+
             if (gameState == GameState.NAME_INPUT) {
                 Gdx.input.setCursorCatched(false);
+
             } else {
-                Gdx.input.setCursorCatched(true);
+
+                if (Gdx.app.getType() != Application.ApplicationType.WebGL) {
+                    Gdx.input.setCursorCatched(true);
+                }
             }
+
             previousState = gameState;
         }
     }
