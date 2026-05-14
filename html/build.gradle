@@ -2,7 +2,9 @@ buildscript {
   repositories {
     mavenCentral()
     gradlePluginPortal()
+    maven { url 'https://jitpack.io' }
   }
+
   dependencies {
     classpath "org.docstr.gwt:org.docstr.gwt.gradle.plugin:$gwtPluginVersion"
 
@@ -15,6 +17,7 @@ apply plugin: "war"
 
 repositories {
   mavenCentral()
+  maven { url 'https://jitpack.io' }
 }
 
 // This next line can be changed if you want to, for instance, always build into the
@@ -80,10 +83,10 @@ dependencies {
   implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
   implementation "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
   implementation "com.google.jsinterop:jsinterop-annotations:2.1.0:sources"
- // implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion:sources"
+  //implementation "com.github.tommyettinger:gdx-backends-gwt:1.13.1.1"
+  // implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion:sources"
   //implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion:sources"
   implementation project(':core')
-
 
 
   constraints {
@@ -141,10 +144,23 @@ tasks.register('dist') {
       from "war"
       into outputPath
     }
-    copy {
-      from("../assets")
-      into "${outputPath}/assets"
+
+/*
+    // PATCHA assets.txt EFTER att allt kopierats
+    def assetsFiles = fileTree("${outputPath}/assets") {
+      include "assets*.txt"
     }
+
+    assetsFiles.each { assetsFile ->
+      def lines = assetsFile.readLines()
+        .findAll { it.trim().length() > 0 }
+
+      if (!lines[0].matches("\\d+")) {
+        assetsFile.text = lines.size() + "\n" + lines.join("\n")
+      }
+    }
+    */
+
   }
 }
 
@@ -179,5 +195,20 @@ sourceSets.main.java.srcDirs = [
 tasks.named("compileGwt") {
   dependsOn(":core:classes")
 }
+/*
+tasks.named("generateAssetList").configure {
+  doLast {
+    def assetsFile = file("war/assets/assets.txt")
+
+    if (assetsFile.exists()) {
+      def lines = assetsFile.readLines()
+        .findAll { it.trim().length() > 0 }
+
+      assetsFile.text = lines.size() + "\n" + lines.join("\n")
+    }
+  }
+}
+
+ */
 
 eclipse.project.name = appName + "-html"
