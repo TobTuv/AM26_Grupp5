@@ -62,6 +62,8 @@ gwt {
     modules = ["io.github.jumpyBirb.GdxDefinition"]
   }
   */
+
+
 }
 
 
@@ -138,6 +140,10 @@ tasks.register('dist') {
     copy {
       from "war"
       into outputPath
+    }
+    copy {
+      from("../assets")
+      into "${outputPath}/assets"
     }
   }
 }
