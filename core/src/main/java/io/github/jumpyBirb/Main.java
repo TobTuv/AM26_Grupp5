@@ -220,7 +220,7 @@ public class Main extends ApplicationAdapter {
         gameState = GameState.NAME_INPUT;
         inputGate.block(1f);
 
-        skin = new Skin(Gdx.files.internal("uiskin.json")); // måste finnas i assets-foldern
+        skin = new Skin(Gdx.files.internal("ui/uiskin.json")); // måste finnas i assets-foldern
         nameStage = new Stage(new FitViewport(UI_WIDTH, UI_HEIGHT));
 
         nameField = new TextField("", skin);
