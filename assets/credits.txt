@@ -56,7 +56,37 @@ LEVEL DESIGNER
 Hang Phan
 
 
+CREATIVE DIRECTOR
+
+Viktoria Johansson
+
+
 MASTER OF MENUS
+
+Tobias Tuvebäck
+
+
+TEST DIRECTOR
+
+Hang Phan
+
+
+COPYWRITER
+
+Felix Andersson
+
+
+DATABASE EXECUTIVE
+
+Tobias Tuvebäck
+
+
+SYSTEM ARCHITECT
+
+Felix Andersson
+
+
+PUBLISHER
 
 Tobias Tuvebäck
 
@@ -71,16 +101,25 @@ Felix Andersson
 
 THANKS TO
 
+Yrgo
 Göteborg Stad
-the people at LibGDX
-the crazy bastards at IntelliJ
+The people at LibGDX
+The crazy bastards at IntelliJ
+Team VSCode
 Gulan
+Nocco
 Jacques Gepetto
+Joe Bilout
+Flappy Bird
 Franz Beckenbauer
 
 
 SPECIAL THANKS TO
 
+Women in tech
+Frölunda HC
+CryptoCats
+Ted the dawg
 Our friends and families
 Those who believed in us
 Those who didn't believe in us
