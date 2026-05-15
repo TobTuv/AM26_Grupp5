@@ -1,21 +1,34 @@
 {
-com.badlogic.gdx.graphics.g2d.BitmapFont: {
-  default: {
-    file: font.fnt
+  com.badlogic.gdx.graphics.g2d.BitmapFont: {
+
+    default: {
+      file: ui-font.fnt
+    }
+
+    font: {
+      file: ui-font.fnt
+    }
+
+    list: {
+      file: ui-font.fnt
+    }
+
+    subtitle: {
+      file: credits-intro-font.fnt
+    }
+
+    window: {
+      file: ui-font.fnt
+    }
+
+    menu: {
+      file: menu-large.fnt
+    }
+
+    highscore: {
+      file: highscore-font.fnt
+    }
   }
-  font: {
-    file: font.fnt
-  }
-  list: {
-    file: font-list.fnt
-  }
-  subtitle: {
-    file: font-subtitle.fnt
-  }
-  window: {
-    file: font-window.fnt
-  }
-}
 com.badlogic.gdx.graphics.Color: {
   black: {
     r: 0

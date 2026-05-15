@@ -121,23 +121,23 @@ public class GameAssets {
         menuMusic.setVolume(0.6f);
         gameMusic.setVolume(0.6f);
 
-/*
-        creditsFont = new BitmapFont(Gdx.files.internal("ui/font-subtitle.fnt"));
-        introFont = new BitmapFont(Gdx.files.internal("ui/font-subtitle.fnt"));
-        uiFont = new BitmapFont(Gdx.files.internal("ui/font.fnt"));
-        gameUiFont = new BitmapFont(Gdx.files.internal("ui/font-window.fnt"));
-        highScoreFont = new BitmapFont(Gdx.files.internal("ui/font-list.fnt"));
-        menuFont = new BitmapFont(Gdx.files.internal("ui/font-window.fnt"));
 
-        */
+        creditsFont = new BitmapFont(Gdx.files.internal("ui/credits-intro-font.fnt"));
+        introFont = new BitmapFont(Gdx.files.internal("ui/credits-intro-font.fnt"));
+        uiFont = new BitmapFont(Gdx.files.internal("ui/ui-font.fnt"));
+        gameUiFont = new BitmapFont(Gdx.files.internal("ui/highscore-font.fnt"));
+        highScoreFont = new BitmapFont(Gdx.files.internal("ui/highscore-font.fnt"));
+        menuFont = new BitmapFont(Gdx.files.internal("ui/menu-large.fnt"));
 
+
+    /*
         creditsFont = new BitmapFont();
         introFont = new BitmapFont();
         uiFont = new BitmapFont();
         gameUiFont = new BitmapFont();
         highScoreFont = new BitmapFont();
         menuFont = new BitmapFont();
-
+ */
     }
 
     /**
